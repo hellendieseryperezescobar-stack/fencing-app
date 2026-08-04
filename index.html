@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fencing Athlete Pro - Florete Cadete</title>
+<style>
+:root {
+  --bg: #0f0f12; --surface: #1a1a20; --surface2: #22222a; --surface3: #2a2a35;
+  --border: #33333d; --text: #f0f0f5; --text2: #b0b0bd; --text3: #7a7a8a;
+  --accent: #e8c547; --accent2: #4ecdc4; --accent3: #ff6b6b; --accent4: #a78bfa;
+  --win: #4ade80; --loss: #f87171; --warn: #fbbf24;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: "SF Mono", Monaco, "Cascadia Code", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Layout */
+.app { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+  position: fixed; height: 100vh; overflow-y: auto; z-index: 100; transition: transform .3s;
+}
+.sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+.sidebar-header h1 { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: .5px; }
+.sidebar-header p { font-size: 12px; color: var(--text3); margin-top: 4px; }
+.sidebar-nav { padding: 12px 8px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px;
+  cursor: pointer; color: var(--text2); font-size: 14px; font-weight: 500; transition: all .2s; margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: var(--surface3); color: var(--accent); }
+.nav-icon { width: 20px; text-align: center; font-size: 16px; }
+.main { flex: 1; margin-left: 260px; padding: 24px 32px; max-width: 1100px; }
+.mobile-header { display: none; padding: 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.mobile-header h1 { font-size: 16px; color: var(--accent); }
+.menu-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
+
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding: 16px; }
+  .mobile-header { display: flex; justify-content: space-between; align-items: center; }
+}
+
+/* Cards & Sections */
+.section { display: none; animation: fadeIn .3s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.page-title { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+.page-sub { color: var(--text3); font-size: 14px; margin-bottom: 20px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px;
+}
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.card-title { font-size: 16px; font-weight: 600; }
+.card-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
+
+/* Stats */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-box {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px;
+  text-align: center; transition: transform .2s;
+}
+.stat-box:hover { transform: translateY(-2px); border-color: var(--surface3); }
+.stat-value { font-size: 32px; font-weight: 600; line-height: 1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; }
+.stat-accent { color: var(--accent); }
+.stat-win { color: var(--win); }
+.stat-loss { color: var(--loss); }
+
+/* Buttons */
+.btn {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); cursor: pointer; font-weight: 500; font-size: 13px; transition: all .2s;
+}
+.btn:hover { background: var(--surface3); }
+.btn-primary { background: var(--accent); color: #1a1500; border-color: var(--accent); }
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-danger { color: var(--loss); border-color: var(--loss); background: rgba(248,113,113,.1); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-ghost { background: transparent; border-color: transparent; }
+
+/* Forms */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: 12px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: .3px; }
+.form-group input, .form-group select, .form-group textarea {
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
+  color: var(--text); font-size: 14px; outline: none; transition: border-color .2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+/* Lists */
+.list-item {
+  display: flex; justify-content: space-between; align-items: flex-start; padding: 14px;
+  border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--surface2);
+  transition: all .2s;
+}
+.list-item:hover { border-color: var(--surface3); }
+.list-item-content { flex: 1; min-width: 0; }
+.list-item-title { font-weight: 600; font-size: 14px; color: var(--text); }
+.list-item-meta { font-size: 12px; color: var(--text3); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
+.list-item-actions { display: flex; gap: 6px; opacity: 0; transition: opacity .2s; }
+.list-item:hover .list-item-actions { opacity: 1; }
+.list-item-actions button { padding: 4px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface3); cursor: pointer; color: var(--text2); }
+.list-item-actions button:hover { background: var(--surface); color: var(--text); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+.badge-win { background: rgba(74,222,128,.15); color: var(--win); }
+.badge-loss { background: rgba(248,113,113,.15); color: var(--loss); }
+.badge-poule { background: rgba(78,205,196,.15); color: var(--accent2); }
+.badge-direct { background: rgba(167,139,250,.15); color: var(--accent4); }
+.badge-team { background: rgba(232,197,71,.15); color: var(--accent); }
+.badge-ind { background: rgba(176,176,189,.15); color: var(--text2); }
+
+/* Match score */
+.match-score { display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 700; font-family: var(--mono); }
+.score-me { color: var(--text); }
+.score-sep { color: var(--text3); }
+.score-them { color: var(--text3); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 24px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-size: 17px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text3); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+.modal-close:hover { background: var(--surface2); color: var(--text); }
+
+/* Filters */
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-chip {
+  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface2);
+  font-size: 13px; cursor: pointer; color: var(--text2); transition: all .2s;
+}
+.filter-chip:hover { border-color: var(--text3); }
+.filter-chip.active { background: var(--accent); color: #1a1500; border-color: var(--accent); font-weight: 600; }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
+.empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: .4; }
+.empty-state-title { font-size: 15px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+
+/* Checkbox */
+.checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.checkbox-wrap input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+/* Calendar */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day-header { text-align: center; font-size: 11px; color: var(--text3); padding: 8px; text-transform: uppercase; }
+.cal-day {
+  aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; padding: 6px;
+  font-size: 13px; cursor: pointer; position: relative; background: var(--surface2);
+  display: flex; flex-direction: column; align-items: flex-start; min-height: 60px;
+}
+.cal-day:hover { border-color: var(--surface3); }
+.cal-day.other { opacity: .4; }
+.cal-day.today { border-color: var(--accent); }
+.cal-day-num { font-weight: 600; font-size: 12px; }
+.cal-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
+.cal-dot.train { background: var(--accent2); }
+.cal-dot.comp { background: var(--accent); }
+.cal-dot.match { background: var(--win); }
+.cal-dot.psych { background: var(--accent4); }
+
+/* Progress bar */
+.progress-bar { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.tab { padding: 10px 16px; border: none; background: none; color: var(--text3); cursor: pointer; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Theory content */
+.theory-section { line-height: 1.7; }
+.theory-section h3 { color: var(--accent); font-size: 16px; margin: 20px 0 10px; }
+.theory-section p { color: var(--text2); font-size: 14px; margin-bottom: 10px; }
+.theory-section ul { margin-left: 20px; color: var(--text2); font-size: 14px; }
+.theory-section li { margin-bottom: 6px; }
+
+/* Equipment status */
+.equip-status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.equip-ok { background: var(--win); }
+.equip-warn { background: var(--warn); }
+.equip-bad { background: var(--loss); }
+
+/* Nutrition tracker */
+.nutri-track { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.nutri-item { text-align: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); }
+.nutri-val { font-size: 20px; font-weight: 600; color: var(--accent2); }
+.nutri-label { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* Goal card */
+.goal-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; background: var(--surface2); }
+.goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.goal-title { font-weight: 600; font-size: 14px; }
+.goal-meta { font-size: 12px; color: var(--text3); }
+.goal-deadline { font-size: 11px; color: var(--accent); margin-top: 4px; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .nutri-track { grid-template-columns: repeat(2, 1fr); }
+  .list-item-actions { opacity: 1; }
+}
+</style>
+<meta name="theme-color" content="#0f0f12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fencing Pro">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkZlbmNpbmcgQXRobGV0ZSBQcm8iLCAic2hvcnRfbmFtZSI6ICJGZW5jaW5nIFBybyIsICJkZXNjcmlwdGlvbiI6ICJBcHAgZGUgc2VndWltaWVudG8gcGFyYSBlc2dyaW1pc3RhcyAtIEZsb3JldGUgQ2FkZXRlIiwgInN0YXJ0X3VybCI6ICIuIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZjBmMTIiLCAidGhlbWVfY29sb3IiOiAiIzBmMGYxMiIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDE5MiAxOTInJTNFJTNDcmVjdCBmaWxsPSclMjNlOGM1NDcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyByeD0nMjQnLyUzRSUzQ3RleHQgeD0nOTYnIHk9JzEyMCcgZm9udC1zaXplPScxMDAnIHRleHQtYW5jaG9yPSdtaWRkbGUnJTNFXHVkODNlXHVkZDNhJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIn0sIHsic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IGZpbGw9JyUyM2U4YzU0Nycgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc2NCcvJTNFJTNDdGV4dCB4PScyNTYnIHk9JzMyMCcgZm9udC1zaXplPScyODAnIHRleHQtYW5jaG9yPSdtaWRkbGUnJTNFXHVkODNlXHVkZDNhJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIn1dfQ==">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h1>⚔️ Fencing Pro</h1>
+      <p>Florete · Cadete · Selección VEN</p>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-section="dashboard"><span class="nav-icon">📊</span> Resumen</div>
+      <div class="nav-item" data-section="trainings"><span class="nav-icon">🤺</span> Entrenamientos</div>
+      <div class="nav-item" data-section="competitions"><span class="nav-icon">🏆</span> Competencias</div>
+      <div class="nav-item" data-section="matches"><span class="nav-icon">⚔️</span> Combates</div>
+      <div class="nav-item" data-section="opponents"><span class="nav-icon">🎯</span> Oponentes</div>
+      <div class="nav-item" data-section="calendar"><span class="nav-icon">📅</span> Calendario</div>
+      <div class="nav-item" data-section="tests"><span class="nav-icon">📈</span> Tests Físicos</div>
+      <div class="nav-item" data-section="video"><span class="nav-icon">🎬</span> Video Análisis</div>
+      <div class="nav-item" data-section="equipment"><span class="nav-icon">🛡️</span> Equipamiento</div>
+      <div class="nav-item" data-section="nutrition"><span class="nav-icon">🥗</span> Nutrición</div>
+      <div class="nav-item" data-section="psychology"><span class="nav-icon">🧠</span> Psicología</div>
+      <div class="nav-item" data-section="music"><span class="nav-icon">🎧</span> Música</div>
+      <div class="nav-item" data-section="goals"><span class="nav-icon">🎯</span> Objetivos</div>
+      <div class="nav-item" data-section="diary"><span class="nav-icon">📓</span> Diario</div>
+      <div class="nav-item" data-section="theory"><span class="nav-icon">📖</span> Teoría / Reglamento</div>
+      <div class="nav-item" data-section="injuries"><span class="nav-icon">🩹</span> Lesiones / Prevención</div>
+      <div class="nav-item" data-section="ranking"><span class="nav-icon">🏅</span> Ranking</div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-header">
+      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+      <h1>⚔️ Fencing Pro</h1>
+      <div style="width:32px"></div>
+    </div>
+
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Tu rendimiento en un vistazo</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-value stat-accent" id="d-trainings">0</div><div class="stat-label">Entrenamientos</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent" id="d-competitions">0</div><div class="stat-label">Competencias</div></div>
+        <div class="stat-box"><div class="stat-value stat-win" id="d-wins">0</div><div class="stat-label">Victorias</div></div>
+        <div class="stat-box"><div class="stat-value stat-loss" id="d-losses">0</div><div class="stat-label">Derrotas</div></div>
+        <div class="stat-box"><div class="stat-value" id="d-winrate">0%</div><div class="stat-label">% Victorias</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent" id="d-goals">0</div><div class="stat-label">Objetivos activos</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Próximos eventos</div><div class="card-sub">Entrenamientos y competencias próximos</div></div></div>
+        <div id="dash-upcoming"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Últimos combates</div><div class="card-sub">Tus 5 combates más recientes</div></div></div>
+        <div id="dash-recent"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Objetivos del mes</div><div class="card-sub">Progreso hacia tus metas</div></div></div>
+        <div id="dash-goals"></div>
+      </div>
+    </div>
+
+    <!-- TRAININGS -->
+    <div class="section" id="trainings">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Entrenamientos</div><div class="page-sub">Registra cada sesión de trabajo</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-training')">+ Nuevo entrenamiento</button>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterTrainings('all')">Todos</button>
+        <button class="filter-chip" onclick="filterTrainings('Físico')">Físico</button>
+        <button class="filter-chip" onclick="filterTrainings('Técnico')">Técnico</button>
+        <button class="filter-chip" onclick="filterTrainings('Táctico')">Táctico</button>
+        <button class="filter-chip" onclick="filterTrainings('Combate')">Combate</button>
+        <button class="filter-chip" onclick="filterTrainings('Completo')">Completo</button>
+      </div>
+      <div id="list-trainings"></div>
+    </div>
+
+    <!-- COMPETITIONS -->
+    <div class="section" id="competitions">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Competencias</div><div class="page-sub">Torneos, resultados y posiciones</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-competition')">+ Nueva competencia</button>
+      </div>
+      <div id="list-competitions"></div>
+    </div>
+
+    <!-- MATCHES -->
+    <div class="section" id="matches">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Combates</div><div class="page-sub">Registro completo tipo Fencing Time</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-match')">+ Registrar combate</button>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterMatches('all')">Todos</button>
+        <button class="filter-chip" onclick="filterMatches('individual')">Individual</button>
+        <button class="filter-chip" onclick="filterMatches('team')">Equipo</button>
+        <button class="filter-chip" onclick="filterMatches('poule')">Poule</button>
+        <button class="filter-chip" onclick="filterMatches('direct')">Directas</button>
+      </div>
+      <div id="list-matches"></div>
+    </div>
+
+    <!-- OPPONENTS -->
+    <div class="section" id="opponents">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Oponentes</div><div class="page-sub">Base de datos de rivales con historial H2H</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-opponent')">+ Nuevo oponente</button>
+      </div>
+      <div id="list-opponents"></div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="section" id="calendar">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Calendario</div><div class="page-sub">Planificación de temporada</div></div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="changeMonth(-1)">←</button>
+          <span id="cal-month-year" style="font-weight:600; font-size:16px; min-width:140px; text-align:center;"></span>
+          <button class="btn" onclick="changeMonth(1)">→</button>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; font-size:12px; color:var(--text3);">
+        <span><span class="cal-dot train" style="display:inline-block; margin-right:4px;"></span>Entrenamiento</span>
+        <span><span class="cal-dot comp" style="display:inline-block; margin-right:4px;"></span>Competencia</span>
+        <span><span class="cal-dot match" style="display:inline-block; margin-right:4px;"></span>Combate</span>
+        <span><span class="cal-dot psych" style="display:inline-block; margin-right:4px;"></span>Psicología</span>
+      </div>
+      <div class="calendar-grid" id="cal-grid"></div>
+    </div>
+
+    <!-- TESTS -->
+    <div class="section" id="tests">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Tests de Rendimiento</div><div class="page-sub">Métricas objetivas de progreso físico</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-test')">+ Nuevo test</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Tests recomendados para esgrimistas</div></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.7;">
+          <p><strong>Lanzadera 2-4-2:</strong> Avanza a línea central, retrocede, avanza a línea lejana, retrocede, avanza a centro, retrocede + estocada final. Mide agilidad y explosividad.</p>
+          <p><strong>Salto vertical:</strong> Mide potencia de piernas. Compara salto estándar vs salto en profundidad desde 45cm.</p>
+          <p><strong>Test de fondo:</strong> Número de fondos en 30 segundos. Mide resistencia específica.</p>
+          <p><strong>Desplazamiento 10m:</strong> Tiempo de avance y retroceso en pista. Mide velocidad de pies.</p>
+        </div>
+      </div>
+      <div id="list-tests"></div>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="section" id="video">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Video Análisis</div><div class="page-sub">Estudia combates propios y de rivales</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-video')">+ Agregar video</button>
+      </div>
+      <div id="list-video"></div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="section" id="equipment">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Equipamiento</div><div class="page-sub">Control de material y mantenimiento</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-equip')">+ Agregar equipo</button>
+      </div>
+      <div id="list-equipment"></div>
+    </div>
+
+    <!-- NUTRITION -->
+    <div class="section" id="nutrition">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Nutrición & Hidratación</div><div class="page-sub">Seguimiento diario de alimentación</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-nutri')">+ Registrar día</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Hoy</div></div>
+        <div class="nutri-track" id="nutri-today">
+          <div class="nutri-item"><div class="nutri-val" id="n-water">0</div><div class="nutri-label">Vasos de agua</div></div>
+          <div class="nutri-item"><div class="nutri-val" id="n-protein">0g</div><div class="nutri-label">Proteínas</div></div>
+          <div class="nutri-item"><div class="nutri-val" id="n-carbs">0g</div><div class="nutri-label">Carbohidratos</div></div>
+          <div class="nutri-item"><div class="nutri-val" id="n-veggies">0</div><div class="nutri-label">Porciones verduras</div></div>
+        </div>
+      </div>
+      <div id="list-nutrition"></div>
+    </div>
+
+    <!-- PSYCHOLOGY -->
+    <div class="section" id="psychology">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Psicología</div><div class="page-sub">Ejercicios mentales del psicólogo</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-psych')">+ Nuevo ejercicio</button>
+      </div>
+      <div id="list-psychology"></div>
+    </div>
+
+    <!-- MUSIC -->
+    <div class="section" id="music">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Música</div><div class="page-sub">Playlists por momento de entrenamiento</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-music')">+ Agregar canción</button>
+      </div>
+      <div id="list-music"></div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="section" id="goals">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Objetivos</div><div class="page-sub">Metas SMART a corto, mediano y largo plazo</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-goal')">+ Nuevo objetivo</button>
+      </div>
+      <div id="list-goals"></div>
+    </div>
+
+    <!-- DIARY -->
+    <div class="section" id="diary">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Diario de Atleta</div><div class="page-sub">Reflexiones diarias, sensaciones y estado de ánimo</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-diary')">+ Nueva entrada</button>
+      </div>
+      <div id="list-diary"></div>
+    </div>
+
+    <!-- THEORY -->
+    <div class="section" id="theory">
+      <div class="page-title">Teoría & Reglamento</div>
+      <div class="page-sub">Material de estudio para dominar el florete</div>
+      <div class="tabs">
+        <button class="tab active" onclick="showTheoryTab('positions')">Posiciones</button>
+        <button class="tab" onclick="showTheoryTab('priority')">Prioridad</button>
+        <button class="tab" onclick="showTheoryTab('rules')">Reglamento</button>
+        <button class="tab" onclick="showTheoryTab('tactics')">Táctica</button>
+      </div>
+      <div class="card theory-section" id="theory-positions">
+        <h3>Las 4 posiciones básicas del brazo armado (Florete)</h3>
+        <p>En cada línea, el brazo armado puede tomar 2 posiciones: una en supinación y otra en pronación. La hoja con relación a la mano puede tener la punta por encima, al nivel, o por debajo de la mano.</p>
+        <ul>
+          <li><strong>Sexta:</strong> Posición de supinación. Punta al nivel de la mano. Es la posición de guardia natural del floretista.</li>
+          <li><strong>Cuarta:</strong> Pronación. Punta por encima de la mano. Protege la línea interior.</li>
+          <li><strong>Octava:</strong> Supinación. Punta por debajo de la mano. Protege la línea inferior.</li>
+          <li><strong>Séptima:</strong> Pronación. Punta por debajo. Protege la línea inferior exterior.</li>
+        </ul>
+        <h3>El fondo (estocada)</h3>
+        <p>Desde la posición de guardia se estira vivamente el brazo armado sin rigidez, mientras el cuerpo sigue inmóvil. Se lanza el pie adelantado estirando completamente la pierna a ras de suelo, para caer con el talón. La pierna retrasada empuja con máxima potencia.</p>
+        <h3>Desplazamientos</h3>
+        <ul>
+          <li><strong>Avance:</strong> Pie delantero avanza primero, luego el trasero lo sigue manteniendo la distancia de guardia.</li>
+          <li><strong>Retroceso:</strong> Pie trasero retrocede primero, luego el delantero.</li>
+          <li><strong>Fondo corto:</strong> Extensión del brazo + paso corto.</li>
+          <li><strong>Fondo largo:</strong> Extensión completa + lunge profundo.</li>
+        </ul>
+      </div>
+      <div class="card theory-section" id="theory-priority" style="display:none;">
+        <h3>Convención de prioridad (Florete)</h3>
+        <p>El florete es el "arma de la convención". No existe el tocado simultáneo válido. El árbitro decide quién tiene la "derecha de ataque" (prioridad) basándose en la secuencia de acciones.</p>
+        <ul>
+          <li><strong>Ataque iniciado:</strong> Quien extiende el brazo primero y avanza con intención de tocar tiene la prioridad.</li>
+          <li><strong>Parada:</strong> Si el defensor realiza una parada válida, gana la prioridad y puede contraatacar.</li>
+          <li><strong>Contraataque:</strong> Si el atacante es parado y contraataca inmediatamente, puede recuperar la prioridad si la acción es continua.</li>
+          <li><strong>Ataque en preparación:</strong> Se puede tocar al oponente mientras prepara su ataque (baja el arma, flexiona el brazo, etc.).</li>
+          <li><strong>Ataque al arco:</strong> Tocar al brazo del oponente mientras este intenta atacar. Válido si se realiza correctamente.</li>
+        </ul>
+        <h3>La "frase de las armas"</h3>
+        <p>Se compara con una conversación entre dos personas. Cada acción responde a la anterior. El floretista debe ser riguroso, mantener la prioridad y buscar los errores del oponente.</p>
+      </div>
+      <div class="card theory-section" id="theory-rules" style="display:none;">
+        <h3>Reglamento básico de competencia</h3>
+        <ul>
+          <li><strong>Pista:</strong> 14m de largo x 1.5-2m de ancho. Líneas de guardia a 2m del centro. Líneas de advertencia a 2m de cada extremo.</li>
+          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos.</li>
+          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos de 3 min con 1 min de descanso).</li>
+          <li><strong>Superficie válida (florete):</strong> Tronco, solo sobre la chaquetilla eléctrica. No valen brazos, cabeza, piernas.</li>
+          <li><strong>Arma:</strong> Hoja de 90cm, peso total 500g, longitud máxima 110cm. Cazoleta entre 9.5-12cm de circunferencia.</li>
+          <li><strong>Órdenes del árbitro:</strong> "En garde" → "¿Listos?" → "¡Allez!" (o "¡Adelante!"). "¡Alto!" para detener.</li>
+          <li><strong>Tocado simultáneo:</strong> En florete NO existe. El árbitro otorga el punto al que tiene prioridad, o anula si ambos atacan sin prioridad clara.</li>
+        </ul>
+      </div>
+      <div class="card theory-section" id="theory-tactics" style="display:none;">
+        <h3>Táctica básica del floretista</h3>
+        <ul>
+          <li><strong>Tipología:</strong> El floretista es riguroso, se involucra en largos intercambios, busca mantener prioridad y desenmascarar errores del rival.</li>
+          <li><strong>Control de distancia:</strong> Domina el espacio entre tú y tu oponente. Acorta para atacar, alarga para defenderte.</li>
+          <li><strong>Tempo:</strong> Varía la velocidad de tus acciones. Acelera para sorprender, frena para provocar errores.</li>
+          <li><strong>Engaño (feint):</strong> Simula un ataque en una línea para provocar una parada, luego cambia de línea.</li>
+          <li><strong>Contra-tiempo:</strong> Tocar al oponente en el momento exacto de su ataque, aprovechando su preparación.</li>
+          <li><strong>Estudio del rival:</strong> Observa en los primeros asaltos: ¿es agresivo o pasivo? ¿tiende a parar en cuarta u octava? ¿cómo reacciona a la presión?</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- INJURIES -->
+    <div class="section" id="injuries">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Lesiones & Prevención</div><div class="page-sub">Registro de molestias y plan de prevención</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-injury')">+ Registrar</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Ejercicios de prevención recomendados</div></div>
+        <div style="font-size:13px; color:var(--text2); line-height:1.7;">
+          <p><strong>Zancada del reloj:</strong> Zancada adelante, lateral, atrás y con curvas con la misma pierna. 3 series x 5 cada posición.</p>
+          <p><strong>Elevación excéntrica de pantorrilla:</strong> Sube con ambos pies, baja lento (3-5 seg) con una pierna. 8-12 reps x pierna.</p>
+          <p><strong>Inclinaciones pélvicas posteriores:</strong> Acuesta boca arriba, gira caderas hacia atrás aplanando la lumbar. 20-30 segundos.</p>
+          <p><strong>Bosu / Tabla de equilibrio:</strong> Trabaja propiocepción y estabilidad de tobillo. Esencial para esgrimistas.</p>
+        </div>
+      </div>
+      <div id="list-injuries"></div>
+    </div>
+
+    <!-- RANKING -->
+    <div class="section" id="ranking">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Ranking</div><div class="page-sub">Seguimiento de posición nacional e internacional</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-ranking')">+ Actualizar ranking</button>
+      </div>
+      <div id="list-ranking"></div>
+    </div>
+
+
+  </main>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Training -->
+<div class="modal-overlay" id="modal-training">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nuevo entrenamiento</h3><button class="modal-close" onclick="closeModal('modal-training')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="t-date"></div>
+      <div class="form-group"><label>Duración (min)</label><input type="number" id="t-duration" placeholder="90"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label><select id="t-type"><option>Físico</option><option>Técnico</option><option>Táctico</option><option>Combate</option><option>Completo</option></select></div>
+      <div class="form-group"><label>Intensidad (1-10)</label><input type="number" id="t-intensity" min="1" max="10" placeholder="7"></div>
+    </div>
+    <div class="form-group full"><label>Notas</label><textarea id="t-notes" placeholder="¿Qué trabajaste hoy?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-training')">Cancelar</button><button class="btn btn-primary" onclick="saveTraining()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Competition -->
+<div class="modal-overlay" id="modal-competition">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nueva competencia</h3><button class="modal-close" onclick="closeModal('modal-competition')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Nombre del evento</label><input type="text" id="c-name" placeholder="Ej: Copa Venezuela 2026"></div>
+      <div class="form-group"><label>Fecha</label><input type="date" id="c-date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Ubicación</label><input type="text" id="c-location" placeholder="Ciudad, País"></div>
+      <div class="form-group"><label>Posición final</label><input type="text" id="c-position" placeholder="Ej: 3ro / Top 8"></div>
+    </div>
+    <div class="form-group full"><label>Notas</label><textarea id="c-notes" placeholder="Observaciones..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-competition')">Cancelar</button><button class="btn btn-primary" onclick="saveCompetition()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Match -->
+<div class="modal-overlay" id="modal-match">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Registrar combate</h3><button class="modal-close" onclick="closeModal('modal-match')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="m-date"></div>
+      <div class="form-group"><label>Competencia</label><input type="text" id="m-comp" placeholder="Torneo (opcional)"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Oponente</label><input type="text" id="m-opponent" placeholder="Nombre" list="dl-opponents"></div>
+      <div class="form-group"><label>País oponente</label><input type="text" id="m-country" placeholder="VEN"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tipo</label><select id="m-type"><option value="individual">Individual</option><option value="team">Equipo</option></select></div>
+      <div class="form-group"><label>Formato</label><select id="m-format"><option value="poule">Poule</option><option value="direct">Directas</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Tus touches</label><input type="number" id="m-for" placeholder="5"></div>
+      <div class="form-group"><label>Touches oponente</label><input type="number" id="m-against" placeholder="3"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fase</label><select id="m-phase"><option>Poule</option><option>Tabla de 128</option><option>Tabla de 64</option><option>Tabla de 32</option><option>Tabla de 16</option><option>Octavos</option><option>Cuartos</option><option>Semifinal</option><option>Final</option></select></div>
+      <div class="form-group"><label>Arma oponente</label><select id="m-weapon"><option>Florete</option><option>Espada</option><option>Sable</option></select></div>
+    </div>
+    <div class="form-group full"><label>Notas tácticas</label><textarea id="m-notes" placeholder="¿Qué funcionó? ¿Qué mejorar?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-match')">Cancelar</button><button class="btn btn-primary" onclick="saveMatch()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Opponent -->
+<div class="modal-overlay" id="modal-opponent">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nuevo oponente</h3><button class="modal-close" onclick="closeModal('modal-opponent')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Nombre</label><input type="text" id="o-name" placeholder="Nombre completo"></div>
+      <div class="form-group"><label>País</label><input type="text" id="o-country" placeholder="VEN"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Arma</label><select id="o-weapon"><option>Florete</option><option>Espada</option><option>Sable</option></select></div>
+      <div class="form-group"><label>Mano</label><select id="o-hand"><option>Derecha</option><option>Izquierda</option></select></div>
+    </div>
+    <div class="form-group full"><label>Notas / Estilo</label><textarea id="o-notes" placeholder="¿Cómo esgrime? Puntos débiles?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-opponent')">Cancelar</button><button class="btn btn-primary" onclick="saveOpponent()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Test -->
+<div class="modal-overlay" id="modal-test">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nuevo test físico</h3><button class="modal-close" onclick="closeModal('modal-test')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="test-date"></div>
+      <div class="form-group"><label>Tipo de test</label><select id="test-type"><option>Lanzadera 2-4-2 (seg)</option><option>Salto vertical (cm)</option><option>Salto en profundidad (cm)</option><option>Fondos en 30s (reps)</option><option>Desplazamiento 10m (seg)</option><option>Test personalizado</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Resultado</label><input type="text" id="test-result" placeholder="Ej: 12.4 seg / 45 cm"></div>
+      <div class="form-group"><label>Peso corporal (kg)</label><input type="number" id="test-weight" placeholder="Opcional"></div>
+    </div>
+    <div class="form-group full"><label>Notas</label><textarea id="test-notes" placeholder="Condiciones, sensaciones..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-test')">Cancelar</button><button class="btn btn-primary" onclick="saveTest()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Video -->
+<div class="modal-overlay" id="modal-video">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Agregar video</h3><button class="modal-close" onclick="closeModal('modal-video')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Título</label><input type="text" id="v-title" placeholder="Ej: Combate vs X - Semifinal"></div>
+      <div class="form-group"><label>Fecha del combate</label><input type="date" id="v-date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Link del video</label><input type="url" id="v-url" placeholder="YouTube, Google Drive, etc."></div>
+      <div class="form-group"><label>Tipo</label><select id="v-type"><option>Propio</option><option>Rival</option><option>Referencia</option></select></div>
+    </div>
+    <div class="form-group full"><label>Notas de análisis</label><textarea id="v-notes" placeholder="Patrones observados, tácticas, errores..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-video')">Cancelar</button><button class="btn btn-primary" onclick="saveVideo()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Equipment -->
+<div class="modal-overlay" id="modal-equip">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Agregar equipo</h3><button class="modal-close" onclick="closeModal('modal-equip')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Item</label><select id="e-item"><option>Florete completo</option><option>Hoja de florete</option><option>Careta</option><option>Chaquetilla</option><option>Peto</option><option>Guante</option><option>Pantalón</option><option>Medias</option><option>Bodycord / Cable</option><option>Pinza de careta</option><option>Zapatillas</option><option>Bolsa / Saca</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Marca / Modelo</label><input type="text" id="e-brand" placeholder="Ej: PBT, Uhlmann, Negrini"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha de compra</label><input type="date" id="e-date"></div>
+      <div class="form-group"><label>Estado</label><select id="e-status"><option value="ok">✅ Perfecto</option><option value="warn">⚠️ Revisar</option><option value="bad">❌ Cambiar</option></select></div>
+    </div>
+    <div class="form-group full"><label>Notas / Mantenimiento</label><textarea id="e-notes" placeholder="Última revisión, problemas..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-equip')">Cancelar</button><button class="btn btn-primary" onclick="saveEquip()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Nutrition -->
+<div class="modal-overlay" id="modal-nutri">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Registro nutricional</h3><button class="modal-close" onclick="closeModal('modal-nutri')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="n-date"></div>
+      <div class="form-group"><label>Vasos de agua</label><input type="number" id="n-water" placeholder="8" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Proteínas (g)</label><input type="number" id="n-protein" placeholder="Ej: 80"></div>
+      <div class="form-group"><label>Carbohidratos (g)</label><input type="number" id="n-carbs" placeholder="Ej: 200"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Porciones de verduras</label><input type="number" id="n-veggies" placeholder="Ej: 3" min="0"></div>
+      <div class="form-group"><label>Suplementos</label><input type="text" id="n-supp" placeholder="Ej: Creatina, Omega 3"></div>
+    </div>
+    <div class="form-group full"><label>Observaciones</label><textarea id="n-notes" placeholder="¿Cómo te sentiste con la alimentación hoy?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-nutri')">Cancelar</button><button class="btn btn-primary" onclick="saveNutri()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Psychology -->
+<div class="modal-overlay" id="modal-psych">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nuevo ejercicio psicológico</h3><button class="modal-close" onclick="closeModal('modal-psych')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="p-date"></div>
+      <div class="form-group"><label>Tipo de ejercicio</label><input type="text" id="p-exercise" placeholder="Ej: Visualización, Respiración 4-7-8"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Duración (min)</label><input type="number" id="p-duration" placeholder="10"></div>
+      <div class="form-group"><label>Categoría</label><select id="p-cat"><option>Pre-competitivo</option><option>Entrenamiento</option><option>Recuperación</option><option>Rutina diaria</option></select></div>
+    </div>
+    <div class="form-group full"><label>Descripción / Notas</label><textarea id="p-notes" placeholder="Instrucciones o reflexiones..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-psych')">Cancelar</button><button class="btn btn-primary" onclick="savePsych()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Music -->
+<div class="modal-overlay" id="modal-music">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Agregar música</h3><button class="modal-close" onclick="closeModal('modal-music')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Título / Canción</label><input type="text" id="mu-title" placeholder="Nombre"></div>
+      <div class="form-group"><label>Artista</label><input type="text" id="mu-artist" placeholder="Artista"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Categoría</label><select id="mu-cat"><option value="pre-entrenamiento">Pre-entrenamiento</option><option value="entrenamiento">Entrenamiento</option><option value="pre-competitivo">Pre-competitivo</option><option value="recuperacion">Recuperación</option></select></div>
+      <div class="form-group"><label>Link (URL)</label><input type="url" id="mu-url" placeholder="https://..."></div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-music')">Cancelar</button><button class="btn btn-primary" onclick="saveMusic()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Goal -->
+<div class="modal-overlay" id="modal-goal">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nuevo objetivo</h3><button class="modal-close" onclick="closeModal('modal-goal')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group full"><label>Objetivo</label><input type="text" id="g-title" placeholder="Ej: Clasificar al Panamericano Cadete"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Categoría</label><select id="g-cat"><option>Técnico</option><option>Táctico</option><option>Físico</option><option>Mental</option><option>Competitivo</option><option>Académico</option></select></div>
+      <div class="form-group"><label>Plazo</label><select id="g-term"><option value="short">Corto plazo (1-3 meses)</option><option value="medium">Mediano plazo (3-6 meses)</option><option value="long">Largo plazo (6-12 meses)</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha límite</label><input type="date" id="g-deadline"></div>
+      <div class="form-group"><label>Progreso (%)</label><input type="number" id="g-progress" min="0" max="100" value="0"></div>
+    </div>
+    <div class="form-group full"><label>Plan de acción</label><textarea id="g-plan" placeholder="¿Qué pasos necesitas dar?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-goal')">Cancelar</button><button class="btn btn-primary" onclick="saveGoal()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Diary -->
+<div class="modal-overlay" id="modal-diary">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nueva entrada de diario</h3><button class="modal-close" onclick="closeModal('modal-diary')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="d-date"></div>
+      <div class="form-group"><label>Estado de ánimo (1-10)</label><input type="number" id="d-mood" min="1" max="10" placeholder="7"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Nivel de energía (1-10)</label><input type="number" id="d-energy" min="1" max="10" placeholder="7"></div>
+      <div class="form-group"><label>Calidad de sueño (1-10)</label><input type="number" id="d-sleep" min="1" max="10" placeholder="7"></div>
+    </div>
+    <div class="form-group full"><label>Entrada</label><textarea id="d-text" placeholder="¿Cómo fue tu día? ¿Qué sentiste en el entrenamiento? ¿Qué aprendiste?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-diary')">Cancelar</button><button class="btn btn-primary" onclick="saveDiary()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Injury -->
+<div class="modal-overlay" id="modal-injury">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Registro de lesión / molestia</h3><button class="modal-close" onclick="closeModal('modal-injury')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="i-date"></div>
+      <div class="form-group"><label>Zona afectada</label><select id="i-zone"><option>Tobillo</option><option>Rodilla</option><option>Cadera</option><option>Espalda lumbar</option><option>Hombro</option><option>Codo</option><option>Muñeca</option><option>Cuello</option><option>Otra</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Intensidad (1-10)</label><input type="number" id="i-intensity" min="1" max="10" placeholder="5"></div>
+      <div class="form-group"><label>Estado</label><select id="i-status"><option value="active">Activa / En tratamiento</option><option value="recovered">Recuperada</option><option value="chronic">Crónica / Controlada</option></select></div>
+    </div>
+    <div class="form-group full"><label>Descripción</label><textarea id="i-desc" placeholder="¿Qué te duele? ¿Cuándo empezó?"></textarea></div>
+    <div class="form-group full"><label>Tratamiento / Prevención</label><textarea id="i-treatment" placeholder="¿Qué estás haciendo para mejorar?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-injury')">Cancelar</button><button class="btn btn-primary" onclick="saveInjury()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Ranking -->
+<div class="modal-overlay" id="modal-ranking">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Actualizar ranking</h3><button class="modal-close" onclick="closeModal('modal-ranking')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label><input type="date" id="r-date"></div>
+      <div class="form-group"><label>Tipo de ranking</label><select id="r-type"><option>Nacional VEN</option><option>Panamericano Cadete</option><option>Ranking FIE Cadete</option><option>Ranking FIE Junior</option><option>Ranking Club</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Posición</label><input type="number" id="r-pos" placeholder="Ej: 15"></div>
+      <div class="form-group"><label>Puntos</label><input type="number" id="r-points" placeholder="Ej: 320"></div>
+    </div>
+    <div class="form-group full"><label>Notas</label><textarea id="r-notes" placeholder="Cambios, competencias que sumaron..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-ranking')">Cancelar</button><button class="btn btn-primary" onclick="saveRanking()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- H2H Modal -->
+<div class="modal-overlay" id="modal-h2h">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-header"><h3 class="modal-title" id="h2h-title">Historial</h3><button class="modal-close" onclick="closeModal('modal-h2h')">&times;</button></div>
+    <div id="h2h-content"></div>
+  </div>
+</div>
+
+<datalist id="dl-opponents"></datalist>
+
+
+<script>
+(function(){
+  const KEY = 'fencing_pro_v2';
+  let data = {
+    trainings: [], competitions: [], matches: [], opponents: [],
+    tests: [], videos: [], equipment: [], nutrition: [], psychology: [],
+    music: [], goals: [], diary: [], injuries: [], ranking: []
+  };
+  let filters = { trainings: 'all', matches: 'all' };
+  let calDate = new Date();
+
+  function load() {
+    try { const raw = localStorage.getItem(KEY); if(raw) data = JSON.parse(raw); }
+    catch(e) {}
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"]').forEach(el => { if(!el.value) el.value = today; });
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(data)); renderAll(); }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
+
+  // Navigation
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.section).classList.add('active');
+      document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+  window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('open'); };
+
+  // Modals
+  window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
+  window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
+  document.querySelectorAll('.modal-overlay').forEach(ov => {
+    ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('active'); });
+  });
+
+  // Theory tabs
+  window.showTheoryTab = function(id) {
+    document.querySelectorAll('#theory .tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.theory-section').forEach(s => s.style.display = 'none');
+    document.getElementById('theory-'+id).style.display = 'block';
+  };
+
+  // ===== TRAINING =====
+  window.saveTraining = function() {
+    data.trainings.unshift({
+      id: uid(), date: document.getElementById('t-date').value,
+      type: document.getElementById('t-type').value,
+      duration: parseInt(document.getElementById('t-duration').value)||0,
+      intensity: parseInt(document.getElementById('t-intensity').value)||5,
+      notes: document.getElementById('t-notes').value
+    });
+    save(); closeModal('modal-training');
+    document.getElementById('t-duration').value=''; document.getElementById('t-intensity').value=''; document.getElementById('t-notes').value='';
+  };
+  window.filterTrainings = function(f) { filters.trainings=f; document.querySelectorAll('#trainings .filter-chip').forEach(c=>c.classList.toggle('active', (f==='all'&&c.textContent==='Todos')||c.textContent===f)); renderTrainings(); };
+  window.delTraining = function(id) { data.trainings=data.trainings.filter(x=>x.id!==id); save(); };
+
+  // ===== COMPETITION =====
+  window.saveCompetition = function() {
+    data.competitions.unshift({
+      id: uid(), name: document.getElementById('c-name').value,
+      date: document.getElementById('c-date').value,
+      location: document.getElementById('c-location').value,
+      position: document.getElementById('c-position').value,
+      notes: document.getElementById('c-notes').value
+    });
+    save(); closeModal('modal-competition');
+    document.getElementById('c-name').value=''; document.getElementById('c-location').value=''; document.getElementById('c-position').value=''; document.getElementById('c-notes').value='';
+  };
+  window.delCompetition = function(id) { data.competitions=data.competitions.filter(x=>x.id!==id); save(); };
+
+  // ===== MATCH =====
+  window.saveMatch = function() {
+    const opp = document.getElementById('m-opponent').value.trim();
+    if(!opp) { alert('Ingresa el nombre del oponente'); return; }
+    const forScore = parseInt(document.getElementById('m-for').value)||0;
+    const againstScore = parseInt(document.getElementById('m-against').value)||0;
+    const m = {
+      id: uid(), date: document.getElementById('m-date').value,
+      competition: document.getElementById('m-comp').value,
+      opponentName: opp, opponentCountry: document.getElementById('m-country').value,
+      type: document.getElementById('m-type').value,
+      format: document.getElementById('m-format').value,
+      scoreFor: forScore, scoreAgainst: againstScore,
+      phase: document.getElementById('m-phase').value,
+      weapon: document.getElementById('m-weapon').value,
+      notes: document.getElementById('m-notes').value,
+      win: forScore > againstScore
+    };
+    data.matches.unshift(m);
+    if(!data.opponents.find(o=>o.name.toLowerCase()===opp.toLowerCase())) {
+      data.opponents.push({ id: uid(), name: opp, country: m.opponentCountry, weapon: m.weapon, hand: 'Derecha', notes: '' });
+    }
+    save(); closeModal('modal-match');
+    document.getElementById('m-opponent').value=''; document.getElementById('m-country').value='';
+    document.getElementById('m-for').value=''; document.getElementById('m-against').value='';
+    document.getElementById('m-notes').value=''; document.getElementById('m-comp').value='';
+  };
+  window.filterMatches = function(f) { filters.matches=f; document.querySelectorAll('#matches .filter-chip').forEach(c=>c.classList.toggle('active', c.textContent.toLowerCase().includes(f)||(f==='all'&&c.textContent==='Todos'))); renderMatches(); };
+  window.delMatch = function(id) { data.matches=data.matches.filter(x=>x.id!==id); save(); };
+
+  // ===== OPPONENT =====
+  window.saveOpponent = function() {
+    data.opponents.unshift({
+      id: uid(), name: document.getElementById('o-name').value,
+      country: document.getElementById('o-country').value,
+      weapon: document.getElementById('o-weapon').value,
+      hand: document.getElementById('o-hand').value,
+      notes: document.getElementById('o-notes').value
+    });
+    save(); closeModal('modal-opponent');
+    document.getElementById('o-name').value=''; document.getElementById('o-country').value=''; document.getElementById('o-notes').value='';
+  };
+  window.delOpponent = function(id) { data.opponents=data.opponents.filter(x=>x.id!==id); save(); };
+  window.showH2H = function(oppId) {
+    const opp = data.opponents.find(o=>o.id===oppId); if(!opp) return;
+    const h2h = data.matches.filter(m=>m.opponentName.toLowerCase()===opp.name.toLowerCase());
+    const wins = h2h.filter(m=>m.win).length;
+    const losses = h2h.length - wins;
+    const tf = h2h.reduce((s,m)=>s+m.scoreFor,0);
+    const ta = h2h.reduce((s,m)=>s+m.scoreAgainst,0);
+    document.getElementById('h2h-title').textContent = 'Historial vs ' + opp.name;
+    let html = '<div class="stats-grid" style="margin-bottom:16px;">';
+    html += '<div class="stat-box"><div class="stat-value">'+h2h.length+'</div><div class="stat-label">Combates</div></div>';
+    html += '<div class="stat-box"><div class="stat-value stat-win">'+wins+'</div><div class="stat-label">Victorias</div></div>';
+    html += '<div class="stat-box"><div class="stat-value stat-loss">'+losses+'</div><div class="stat-label">Derrotas</div></div>';
+    html += '<div class="stat-box"><div class="stat-value">'+tf+':'+ta+'</div><div class="stat-label">Touches</div></div>';
+    html += '</div>';
+    if(h2h.length===0) html += '<div class="empty-state">Sin combates registrados.</div>';
+    else {
+      html += '<table class="h2h-table"><thead><tr><th>Fecha</th><th>Resultado</th><th>Score</th><th>Fase</th><th>Formato</th></tr></thead><tbody>';
+      h2h.forEach(m=>{
+        html += '<tr><td>'+m.date+'</td><td>'+(m.win?'<span class="badge badge-win">Victoria</span>':'<span class="badge badge-loss">Derrota</span>')+'</td><td>'+m.scoreFor+' - '+m.scoreAgainst+'</td><td>'+m.phase+'</td><td>'+(m.format==='poule'?'Poule':'Directas')+'</td></tr>';
+      });
+      html += '</tbody></table>';
+    }
+    document.getElementById('h2h-content').innerHTML = html;
+    openModal('modal-h2h');
+  };
+
+  // ===== TEST =====
+  window.saveTest = function() {
+    data.tests.unshift({
+      id: uid(), date: document.getElementById('test-date').value,
+      type: document.getElementById('test-type').value,
+      result: document.getElementById('test-result').value,
+      weight: document.getElementById('test-weight').value,
+      notes: document.getElementById('test-notes').value
+    });
+    save(); closeModal('modal-test');
+    document.getElementById('test-result').value=''; document.getElementById('test-weight').value=''; document.getElementById('test-notes').value='';
+  };
+  window.delTest = function(id) { data.tests=data.tests.filter(x=>x.id!==id); save(); };
+
+  // ===== VIDEO =====
+  window.saveVideo = function() {
+    data.videos.unshift({
+      id: uid(), title: document.getElementById('v-title').value,
+      date: document.getElementById('v-date').value,
+      url: document.getElementById('v-url').value,
+      type: document.getElementById('v-type').value,
+      notes: document.getElementById('v-notes').value
+    });
+    save(); closeModal('modal-video');
+    document.getElementById('v-title').value=''; document.getElementById('v-url').value=''; document.getElementById('v-notes').value='';
+  };
+  window.delVideo = function(id) { data.videos=data.videos.filter(x=>x.id!==id); save(); };
+
+  // ===== EQUIPMENT =====
+  window.saveEquip = function() {
+    data.equipment.unshift({
+      id: uid(), item: document.getElementById('e-item').value,
+      brand: document.getElementById('e-brand').value,
+      date: document.getElementById('e-date').value,
+      status: document.getElementById('e-status').value,
+      notes: document.getElementById('e-notes').value
+    });
+    save(); closeModal('modal-equip');
+    document.getElementById('e-brand').value=''; document.getElementById('e-notes').value='';
+  };
+  window.delEquip = function(id) { data.equipment=data.equipment.filter(x=>x.id!==id); save(); };
+
+  // ===== NUTRITION =====
+  window.saveNutri = function() {
+    data.nutrition.unshift({
+      id: uid(), date: document.getElementById('n-date').value,
+      water: parseInt(document.getElementById('n-water').value)||0,
+      protein: parseInt(document.getElementById('n-protein').value)||0,
+      carbs: parseInt(document.getElementById('n-carbs').value)||0,
+      veggies: parseInt(document.getElementById('n-veggies').value)||0,
+      supp: document.getElementById('n-supp').value,
+      notes: document.getElementById('n-notes').value
+    });
+    save(); closeModal('modal-nutri');
+    document.getElementById('n-water').value=''; document.getElementById('n-protein').value='';
+    document.getElementById('n-carbs').value=''; document.getElementById('n-veggies').value='';
+    document.getElementById('n-supp').value=''; document.getElementById('n-notes').value='';
+  };
+  window.delNutri = function(id) { data.nutrition=data.nutrition.filter(x=>x.id!==id); save(); };
+
+  // ===== PSYCHOLOGY =====
+  window.savePsych = function() {
+    data.psychology.unshift({
+      id: uid(), date: document.getElementById('p-date').value,
+      exercise: document.getElementById('p-exercise').value,
+      duration: parseInt(document.getElementById('p-duration').value)||0,
+      category: document.getElementById('p-cat').value,
+      notes: document.getElementById('p-notes').value,
+      completed: false
+    });
+    save(); closeModal('modal-psych');
+    document.getElementById('p-exercise').value=''; document.getElementById('p-duration').value=''; document.getElementById('p-notes').value='';
+  };
+  window.togglePsych = function(id) { const item=data.psychology.find(p=>p.id===id); if(item){item.completed=!item.completed;save();} };
+  window.delPsych = function(id) { data.psychology=data.psychology.filter(x=>x.id!==id); save(); };
+
+  // ===== MUSIC =====
+  window.saveMusic = function() {
+    data.music.unshift({
+      id: uid(), title: document.getElementById('mu-title').value,
+      artist: document.getElementById('mu-artist').value,
+      category: document.getElementById('mu-cat').value,
+      url: document.getElementById('mu-url').value
+    });
+    save(); closeModal('modal-music');
+    document.getElementById('mu-title').value=''; document.getElementById('mu-artist').value=''; document.getElementById('mu-url').value='';
+  };
+  window.delMusic = function(id) { data.music=data.music.filter(x=>x.id!==id); save(); };
+
+  // ===== GOALS =====
+  window.saveGoal = function() {
+    data.goals.unshift({
+      id: uid(), title: document.getElementById('g-title').value,
+      category: document.getElementById('g-cat').value,
+      term: document.getElementById('g-term').value,
+      deadline: document.getElementById('g-deadline').value,
+      progress: parseInt(document.getElementById('g-progress').value)||0,
+      plan: document.getElementById('g-plan').value,
+      completed: false
+    });
+    save(); closeModal('modal-goal');
+    document.getElementById('g-title').value=''; document.getElementById('g-progress').value='0'; document.getElementById('g-plan').value='';
+  };
+  window.updateGoalProgress = function(id, val) { const g=data.goals.find(x=>x.id===id); if(g){g.progress=parseInt(val); if(g.progress>=100)g.completed=true; save();} };
+  window.delGoal = function(id) { data.goals=data.goals.filter(x=>x.id!==id); save(); };
+
+  // ===== DIARY =====
+  window.saveDiary = function() {
+    data.diary.unshift({
+      id: uid(), date: document.getElementById('d-date').value,
+      mood: parseInt(document.getElementById('d-mood').value)||7,
+      energy: parseInt(document.getElementById('d-energy').value)||7,
+      sleep: parseInt(document.getElementById('d-sleep').value)||7,
+      text: document.getElementById('d-text').value
+    });
+    save(); closeModal('modal-diary');
+    document.getElementById('d-mood').value=''; document.getElementById('d-energy').value='';
+    document.getElementById('d-sleep').value=''; document.getElementById('d-text').value='';
+  };
+  window.delDiary = function(id) { data.diary=data.diary.filter(x=>x.id!==id); save(); };
+
+  // ===== INJURY =====
+  window.saveInjury = function() {
+    data.injuries.unshift({
+      id: uid(), date: document.getElementById('i-date').value,
+      zone: document.getElementById('i-zone').value,
+      intensity: parseInt(document.getElementById('i-intensity').value)||5,
+      status: document.getElementById('i-status').value,
+      desc: document.getElementById('i-desc').value,
+      treatment: document.getElementById('i-treatment').value
+    });
+    save(); closeModal('modal-injury');
+    document.getElementById('i-intensity').value=''; document.getElementById('i-desc').value='';
+    document.getElementById('i-treatment').value='';
+  };
+  window.delInjury = function(id) { data.injuries=data.injuries.filter(x=>x.id!==id); save(); };
+
+  // ===== RANKING =====
+  window.saveRanking = function() {
+    data.ranking.unshift({
+      id: uid(), date: document.getElementById('r-date').value,
+      type: document.getElementById('r-type').value,
+      position: parseInt(document.getElementById('r-pos').value)||0,
+      points: parseInt(document.getElementById('r-points').value)||0,
+      notes: document.getElementById('r-notes').value
+    });
+    save(); closeModal('modal-ranking');
+    document.getElementById('r-pos').value=''; document.getElementById('r-points').value=''; document.getElementById('r-notes').value='';
+  };
+  window.delRanking = function(id) { data.ranking=data.ranking.filter(x=>x.id!==id); save(); };
+
+
+  // ===== RENDER FUNCTIONS =====
+  function renderAll() {
+    renderDashboard();
+    renderTrainings();
+    renderCompetitions();
+    renderMatches();
+    renderOpponents();
+    renderCalendar();
+    renderTests();
+    renderVideos();
+    renderEquipment();
+    renderNutrition();
+    renderPsychology();
+    renderMusic();
+    renderGoals();
+    renderDiary();
+    renderInjuries();
+    renderRanking();
+    updateDatalist();
+  }
+
+  function renderDashboard() {
+    document.getElementById('d-trainings').textContent = data.trainings.length;
+    document.getElementById('d-competitions').textContent = data.competitions.length;
+    const wins = data.matches.filter(m=>m.win).length;
+    const losses = data.matches.length - wins;
+    document.getElementById('d-wins').textContent = wins;
+    document.getElementById('d-losses').textContent = losses;
+    document.getElementById('d-winrate').textContent = data.matches.length ? Math.round((wins/data.matches.length)*100)+'%' : '0%';
+    document.getElementById('d-goals').textContent = data.goals.filter(g=>!g.completed).length;
+
+    // Upcoming
+    const today = new Date().toISOString().split('T')[0];
+    const upcoming = [...data.competitions, ...data.trainings].filter(x=>x.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);
+    const upEl = document.getElementById('dash-upcoming');
+    if(upcoming.length===0) upEl.innerHTML = '<div class="empty-state">No hay eventos próximos.</div>';
+    else upEl.innerHTML = upcoming.map(x=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${x.name||x.type||'Entrenamiento'}</div>
+          <div class="list-item-meta">${x.date}${x.location?' · '+x.location:''}${x.duration?' · '+x.duration+' min':''}</div>
+        </div>
+        <span class="badge ${x.name?'badge-comp':'badge-train'}">${x.name?'Competencia':'Entrenamiento'}</span>
+      </div>
+    `).join('');
+
+    // Recent matches
+    const recent = data.matches.slice(0,5);
+    const rmEl = document.getElementById('dash-recent');
+    if(recent.length===0) rmEl.innerHTML = '<div class="empty-state">Aún no hay combates registrados.</div>';
+    else rmEl.innerHTML = recent.map(m=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${m.opponentName} ${m.opponentCountry?'('+m.opponentCountry+')':''}</div>
+          <div class="list-item-meta">${m.date} · ${m.phase} · ${m.format==='poule'?'Poule':'Directas'}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="match-score"><span class="score-me">${m.scoreFor}</span><span class="score-sep">:</span><span class="score-them">${m.scoreAgainst}</span></div>
+          ${m.win?'<span class="badge badge-win">Victoria</span>':'<span class="badge badge-loss">Derrota</span>'}
+        </div>
+      </div>
+    `).join('');
+
+    // Goals
+    const activeGoals = data.goals.filter(g=>!g.completed).slice(0,3);
+    const gEl = document.getElementById('dash-goals');
+    if(activeGoals.length===0) gEl.innerHTML = '<div class="empty-state">No hay objetivos activos.</div>';
+    else gEl.innerHTML = activeGoals.map(g=>`
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:14px; font-weight:500;">${g.title}</span>
+          <span style="font-size:12px; color:var(--text3);">${g.progress}%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%; background:${g.progress>=75?'var(--win)':g.progress>=40?'var(--accent)':'var(--warn)'}"></div></div>
+      </div>
+    `).join('');
+  }
+
+  function renderTrainings() {
+    const el = document.getElementById('list-trainings');
+    let items = data.trainings;
+    if(filters.trainings!=='all') items = items.filter(t=>t.type===filters.trainings);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤺</div><div class="empty-state-title">Sin entrenamientos</div>Registra tu primer entrenamiento.</div>'; return; }
+    el.innerHTML = items.map(t=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${t.type} · ${t.duration} min · Intensidad ${t.intensity}/10</div>
+          <div class="list-item-meta">${t.date}${t.notes?' · '+t.notes:''}</div>
+        </div>
+        <div class="list-item-actions"><button onclick="delTraining('${t.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderCompetitions() {
+    const el = document.getElementById('list-competitions');
+    if(data.competitions.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-title">Sin competencias</div>Registra tus torneos.</div>'; return; }
+    el.innerHTML = data.competitions.map(c=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${c.name}</div>
+          <div class="list-item-meta">${c.date} · ${c.location}${c.position?' · Posición: '+c.position:''}</div>
+        </div>
+        <div class="list-item-actions"><button onclick="delCompetition('${c.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderMatches() {
+    const el = document.getElementById('list-matches');
+    let items = data.matches;
+    if(filters.matches!=='all') {
+      if(filters.matches==='individual'||filters.matches==='team') items=items.filter(m=>m.type===filters.matches);
+      else items=items.filter(m=>m.format===filters.matches);
+    }
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚔️</div><div class="empty-state-title">Sin combates</div>No hay combates en esta categoría.</div>'; return; }
+    el.innerHTML = items.map(m=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${m.opponentName} ${m.opponentCountry?'('+m.opponentCountry+')':''}</div>
+          <div class="list-item-meta">${m.date} · ${m.competition||'Amistoso'} · ${m.phase}</div>
+          <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+            <span class="badge ${m.type==='team'?'badge-team':'badge-ind'}">${m.type==='team'?'Equipo':'Individual'}</span>
+            <span class="badge ${m.format==='poule'?'badge-poule':'badge-direct'}">${m.format==='poule'?'Poule':'Directas'}</span>
+            <span class="badge ${m.win?'badge-win':'badge-loss'}">${m.win?'Victoria':'Derrota'}</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="match-score"><span class="score-me">${m.scoreFor}</span><span class="score-sep">:</span><span class="score-them">${m.scoreAgainst}</span></div>
+          <div class="list-item-actions"><button onclick="delMatch('${m.id}')">Eliminar</button></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderOpponents() {
+    const el = document.getElementById('list-opponents');
+    if(data.opponents.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin oponentes</div>Agrega rivales para ver estadísticas H2H.</div>'; return; }
+    el.innerHTML = data.opponents.map(o=>{
+      const h2h = data.matches.filter(m=>m.opponentName.toLowerCase()===o.name.toLowerCase());
+      const wins = h2h.filter(m=>m.win).length;
+      const losses = h2h.length - wins;
+      return `<div class="opponent-card" style="border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; background:var(--surface2);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+          <div>
+            <div style="font-weight:600; font-size:15px; color:var(--text);">${o.name} ${o.country?'('+o.country+')':''}</div>
+            <div style="font-size:13px; color:var(--text3); margin-top:2px;">${o.weapon} · ${o.hand}</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm" onclick="showH2H('${o.id}')">Ver historial</button>
+            <button class="btn btn-sm" onclick="delOpponent('${o.id}')">Eliminar</button>
+          </div>
+        </div>
+        <div style="display:flex; gap:16px; font-size:13px; color:var(--text2);">
+          <div><strong style="color:var(--text);">${h2h.length}</strong> combates</div>
+          <div><strong style="color:var(--win);">${wins}</strong> victorias</div>
+          <div><strong style="color:var(--loss);">${losses}</strong> derrotas</div>
+        </div>
+        ${o.notes?'<div style="margin-top:8px; font-size:13px; color:var(--text2); font-style:italic;">"'+o.notes+'"</div>':''}
+      </div>`;
+    }).join('');
+  }
+
+  function renderCalendar() {
+    const year = calDate.getFullYear();
+    const month = calDate.getMonth();
+    document.getElementById('cal-month-year').textContent = new Date(year, month).toLocaleDateString('es-ES', {month:'long', year:'numeric'});
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const prevDays = new Date(year, month, 0).getDate();
+    const grid = document.getElementById('cal-grid');
+    let html = '';
+    ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
+    for(let i=firstDay-1; i>=0; i--) html+=`<div class="cal-day other"><span class="cal-day-num">${prevDays-i}</span></div>`;
+    const today = new Date().toISOString().split('T')[0];
+    for(let d=1; d<=daysInMonth; d++) {
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hasTrain = data.trainings.some(t=>t.date===dateStr);
+      const hasComp = data.competitions.some(c=>c.date===dateStr);
+      const hasMatch = data.matches.some(m=>m.date===dateStr);
+      const hasPsych = data.psychology.some(p=>p.date===dateStr);
+      const isToday = dateStr===today;
+      html+=`<div class="cal-day ${isToday?'today':''}"><span class="cal-day-num">${d}</span>`;
+      if(hasTrain) html+='<span class="cal-dot train"></span>';
+      if(hasComp) html+='<span class="cal-dot comp"></span>';
+      if(hasMatch) html+='<span class="cal-dot match"></span>';
+      if(hasPsych) html+='<span class="cal-dot psych"></span>';
+      html+='</div>';
+    }
+    const totalCells = firstDay + daysInMonth;
+    const nextDays = (7 - (totalCells % 7)) % 7;
+    for(let i=1; i<=nextDays; i++) html+=`<div class="cal-day other"><span class="cal-day-num">${i}</span></div>`;
+    grid.innerHTML = html;
+  }
+  window.changeMonth = function(dir) { calDate.setMonth(calDate.getMonth()+dir); renderCalendar(); };
+
+  function renderTests() {
+    const el = document.getElementById('list-tests');
+    if(data.tests.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><div class="empty-state-title">Sin tests</div>Registra tus primeros resultados físicos.</div>'; return; }
+    el.innerHTML = data.tests.map(t=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${t.type}</div>
+          <div class="list-item-meta">${t.date} · Resultado: <strong>${t.result}</strong>${t.weight?' · Peso: '+t.weight+'kg':''}</div>
+          ${t.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+t.notes+'</div>':''}
+        </div>
+        <div class="list-item-actions"><button onclick="delTest('${t.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderVideos() {
+    const el = document.getElementById('list-video');
+    if(data.videos.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎬</div><div class="empty-state-title">Sin videos</div>Agrega links de YouTube o Drive.</div>'; return; }
+    el.innerHTML = data.videos.map(v=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${v.title}</div>
+          <div class="list-item-meta">${v.date} · ${v.type}</div>
+          ${v.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+v.notes+'</div>':''}
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a href="${v.url}" target="_blank" rel="noopener" class="btn btn-sm" style="text-decoration:none;">Ver video →</a>
+          <div class="list-item-actions"><button onclick="delVideo('${v.id}')">Eliminar</button></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderEquipment() {
+    const el = document.getElementById('list-equipment');
+    if(data.equipment.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛡️</div><div class="empty-state-title">Sin equipamiento</div>Registra tu material de esgrima.</div>'; return; }
+    const statusMap = {ok:'✅ Perfecto', warn:'⚠️ Revisar', bad:'❌ Cambiar'};
+    const statusColor = {ok:'var(--win)', warn:'var(--warn)', bad:'var(--loss)'};
+    el.innerHTML = data.equipment.map(e=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${e.item}${e.brand?' · '+e.brand:''}</div>
+          <div class="list-item-meta">Comprado: ${e.date} · <span style="color:${statusColor[e.status]}">${statusMap[e.status]}</span></div>
+          ${e.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+e.notes+'</div>':''}
+        </div>
+        <div class="list-item-actions"><button onclick="delEquip('${e.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderNutrition() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayEntry = data.nutrition.find(n=>n.date===today);
+    if(todayEntry) {
+      document.getElementById('n-water').textContent = todayEntry.water;
+      document.getElementById('n-protein').textContent = todayEntry.protein + 'g';
+      document.getElementById('n-carbs').textContent = todayEntry.carbs + 'g';
+      document.getElementById('n-veggies').textContent = todayEntry.veggies;
+    } else {
+      document.getElementById('n-water').textContent = '0';
+      document.getElementById('n-protein').textContent = '0g';
+      document.getElementById('n-carbs').textContent = '0g';
+      document.getElementById('n-veggies').textContent = '0';
+    }
+    const el = document.getElementById('list-nutrition');
+    const items = data.nutrition.slice(0,14);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state">Sin registros nutricionales.</div>'; return; }
+    el.innerHTML = items.map(n=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${n.date}</div>
+          <div class="list-item-meta">💧 ${n.water} vasos · 🥩 ${n.protein}g proteína · 🍚 ${n.carbs}g carbs · 🥬 ${n.veggies} verduras${n.supp?' · 💊 '+n.supp:''}</div>
+        </div>
+        <div class="list-item-actions"><button onclick="delNutri('${n.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderPsychology() {
+    const el = document.getElementById('list-psychology');
+    if(data.psychology.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧠</div><div class="empty-state-title">Sin ejercicios</div>Registra los ejercicios de tu psicólogo.</div>'; return; }
+    el.innerHTML = data.psychology.map(p=>`
+      <div class="list-item" style="${p.completed?'opacity:.5;':''}">
+        <div class="list-item-content">
+          <div class="list-item-title">${p.exercise}</div>
+          <div class="list-item-meta">${p.date} · ${p.category}${p.duration?' · '+p.duration+' min':''}</div>
+          ${p.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+p.notes+'</div>':''}
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <label class="checkbox-wrap"><input type="checkbox" ${p.completed?'checked':''} onchange="togglePsych('${p.id}')"><span style="font-size:13px; color:var(--text2);">Listo</span></label>
+          <div class="list-item-actions"><button onclick="delPsych('${p.id}')">Eliminar</button></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderMusic() {
+    const el = document.getElementById('list-music');
+    if(data.music.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎧</div><div class="empty-state-title">Sin música</div>Agrega tus playlists.</div>'; return; }
+    const cats = {
+      'pre-entrenamiento':{label:'Pre-entrenamiento',icon:'🔥'},
+      'entrenamiento':{label:'Entrenamiento',icon:'💪'},
+      'pre-competitivo':{label:'Pre-competitivo',icon:'🎯'},
+      'recuperacion':{label:'Recuperación',icon:'🧘'}
+    };
+    let html = '';
+    Object.keys(cats).forEach(cat=>{
+      const items = data.music.filter(m=>m.category===cat);
+      if(items.length>0) {
+        html += `<div style="margin-bottom:16px;"><div style="font-size:15px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;">${cats[cat].icon} ${cats[cat].label}</div>`;
+        html += items.map(m=>`
+          <a href="${m.url}" target="_blank" rel="noopener" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid var(--border); border-radius:8px; margin-bottom:6px; text-decoration:none; color:var(--text); background:var(--surface2); transition:all .2s;" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+            <span style="font-size:14px;">${m.title}${m.artist?' — '+m.artist:''}</span>
+            <span style="color:var(--text3);">→</span>
+          </a>
+          <div style="text-align:right; margin-bottom:6px;"><button class="btn btn-sm" style="font-size:12px; padding:3px 8px;" onclick="event.preventDefault(); delMusic('${m.id}')">Eliminar</button></div>
+        `).join('');
+        html += '</div>';
+      }
+    });
+    el.innerHTML = html || '<div class="empty-state">No hay música registrada.</div>';
+  }
+
+  function renderGoals() {
+    const el = document.getElementById('list-goals');
+    if(data.goals.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin objetivos</div>Define tus metas SMART.</div>'; return; }
+    const termLabels = {short:'Corto plazo', medium:'Mediano plazo', long:'Largo plazo'};
+    el.innerHTML = data.goals.map(g=>`
+      <div class="goal-card">
+        <div class="goal-header">
+          <div>
+            <div class="goal-title">${g.title}</div>
+            <div class="goal-meta">${g.category} · ${termLabels[g.term]}${g.deadline?' · Vence: '+g.deadline:''}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="number" value="${g.progress}" min="0" max="100" style="width:60px; text-align:center; padding:4px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);" onchange="updateGoalProgress('${g.id}', this.value)">
+            <span style="font-size:12px; color:var(--text3);">%</span>
+            <button class="btn btn-sm" onclick="delGoal('${g.id}')">Eliminar</button>
+          </div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%; background:${g.progress>=75?'var(--win)':g.progress>=40?'var(--accent)':'var(--warn)'}"></div></div>
+        ${g.plan?'<div style="margin-top:8px; font-size:13px; color:var(--text2);"><strong>Plan:</strong> '+g.plan+'</div>':''}
+      </div>
+    `).join('');
+  }
+
+  function renderDiary() {
+    const el = document.getElementById('list-diary');
+    if(data.diary.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📓</div><div class="empty-state-title">Sin entradas</div>Escribe sobre tu día, sensaciones y aprendizajes.</div>'; return; }
+    const moodEmoji = {1:'😫',2:'😞',3:'😟',4:'😐',5:'🙂',6:'😊',7:'😃',8:'🤩',9:'🔥',10:'⚡'};
+    el.innerHTML = data.diary.map(d=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${d.date} ${moodEmoji[d.mood]||'😐'}</div>
+          <div class="list-item-meta">Ánimo: ${d.mood}/10 · Energía: ${d.energy}/10 · Sueño: ${d.sleep}/10</div>
+          <div style="margin-top:6px; font-size:13px; color:var(--text2); line-height:1.5;">${d.text}</div>
+        </div>
+        <div class="list-item-actions"><button onclick="delDiary('${d.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderInjuries() {
+    const el = document.getElementById('list-injuries');
+    if(data.injuries.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩹</div><div class="empty-state-title">Sin registros</div>Buen signo. Pero registra cualquier molestia.</div>'; return; }
+    const statusLabels = {active:'🔴 Activa', recovered:'🟢 Recuperada', chronic:'🟡 Crónica'};
+    el.innerHTML = data.injuries.map(i=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${i.zone} · Intensidad ${i.intensity}/10</div>
+          <div class="list-item-meta">${i.date} · ${statusLabels[i.status]}</div>
+          ${i.desc?'<div style="font-size:12px; color:var(--text2); margin-top:2px;">'+i.desc+'</div>':''}
+          ${i.treatment?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">Tratamiento: '+i.treatment+'</div>':''}
+        </div>
+        <div class="list-item-actions"><button onclick="delInjury('${i.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderRanking() {
+    const el = document.getElementById('list-ranking');
+    if(data.ranking.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏅</div><div class="empty-state-title">Sin rankings</div>Registra tu posición en cada actualización.</div>'; return; }
+    el.innerHTML = data.ranking.map(r=>`
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${r.type}</div>
+          <div class="list-item-meta">${r.date} · Posición: <strong>#${r.position}</strong> · Puntos: <strong>${r.points}</strong></div>
+          ${r.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+r.notes+'</div>':''}
+        </div>
+        <div class="list-item-actions"><button onclick="delRanking('${r.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function updateDatalist() {
+    const dl = document.getElementById('dl-opponents');
+    dl.innerHTML = data.opponents.map(o=>`<option value="${o.name}">`).join('');
+  }
+
+  load();
+  renderAll();
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  const swUrl = URL.createObjectURL(new Blob([atob('CmNvbnN0IENBQ0hFX05BTUUgPSAnZmVuY2luZy1wcm8tdjEnOwpjb25zdCB1cmxzVG9DYWNoZSA9IFtzZWxmLmxvY2F0aW9uLmhyZWZdOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2luc3RhbGwnLCBlID0+IHsKICBlLndhaXRVbnRpbChjYWNoZXMub3BlbihDQUNIRV9OQU1FKS50aGVuKGNhY2hlID0+IGNhY2hlLmFkZEFsbCh1cmxzVG9DYWNoZSkpKTsKICBzZWxmLnNraXBXYWl0aW5nKCk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZSA9PiB7CiAgZS53YWl0VW50aWwoc2VsZi5jbGllbnRzLmNsYWltKCkpOwp9KTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGUgPT4gewogIGUucmVzcG9uZFdpdGgoY2FjaGVzLm1hdGNoKGUucmVxdWVzdCkudGhlbihyID0+IHIgfHwgZmV0Y2goZS5yZXF1ZXN0KSkpOwp9KTsK')], {type:'application/javascript'}));
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+</script>
+</body>
+</html>
