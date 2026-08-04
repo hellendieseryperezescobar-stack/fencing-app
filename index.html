@@ -2,260 +2,262 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fencing Athlete Pro - Florete Cadete</title>
-<style>
-:root {
-  --bg: #0f0f12; --surface: #1a1a20; --surface2: #22222a; --surface3: #2a2a35;
-  --border: #33333d; --text: #f0f0f5; --text2: #b0b0bd; --text3: #7a7a8a;
-  --accent: #e8c547; --accent2: #4ecdc4; --accent3: #ff6b6b; --accent4: #a78bfa;
-  --win: #4ade80; --loss: #f87171; --warn: #fbbf24;
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --mono: "SF Mono", Monaco, "Cascadia Code", monospace;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* Layout */
-.app { display: flex; min-height: 100vh; }
-.sidebar {
-  width: 260px; background: var(--surface); border-right: 1px solid var(--border);
-  position: fixed; height: 100vh; overflow-y: auto; z-index: 100; transition: transform .3s;
-}
-.sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border); }
-.sidebar-header h1 { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: .5px; }
-.sidebar-header p { font-size: 12px; color: var(--text3); margin-top: 4px; }
-.sidebar-nav { padding: 12px 8px; }
-.nav-item {
-  display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px;
-  cursor: pointer; color: var(--text2); font-size: 14px; font-weight: 500; transition: all .2s; margin-bottom: 2px;
-}
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--surface3); color: var(--accent); }
-.nav-icon { width: 20px; text-align: center; font-size: 16px; }
-.main { flex: 1; margin-left: 260px; padding: 24px 32px; max-width: 1100px; }
-.mobile-header { display: none; padding: 16px; background: var(--surface); border-bottom: 1px solid var(--border); }
-.mobile-header h1 { font-size: 16px; color: var(--accent); }
-.menu-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; }
-
-@media (max-width: 900px) {
-  .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; padding: 16px; }
-  .mobile-header { display: flex; justify-content: space-between; align-items: center; }
-}
-
-/* Cards & Sections */
-.section { display: none; animation: fadeIn .3s ease; }
-.section.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-.page-title { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
-.page-sub { color: var(--text3); font-size: 14px; margin-bottom: 20px; }
-
-.card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px;
-}
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-.card-title { font-size: 16px; font-weight: 600; }
-.card-sub { font-size: 13px; color: var(--text3); margin-top: 2px; }
-
-/* Stats */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
-.stat-box {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px;
-  text-align: center; transition: transform .2s;
-}
-.stat-box:hover { transform: translateY(-2px); border-color: var(--surface3); }
-.stat-value { font-size: 32px; font-weight: 600; line-height: 1; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
-.stat-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; }
-.stat-accent { color: var(--accent); }
-.stat-win { color: var(--win); }
-.stat-loss { color: var(--loss); }
-
-/* Buttons */
-.btn {
-  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2);
-  color: var(--text); cursor: pointer; font-weight: 500; font-size: 13px; transition: all .2s;
-}
-.btn:hover { background: var(--surface3); }
-.btn-primary { background: var(--accent); color: #1a1500; border-color: var(--accent); }
-.btn-primary:hover { filter: brightness(1.1); }
-.btn-danger { color: var(--loss); border-color: var(--loss); background: rgba(248,113,113,.1); }
-.btn-sm { padding: 5px 10px; font-size: 12px; }
-.btn-ghost { background: transparent; border-color: transparent; }
-
-/* Forms */
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.form-group { display: flex; flex-direction: column; gap: 4px; }
-.form-group.full { grid-column: 1 / -1; }
-.form-group label { font-size: 12px; color: var(--text2); font-weight: 500; text-transform: uppercase; letter-spacing: .3px; }
-.form-group input, .form-group select, .form-group textarea {
-  padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg);
-  color: var(--text); font-size: 14px; outline: none; transition: border-color .2s;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
-.form-group textarea { resize: vertical; min-height: 80px; }
-
-/* Lists */
-.list-item {
-  display: flex; justify-content: space-between; align-items: flex-start; padding: 14px;
-  border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; background: var(--surface2);
-  transition: all .2s;
-}
-.list-item:hover { border-color: var(--surface3); }
-.list-item-content { flex: 1; min-width: 0; }
-.list-item-title { font-weight: 600; font-size: 14px; color: var(--text); }
-.list-item-meta { font-size: 12px; color: var(--text3); margin-top: 3px; display: flex; gap: 8px; flex-wrap: wrap; }
-.list-item-actions { display: flex; gap: 6px; opacity: 0; transition: opacity .2s; }
-.list-item:hover .list-item-actions { opacity: 1; }
-.list-item-actions button { padding: 4px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface3); cursor: pointer; color: var(--text2); }
-.list-item-actions button:hover { background: var(--surface); color: var(--text); }
-
-/* Badges */
-.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-.badge-win { background: rgba(74,222,128,.15); color: var(--win); }
-.badge-loss { background: rgba(248,113,113,.15); color: var(--loss); }
-.badge-poule { background: rgba(78,205,196,.15); color: var(--accent2); }
-.badge-direct { background: rgba(167,139,250,.15); color: var(--accent4); }
-.badge-team { background: rgba(232,197,71,.15); color: var(--accent); }
-.badge-ind { background: rgba(176,176,189,.15); color: var(--text2); }
-
-/* Match score */
-.match-score { display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 700; font-family: var(--mono); }
-.score-me { color: var(--text); }
-.score-sep { color: var(--text3); }
-.score-them { color: var(--text3); }
-
-/* Modal */
-.modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
-  display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px;
-}
-.modal-overlay.active { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-  padding: 24px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,.5);
-}
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-title { font-size: 17px; font-weight: 600; }
-.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text3); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-.modal-close:hover { background: var(--surface2); color: var(--text); }
-
-/* Filters */
-.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-.filter-chip {
-  padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface2);
-  font-size: 13px; cursor: pointer; color: var(--text2); transition: all .2s;
-}
-.filter-chip:hover { border-color: var(--text3); }
-.filter-chip.active { background: var(--accent); color: #1a1500; border-color: var(--accent); font-weight: 600; }
-
-/* Empty state */
-.empty-state { text-align: center; padding: 48px 20px; color: var(--text3); }
-.empty-state-icon { font-size: 40px; margin-bottom: 12px; opacity: .4; }
-.empty-state-title { font-size: 15px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
-
-/* Checkbox */
-.checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.checkbox-wrap input { width: 18px; height: 18px; accent-color: var(--accent); }
-
-/* Calendar */
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-.cal-day-header { text-align: center; font-size: 11px; color: var(--text3); padding: 8px; text-transform: uppercase; }
-.cal-day {
-  aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; padding: 6px;
-  font-size: 13px; cursor: pointer; position: relative; background: var(--surface2);
-  display: flex; flex-direction: column; align-items: flex-start; min-height: 60px;
-}
-.cal-day:hover { border-color: var(--surface3); }
-.cal-day.other { opacity: .4; }
-.cal-day.today { border-color: var(--accent); }
-.cal-day-num { font-weight: 600; font-size: 12px; }
-.cal-dot { width: 6px; height: 6px; border-radius: 50%; margin-top: 4px; }
-.cal-dot.train { background: var(--accent2); }
-.cal-dot.comp { background: var(--accent); }
-.cal-dot.match { background: var(--win); }
-.cal-dot.psych { background: var(--accent4); }
-
-/* Progress bar */
-.progress-bar { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; margin-top: 6px; }
-.progress-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
-
-/* Tabs */
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.tab { padding: 10px 16px; border: none; background: none; color: var(--text3); cursor: pointer; font-size: 14px; font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.tab:hover { color: var(--text2); }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-/* Theory content */
-.theory-section { line-height: 1.7; }
-.theory-section h3 { color: var(--accent); font-size: 16px; margin: 20px 0 10px; }
-.theory-section p { color: var(--text2); font-size: 14px; margin-bottom: 10px; }
-.theory-section ul { margin-left: 20px; color: var(--text2); font-size: 14px; }
-.theory-section li { margin-bottom: 6px; }
-
-/* Equipment status */
-.equip-status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
-.equip-ok { background: var(--win); }
-.equip-warn { background: var(--warn); }
-.equip-bad { background: var(--loss); }
-
-/* Nutrition tracker */
-.nutri-track { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
-.nutri-item { text-align: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface2); }
-.nutri-val { font-size: 20px; font-weight: 600; color: var(--accent2); }
-.nutri-label { font-size: 11px; color: var(--text3); margin-top: 4px; }
-
-/* Goal card */
-.goal-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; background: var(--surface2); }
-.goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.goal-title { font-weight: 600; font-size: 14px; }
-.goal-meta { font-size: 12px; color: var(--text3); }
-.goal-deadline { font-size: 11px; color: var(--accent); margin-top: 4px; }
-
-/* Responsive */
-@media (max-width: 600px) {
-  .form-row { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .nutri-track { grid-template-columns: repeat(2, 1fr); }
-  .list-item-actions { opacity: 1; }
-}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fencing Pro v2 — Multi-Arma</title>
 <meta name="theme-color" content="#0f0f12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Fencing Pro">
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkZlbmNpbmcgQXRobGV0ZSBQcm8iLCAic2hvcnRfbmFtZSI6ICJGZW5jaW5nIFBybyIsICJkZXNjcmlwdGlvbiI6ICJBcHAgZGUgc2VndWltaWVudG8gcGFyYSBlc2dyaW1pc3RhcyAtIEZsb3JldGUgQ2FkZXRlIiwgInN0YXJ0X3VybCI6ICIuIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZjBmMTIiLCAidGhlbWVfY29sb3IiOiAiIzBmMGYxMiIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWwsJTNDc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDE5MiAxOTInJTNFJTNDcmVjdCBmaWxsPSclMjNlOGM1NDcnIHdpZHRoPScxOTInIGhlaWdodD0nMTkyJyByeD0nMjQnLyUzRSUzQ3RleHQgeD0nOTYnIHk9JzEyMCcgZm9udC1zaXplPScxMDAnIHRleHQtYW5jaG9yPSdtaWRkbGUnJTNFXHVkODNlXHVkZDNhJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIn0sIHsic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMiclM0UlM0NyZWN0IGZpbGw9JyUyM2U4YzU0Nycgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PSc2NCcvJTNFJTNDdGV4dCB4PScyNTYnIHk9JzMyMCcgZm9udC1zaXplPScyODAnIHRleHQtYW5jaG9yPSdtaWRkbGUnJTNFXHVkODNlXHVkZDNhJTNDL3RleHQlM0UlM0Mvc3ZnJTNFIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9zdmcreG1sIn1dfQ==">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRmVuY2luZyBQcm8gdjIiLCJzaG9ydF9uYW1lIjoiRmVuY2luZyBQcm8iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYxMiIsInRoZW1lX2NvbG9yIjoiIzBmMGYxMiIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJyUzRSUzQ3JlY3QgZmlsbD0nJTIzZThjNTQ3JyB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5Micgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMjAnIGZvbnQtc2l6ZT0nMTAwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNjc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNlJTNjcmVjdCBmaWxsPSclMjNlOGM1NDcnIHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nNjQnLyUzZSUzY3RleHQgeD0nMjU2JyB5PSczMjAnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+<style>
+:root {
+  --bg:#0f0f12; --surface:#1a1a20; --surface2:#22222a; --surface3:#2a2a35; --border:#33333d;
+  --text:#f0f0f5; --text2:#b0b0bd; --text3:#7a7a8a;
+  --accent:#e8c547; --accent2:#4ecdc4; --accent3:#ff6b6b; --accent4:#a78bfa;
+  --win:#4ade80; --loss:#f87171; --warn:#fbbf24;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"SF Mono",Monaco,"Cascadia Code",monospace;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+.app { display:flex; min-height:100vh; }
+.sidebar {
+  width:260px; background:var(--surface); border-right:1px solid var(--border);
+  position:fixed; height:100vh; overflow-y:auto; z-index:100; transition:transform .3s;
+}
+.sidebar-header { padding:20px; border-bottom:1px solid var(--border); }
+.sidebar-header h1 { font-size:17px; font-weight:600; color:var(--accent); letter-spacing:.5px; }
+.sidebar-header .sub { font-size:11px; color:var(--text3); margin-top:3px; }
+.sidebar-header .badge-mode { display:inline-block; margin-top:6px; padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; }
+.badge-mode.athlete { background:rgba(78,205,196,.15); color:var(--accent2); }
+.badge-mode.coach { background:rgba(232,197,71,.15); color:var(--accent); }
+.sidebar-nav { padding:8px; }
+.nav-item { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; cursor:pointer; color:var(--text2); font-size:13px; font-weight:500; transition:all .2s; margin-bottom:2px; }
+.nav-item:hover { background:var(--surface2); color:var(--text); }
+.nav-item.active { background:var(--surface3); color:var(--accent); }
+.nav-icon { width:20px; text-align:center; font-size:15px; }
+.main { flex:1; margin-left:260px; padding:20px 28px; max-width:1100px; }
+.mobile-header { display:none; padding:14px 16px; background:var(--surface); border-bottom:1px solid var(--border); align-items:center; justify-content:space-between; }
+.mobile-header h1 { font-size:15px; color:var(--accent); }
+.menu-btn { background:none; border:none; color:var(--text); font-size:20px; cursor:pointer; }
+
+@media(max-width:900px){
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main { margin-left:0; padding:14px; }
+  .mobile-header { display:flex; }
+}
+
+.section { display:none; animation:fadeIn .3s ease; }
+.section.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.page-title { font-size:22px; font-weight:600; margin-bottom:4px; }
+.page-sub { color:var(--text3); font-size:13px; margin-bottom:18px; }
+
+.card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:14px; }
+.card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+.card-title { font-size:15px; font-weight:600; }
+.card-sub { font-size:12px; color:var(--text3); margin-top:2px; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:18px; }
+.stat-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 14px; text-align:center; transition:transform .2s; }
+.stat-box:hover { transform:translateY(-2px); border-color:var(--surface3); }
+.stat-value { font-size:28px; font-weight:600; line-height:1; margin-bottom:4px; font-variant-numeric:tabular-nums; }
+.stat-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; }
+
+.btn { padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--text); cursor:pointer; font-weight:500; font-size:12px; transition:all .2s; }
+.btn:hover { background:var(--surface3); }
+.btn-primary { background:var(--accent); color:#1a1500; border-color:var(--accent); }
+.btn-primary:hover { filter:brightness(1.1); }
+.btn-danger { color:var(--loss); border-color:var(--loss); background:rgba(248,113,113,.08); }
+.btn-sm { padding:4px 10px; font-size:11px; }
+.btn-ghost { background:transparent; border-color:transparent; }
+
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.form-group { display:flex; flex-direction:column; gap:3px; }
+.form-group.full { grid-column:1/-1; }
+.form-group label { font-size:11px; color:var(--text2); font-weight:500; text-transform:uppercase; letter-spacing:.3px; }
+.form-group input, .form-group select, .form-group textarea {
+  padding:9px 11px; border:1px solid var(--border); border-radius:8px; background:var(--bg);
+  color:var(--text); font-size:13px; outline:none; transition:border-color .2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--accent); }
+.form-group textarea { resize:vertical; min-height:70px; }
+
+.list-item { display:flex; justify-content:space-between; align-items:flex-start; padding:12px; border:1px solid var(--border); border-radius:10px; margin-bottom:7px; background:var(--surface2); transition:all .2s; }
+.list-item:hover { border-color:var(--surface3); }
+.list-item-content { flex:1; min-width:0; }
+.list-item-title { font-weight:600; font-size:13px; color:var(--text); }
+.list-item-meta { font-size:11px; color:var(--text3); margin-top:2px; display:flex; gap:6px; flex-wrap:wrap; }
+.list-item-actions { display:flex; gap:5px; opacity:0; transition:opacity .2s; }
+.list-item:hover .list-item-actions { opacity:1; }
+.list-item-actions button { padding:3px 7px; font-size:10px; border-radius:5px; border:1px solid var(--border); background:var(--surface3); cursor:pointer; color:var(--text2); }
+.list-item-actions button:hover { background:var(--surface); color:var(--text); }
+
+.badge { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:5px; font-size:10px; font-weight:600; }
+.badge-win { background:rgba(74,222,128,.12); color:var(--win); }
+.badge-loss { background:rgba(248,113,113,.12); color:var(--loss); }
+.badge-poule { background:rgba(78,205,196,.12); color:var(--accent2); }
+.badge-direct { background:rgba(167,139,250,.12); color:var(--accent4); }
+.badge-team { background:rgba(232,197,71,.12); color:var(--accent); }
+.badge-ind { background:rgba(176,176,189,.12); color:var(--text2); }
+
+.match-score { display:flex; align-items:center; gap:5px; font-size:18px; font-weight:700; font-family:var(--mono); }
+.score-me { color:var(--text); } .score-sep { color:var(--text3); } .score-them { color:var(--text3); }
+
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:200; padding:16px; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.modal-title { font-size:16px; font-weight:600; }
+.modal-close { background:none; border:none; font-size:20px; cursor:pointer; color:var(--text3); width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:8px; }
+.modal-close:hover { background:var(--surface2); color:var(--text); }
+
+.filter-bar { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.filter-chip { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:var(--surface2); font-size:12px; cursor:pointer; color:var(--text2); transition:all .2s; }
+.filter-chip:hover { border-color:var(--text3); }
+.filter-chip.active { background:var(--accent); color:#1a1500; border-color:var(--accent); font-weight:600; }
+
+.empty-state { text-align:center; padding:40px 16px; color:var(--text3); }
+.empty-state-icon { font-size:36px; margin-bottom:10px; opacity:.4; }
+.empty-state-title { font-size:14px; font-weight:600; color:var(--text2); margin-bottom:3px; }
+
+.checkbox-wrap { display:flex; align-items:center; gap:6px; cursor:pointer; }
+.checkbox-wrap input { width:16px; height:16px; accent-color:var(--accent); }
+
+.progress-bar { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; margin-top:5px; }
+.progress-fill { height:100%; border-radius:3px; transition:width .4s ease; }
+
+.tabs { display:flex; gap:3px; border-bottom:1px solid var(--border); margin-bottom:14px; }
+.tab { padding:9px 14px; border:none; background:none; color:var(--text3); cursor:pointer; font-size:13px; font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
+.tab:hover { color:var(--text2); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+.theory-section { line-height:1.7; font-size:13px; color:var(--text2); }
+.theory-section h3 { color:var(--accent); font-size:15px; margin:18px 0 8px; }
+.theory-section p { margin-bottom:8px; }
+.theory-section ul { margin-left:18px; margin-bottom:10px; }
+.theory-section li { margin-bottom:5px; }
+
+.goal-card { border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:8px; background:var(--surface2); }
+.goal-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+.goal-title { font-weight:600; font-size:13px; }
+.goal-meta { font-size:11px; color:var(--text3); }
+
+.nutri-track { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:10px; }
+.nutri-item { text-align:center; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface2); }
+.nutri-val { font-size:18px; font-weight:600; color:var(--accent2); }
+.nutri-label { font-size:10px; color:var(--text3); margin-top:3px; }
+
+.calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+.cal-day-header { text-align:center; font-size:10px; color:var(--text3); padding:6px; text-transform:uppercase; }
+.cal-day { aspect-ratio:1; border:1px solid var(--border); border-radius:7px; padding:4px; font-size:12px; cursor:pointer; position:relative; background:var(--surface2); display:flex; flex-direction:column; align-items:flex-start; min-height:50px; }
+.cal-day:hover { border-color:var(--surface3); }
+.cal-day.other { opacity:.35; }
+.cal-day.today { border-color:var(--accent); }
+.cal-day-num { font-weight:600; font-size:11px; }
+.cal-dot { width:5px; height:5px; border-radius:50%; margin-top:3px; }
+.cal-dot.train { background:var(--accent2); }
+.cal-dot.comp { background:var(--accent); }
+.cal-dot.match { background:var(--win); }
+.cal-dot.psych { background:var(--accent4); }
+
+/* Selector inicial */
+.setup-screen { position:fixed; inset:0; background:var(--bg); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
+.setup-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px 28px; width:100%; max-width:420px; text-align:center; }
+.setup-card h2 { font-size:20px; margin-bottom:6px; color:var(--accent); }
+.setup-card p { color:var(--text3); font-size:13px; margin-bottom:20px; }
+.weapon-options { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:20px; }
+.weapon-opt { padding:16px 8px; border:2px solid var(--border); border-radius:12px; cursor:pointer; background:var(--surface2); transition:all .2s; }
+.weapon-opt:hover { border-color:var(--text3); }
+.weapon-opt.selected { border-color:var(--accent); background:rgba(232,197,71,.08); }
+.weapon-opt .icon { font-size:32px; margin-bottom:6px; }
+.weapon-opt .name { font-size:13px; font-weight:600; }
+.weapon-opt .desc { font-size:10px; color:var(--text3); margin-top:2px; }
+
+.mode-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
+.mode-opt { padding:14px; border:2px solid var(--border); border-radius:12px; cursor:pointer; background:var(--surface2); transition:all .2s; }
+.mode-opt:hover { border-color:var(--text3); }
+.mode-opt.selected { border-color:var(--accent2); background:rgba(78,205,196,.08); }
+.mode-opt .name { font-size:13px; font-weight:600; }
+.mode-opt .desc { font-size:11px; color:var(--text3); margin-top:3px; }
+
+.athlete-selector { display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+.athlete-chip { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:var(--surface2); font-size:12px; cursor:pointer; color:var(--text2); }
+.athlete-chip.active { background:var(--accent); color:#1a1500; border-color:var(--accent); font-weight:600; }
+
+.comparison-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
+.comparison-table th { text-align:left; padding:8px; color:var(--text2); font-weight:600; border-bottom:1px solid var(--border); background:var(--surface2); }
+.comparison-table td { padding:8px; border-bottom:1px solid var(--border); color:var(--text); }
+.comparison-table tr:hover td { background:var(--surface2); }
+
+@media(max-width:600px){
+  .form-row { grid-template-columns:1fr; }
+  .stats-grid { grid-template-columns:repeat(2,1fr); }
+  .nutri-track { grid-template-columns:repeat(2,1fr); }
+  .weapon-options { grid-template-columns:1fr; }
+  .list-item-actions { opacity:1; }
+}
+</style>
 </head>
 <body>
-<div class="app">
+
+<!-- SETUP SCREEN -->
+<div class="setup-screen" id="setup-screen">
+  <div class="setup-card">
+    <div style="font-size:48px; margin-bottom:12px;">🤺</div>
+    <h2>Fencing Pro v2</h2>
+    <p>Configura tu perfil para empezar</p>
+
+    <div style="text-align:left; margin-bottom:8px; font-size:11px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Selecciona tu arma</div>
+    <div class="weapon-options">
+      <div class="weapon-opt selected" data-weapon="florete" onclick="selectWeapon(this)">
+        <div class="icon">⚔️</div>
+        <div class="name">Florete</div>
+        <div class="desc">Convención de prioridad</div>
+      </div>
+      <div class="weapon-opt" data-weapon="espada" onclick="selectWeapon(this)">
+        <div class="icon">🗡️</div>
+        <div class="name">Espada</div>
+        <div class="desc">Tocado simultáneo</div>
+      </div>
+      <div class="weapon-opt" data-weapon="sable" onclick="selectWeapon(this)">
+        <div class="icon">🔪</div>
+        <div class="name">Sable</div>
+        <div class="desc">Prioridad + corte</div>
+      </div>
+    </div>
+
+    <div style="text-align:left; margin-bottom:8px; font-size:11px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Modo de uso</div>
+    <div class="mode-options">
+      <div class="mode-opt selected" data-mode="athlete" onclick="selectMode(this)">
+        <div class="name">👤 Modo Atleta</div>
+        <div class="desc">Soy esgrimista y quiero seguir mi progreso personal</div>
+      </div>
+      <div class="mode-opt" data-mode="coach" onclick="selectMode(this)">
+        <div class="name">👨‍🏫 Modo Entrenador</div>
+        <div class="desc">Soy entrenador y quiero gestionar mi equipo</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%; padding:12px; font-size:14px;" onclick="finishSetup()">Comenzar →</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="main-app" style="display:none;">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h1>⚔️ Fencing Pro</h1>
-      <p>Florete · Cadete · Selección VEN</p>
+      <h1>⚔️ Fencing Pro v2</h1>
+      <div class="sub" id="sidebar-sub">Florete · Cadete</div>
+      <span class="badge-mode athlete" id="mode-badge">Atleta</span>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-item active" data-section="dashboard"><span class="nav-icon">📊</span> Resumen</div>
-      <div class="nav-item" data-section="trainings"><span class="nav-icon">🤺</span> Entrenamientos</div>
-      <div class="nav-item" data-section="competitions"><span class="nav-icon">🏆</span> Competencias</div>
-      <div class="nav-item" data-section="matches"><span class="nav-icon">⚔️</span> Combates</div>
-      <div class="nav-item" data-section="opponents"><span class="nav-icon">🎯</span> Oponentes</div>
-      <div class="nav-item" data-section="calendar"><span class="nav-icon">📅</span> Calendario</div>
-      <div class="nav-item" data-section="tests"><span class="nav-icon">📈</span> Tests Físicos</div>
-      <div class="nav-item" data-section="video"><span class="nav-icon">🎬</span> Video Análisis</div>
-      <div class="nav-item" data-section="equipment"><span class="nav-icon">🛡️</span> Equipamiento</div>
-      <div class="nav-item" data-section="nutrition"><span class="nav-icon">🥗</span> Nutrición</div>
-      <div class="nav-item" data-section="psychology"><span class="nav-icon">🧠</span> Psicología</div>
-      <div class="nav-item" data-section="music"><span class="nav-icon">🎧</span> Música</div>
-      <div class="nav-item" data-section="goals"><span class="nav-icon">🎯</span> Objetivos</div>
-      <div class="nav-item" data-section="diary"><span class="nav-icon">📓</span> Diario</div>
-      <div class="nav-item" data-section="theory"><span class="nav-icon">📖</span> Teoría / Reglamento</div>
-      <div class="nav-item" data-section="injuries"><span class="nav-icon">🩹</span> Lesiones / Prevención</div>
-      <div class="nav-item" data-section="ranking"><span class="nav-icon">🏅</span> Ranking</div>
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- Se llena dinámicamente por JS -->
     </nav>
   </aside>
 
@@ -263,41 +265,80 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     <div class="mobile-header">
       <button class="menu-btn" onclick="toggleSidebar()">☰</button>
       <h1>⚔️ Fencing Pro</h1>
-      <div style="width:32px"></div>
+      <div style="width:28px"></div>
     </div>
 
+    <!-- ATHLETE SELECTOR (coach mode) -->
+    <div id="athlete-selector-bar" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:12px; color:var(--text3); font-weight:600; text-transform:uppercase;">Atleta seleccionado</span>
+        <button class="btn btn-sm btn-primary" onclick="openModal('modal-athlete')">+ Nuevo atleta</button>
+      </div>
+      <div class="athlete-selector" id="athlete-chips"></div>
+    </div>
 
-    <!-- DASHBOARD -->
-    <div class="section active" id="dashboard">
+    <!-- DASHBOARD ATHLETE -->
+    <div class="section active" id="dashboard-athlete">
       <div class="page-title">Dashboard</div>
-      <div class="page-sub">Tu rendimiento en un vistazo</div>
+      <div class="page-sub" id="dash-athlete-sub">Tu rendimiento en un vistazo</div>
       <div class="stats-grid">
-        <div class="stat-box"><div class="stat-value stat-accent" id="d-trainings">0</div><div class="stat-label">Entrenamientos</div></div>
-        <div class="stat-box"><div class="stat-value stat-accent" id="d-competitions">0</div><div class="stat-label">Competencias</div></div>
-        <div class="stat-box"><div class="stat-value stat-win" id="d-wins">0</div><div class="stat-label">Victorias</div></div>
-        <div class="stat-box"><div class="stat-value stat-loss" id="d-losses">0</div><div class="stat-label">Derrotas</div></div>
-        <div class="stat-box"><div class="stat-value" id="d-winrate">0%</div><div class="stat-label">% Victorias</div></div>
-        <div class="stat-box"><div class="stat-value stat-accent" id="d-goals">0</div><div class="stat-label">Objetivos activos</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent" id="da-trainings">0</div><div class="stat-label">Entrenamientos</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent" id="da-competitions">0</div><div class="stat-label">Competencias</div></div>
+        <div class="stat-box"><div class="stat-value stat-win" id="da-wins">0</div><div class="stat-label">Victorias</div></div>
+        <div class="stat-box"><div class="stat-value stat-loss" id="da-losses">0</div><div class="stat-label">Derrotas</div></div>
+        <div class="stat-box"><div class="stat-value" id="da-winrate">0%</div><div class="stat-label">% Victorias</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent" id="da-goals">0</div><div class="stat-label">Objetivos</div></div>
       </div>
       <div class="card">
         <div class="card-header"><div><div class="card-title">Próximos eventos</div><div class="card-sub">Entrenamientos y competencias próximos</div></div></div>
-        <div id="dash-upcoming"></div>
+        <div id="da-upcoming"></div>
       </div>
       <div class="card">
         <div class="card-header"><div><div class="card-title">Últimos combates</div><div class="card-sub">Tus 5 combates más recientes</div></div></div>
-        <div id="dash-recent"></div>
+        <div id="da-recent"></div>
       </div>
       <div class="card">
-        <div class="card-header"><div><div class="card-title">Objetivos del mes</div><div class="card-sub">Progreso hacia tus metas</div></div></div>
-        <div id="dash-goals"></div>
+        <div class="card-header"><div><div class="card-title">Objetivos activos</div><div class="card-sub">Progreso hacia tus metas</div></div></div>
+        <div id="da-goals-list"></div>
       </div>
+    </div>
+
+    <!-- DASHBOARD COACH -->
+    <div class="section" id="dashboard-coach">
+      <div class="page-title">Panel del Entrenador</div>
+      <div class="page-sub">Vista general de tu equipo</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-value stat-accent" id="dc-athletes">0</div><div class="stat-label">Atletas</div></div>
+        <div class="stat-box"><div class="stat-value stat-win" id="dc-team-wins">0</div><div class="stat-label">Victorias equipo</div></div>
+        <div class="stat-box"><div class="stat-value stat-loss" id="dc-team-losses">0</div><div class="stat-label">Derrotas equipo</div></div>
+        <div class="stat-box"><div class="stat-value" id="dc-team-rate">0%</div><div class="stat-label">% Victorias equipo</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent2" id="dc-next-comp">—</div><div class="stat-label">Próxima competencia</div></div>
+        <div class="stat-box"><div class="stat-value stat-accent4" id="dc-top-athlete">—</div><div class="stat-label">Mejor win rate</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Comparativa de atletas</div><div class="card-sub">Rendimiento general del equipo</div></div></div>
+        <div id="dc-comparison"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-title">Atletas del equipo</div><div class="card-sub">Selecciona uno para ver sus detalles</div></div></div>
+        <div id="dc-athletes-list"></div>
+      </div>
+    </div>
+
+    <!-- ATHLETES (coach CRUD) -->
+    <div class="section" id="athletes">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Gestión de Atletas</div><div class="page-sub">Crea y administra los perfiles de tu equipo</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-athlete')">+ Nuevo atleta</button>
+      </div>
+      <div id="list-athletes-crud"></div>
     </div>
 
     <!-- TRAININGS -->
     <div class="section" id="trainings">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Entrenamientos</div><div class="page-sub">Registra cada sesión de trabajo</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-training')">+ Nuevo entrenamiento</button>
+        <button class="btn btn-primary" onclick="openModal('modal-training')">+ Nuevo</button>
       </div>
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterTrainings('all')">Todos</button>
@@ -312,16 +353,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- COMPETITIONS -->
     <div class="section" id="competitions">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Competencias</div><div class="page-sub">Torneos, resultados y posiciones</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-competition')">+ Nueva competencia</button>
+        <button class="btn btn-primary" onclick="openModal('modal-competition')">+ Nueva</button>
       </div>
       <div id="list-competitions"></div>
     </div>
 
     <!-- MATCHES -->
     <div class="section" id="matches">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Combates</div><div class="page-sub">Registro completo tipo Fencing Time</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-match')">+ Registrar combate</button>
       </div>
@@ -337,7 +378,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- OPPONENTS -->
     <div class="section" id="opponents">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Oponentes</div><div class="page-sub">Base de datos de rivales con historial H2H</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-opponent')">+ Nuevo oponente</button>
       </div>
@@ -346,44 +387,39 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- CALENDAR -->
     <div class="section" id="calendar">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Calendario</div><div class="page-sub">Planificación de temporada</div></div>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:6px;">
           <button class="btn" onclick="changeMonth(-1)">←</button>
-          <span id="cal-month-year" style="font-weight:600; font-size:16px; min-width:140px; text-align:center;"></span>
+          <span id="cal-month-year" style="font-weight:600; font-size:15px; min-width:130px; text-align:center;"></span>
           <button class="btn" onclick="changeMonth(1)">→</button>
         </div>
       </div>
-      <div style="display:flex; gap:16px; margin-bottom:16px; flex-wrap:wrap; font-size:12px; color:var(--text3);">
-        <span><span class="cal-dot train" style="display:inline-block; margin-right:4px;"></span>Entrenamiento</span>
-        <span><span class="cal-dot comp" style="display:inline-block; margin-right:4px;"></span>Competencia</span>
-        <span><span class="cal-dot match" style="display:inline-block; margin-right:4px;"></span>Combate</span>
-        <span><span class="cal-dot psych" style="display:inline-block; margin-right:4px;"></span>Psicología</span>
+      <div style="display:flex; gap:14px; margin-bottom:12px; flex-wrap:wrap; font-size:11px; color:var(--text3);">
+        <span><span class="cal-dot train" style="display:inline-block; margin-right:3px;"></span>Entrenamiento</span>
+        <span><span class="cal-dot comp" style="display:inline-block; margin-right:3px;"></span>Competencia</span>
+        <span><span class="cal-dot match" style="display:inline-block; margin-right:3px;"></span>Combate</span>
+        <span><span class="cal-dot psych" style="display:inline-block; margin-right:3px;"></span>Psicología</span>
       </div>
       <div class="calendar-grid" id="cal-grid"></div>
     </div>
 
     <!-- TESTS -->
     <div class="section" id="tests">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-        <div><div class="page-title">Tests de Rendimiento</div><div class="page-sub">Métricas objetivas de progreso físico</div></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Tests de Rendimiento</div><div class="page-sub" id="tests-sub">Métricas objetivas de progreso físico</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-test')">+ Nuevo test</button>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title">Tests recomendados para esgrimistas</div></div>
-        <div style="font-size:13px; color:var(--text2); line-height:1.7;">
-          <p><strong>Lanzadera 2-4-2:</strong> Avanza a línea central, retrocede, avanza a línea lejana, retrocede, avanza a centro, retrocede + estocada final. Mide agilidad y explosividad.</p>
-          <p><strong>Salto vertical:</strong> Mide potencia de piernas. Compara salto estándar vs salto en profundidad desde 45cm.</p>
-          <p><strong>Test de fondo:</strong> Número de fondos en 30 segundos. Mide resistencia específica.</p>
-          <p><strong>Desplazamiento 10m:</strong> Tiempo de avance y retroceso en pista. Mide velocidad de pies.</p>
-        </div>
+      <div class="card" id="tests-info-card">
+        <div class="card-header"><div class="card-title">Tests recomendados</div></div>
+        <div style="font-size:12px; color:var(--text2); line-height:1.7;" id="tests-info-content"></div>
       </div>
       <div id="list-tests"></div>
     </div>
 
     <!-- VIDEO -->
     <div class="section" id="video">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Video Análisis</div><div class="page-sub">Estudia combates propios y de rivales</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-video')">+ Agregar video</button>
       </div>
@@ -392,8 +428,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- EQUIPMENT -->
     <div class="section" id="equipment">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-        <div><div class="page-title">Equipamiento</div><div class="page-sub">Control de material y mantenimiento</div></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Equipamiento</div><div class="page-sub" id="equip-sub">Control de material y mantenimiento</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-equip')">+ Agregar equipo</button>
       </div>
       <div id="list-equipment"></div>
@@ -401,17 +437,17 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- NUTRITION -->
     <div class="section" id="nutrition">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Nutrición & Hidratación</div><div class="page-sub">Seguimiento diario de alimentación</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-nutri')">+ Registrar día</button>
       </div>
       <div class="card">
         <div class="card-header"><div class="card-title">Hoy</div></div>
         <div class="nutri-track" id="nutri-today">
-          <div class="nutri-item"><div class="nutri-val" id="n-water">0</div><div class="nutri-label">Vasos de agua</div></div>
+          <div class="nutri-item"><div class="nutri-val" id="n-water">0</div><div class="nutri-label">Vasos agua</div></div>
           <div class="nutri-item"><div class="nutri-val" id="n-protein">0g</div><div class="nutri-label">Proteínas</div></div>
           <div class="nutri-item"><div class="nutri-val" id="n-carbs">0g</div><div class="nutri-label">Carbohidratos</div></div>
-          <div class="nutri-item"><div class="nutri-val" id="n-veggies">0</div><div class="nutri-label">Porciones verduras</div></div>
+          <div class="nutri-item"><div class="nutri-val" id="n-veggies">0</div><div class="nutri-label">Verduras</div></div>
         </div>
       </div>
       <div id="list-nutrition"></div>
@@ -419,7 +455,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- PSYCHOLOGY -->
     <div class="section" id="psychology">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Psicología</div><div class="page-sub">Ejercicios mentales del psicólogo</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-psych')">+ Nuevo ejercicio</button>
       </div>
@@ -428,7 +464,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- MUSIC -->
     <div class="section" id="music">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Música</div><div class="page-sub">Playlists por momento de entrenamiento</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-music')">+ Agregar canción</button>
       </div>
@@ -437,7 +473,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- GOALS -->
     <div class="section" id="goals">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Objetivos</div><div class="page-sub">Metas SMART a corto, mediano y largo plazo</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-goal')">+ Nuevo objetivo</button>
       </div>
@@ -446,7 +482,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- DIARY -->
     <div class="section" id="diary">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Diario de Atleta</div><div class="page-sub">Reflexiones diarias, sensaciones y estado de ánimo</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-diary')">+ Nueva entrada</button>
       </div>
@@ -456,83 +492,32 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     <!-- THEORY -->
     <div class="section" id="theory">
       <div class="page-title">Teoría & Reglamento</div>
-      <div class="page-sub">Material de estudio para dominar el florete</div>
+      <div class="page-sub" id="theory-sub">Material de estudio específico para tu arma</div>
       <div class="tabs">
         <button class="tab active" onclick="showTheoryTab('positions')">Posiciones</button>
-        <button class="tab" onclick="showTheoryTab('priority')">Prioridad</button>
-        <button class="tab" onclick="showTheoryTab('rules')">Reglamento</button>
+        <button class="tab" onclick="showTheoryTab('priority')">Prioridad / Reglas</button>
         <button class="tab" onclick="showTheoryTab('tactics')">Táctica</button>
+        <button class="tab" onclick="showTheoryTab('rules')">Reglamento</button>
       </div>
-      <div class="card theory-section" id="theory-positions">
-        <h3>Las 4 posiciones básicas del brazo armado (Florete)</h3>
-        <p>En cada línea, el brazo armado puede tomar 2 posiciones: una en supinación y otra en pronación. La hoja con relación a la mano puede tener la punta por encima, al nivel, o por debajo de la mano.</p>
-        <ul>
-          <li><strong>Sexta:</strong> Posición de supinación. Punta al nivel de la mano. Es la posición de guardia natural del floretista.</li>
-          <li><strong>Cuarta:</strong> Pronación. Punta por encima de la mano. Protege la línea interior.</li>
-          <li><strong>Octava:</strong> Supinación. Punta por debajo de la mano. Protege la línea inferior.</li>
-          <li><strong>Séptima:</strong> Pronación. Punta por debajo. Protege la línea inferior exterior.</li>
-        </ul>
-        <h3>El fondo (estocada)</h3>
-        <p>Desde la posición de guardia se estira vivamente el brazo armado sin rigidez, mientras el cuerpo sigue inmóvil. Se lanza el pie adelantado estirando completamente la pierna a ras de suelo, para caer con el talón. La pierna retrasada empuja con máxima potencia.</p>
-        <h3>Desplazamientos</h3>
-        <ul>
-          <li><strong>Avance:</strong> Pie delantero avanza primero, luego el trasero lo sigue manteniendo la distancia de guardia.</li>
-          <li><strong>Retroceso:</strong> Pie trasero retrocede primero, luego el delantero.</li>
-          <li><strong>Fondo corto:</strong> Extensión del brazo + paso corto.</li>
-          <li><strong>Fondo largo:</strong> Extensión completa + lunge profundo.</li>
-        </ul>
-      </div>
-      <div class="card theory-section" id="theory-priority" style="display:none;">
-        <h3>Convención de prioridad (Florete)</h3>
-        <p>El florete es el "arma de la convención". No existe el tocado simultáneo válido. El árbitro decide quién tiene la "derecha de ataque" (prioridad) basándose en la secuencia de acciones.</p>
-        <ul>
-          <li><strong>Ataque iniciado:</strong> Quien extiende el brazo primero y avanza con intención de tocar tiene la prioridad.</li>
-          <li><strong>Parada:</strong> Si el defensor realiza una parada válida, gana la prioridad y puede contraatacar.</li>
-          <li><strong>Contraataque:</strong> Si el atacante es parado y contraataca inmediatamente, puede recuperar la prioridad si la acción es continua.</li>
-          <li><strong>Ataque en preparación:</strong> Se puede tocar al oponente mientras prepara su ataque (baja el arma, flexiona el brazo, etc.).</li>
-          <li><strong>Ataque al arco:</strong> Tocar al brazo del oponente mientras este intenta atacar. Válido si se realiza correctamente.</li>
-        </ul>
-        <h3>La "frase de las armas"</h3>
-        <p>Se compara con una conversación entre dos personas. Cada acción responde a la anterior. El floretista debe ser riguroso, mantener la prioridad y buscar los errores del oponente.</p>
-      </div>
-      <div class="card theory-section" id="theory-rules" style="display:none;">
-        <h3>Reglamento básico de competencia</h3>
-        <ul>
-          <li><strong>Pista:</strong> 14m de largo x 1.5-2m de ancho. Líneas de guardia a 2m del centro. Líneas de advertencia a 2m de cada extremo.</li>
-          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos.</li>
-          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos de 3 min con 1 min de descanso).</li>
-          <li><strong>Superficie válida (florete):</strong> Tronco, solo sobre la chaquetilla eléctrica. No valen brazos, cabeza, piernas.</li>
-          <li><strong>Arma:</strong> Hoja de 90cm, peso total 500g, longitud máxima 110cm. Cazoleta entre 9.5-12cm de circunferencia.</li>
-          <li><strong>Órdenes del árbitro:</strong> "En garde" → "¿Listos?" → "¡Allez!" (o "¡Adelante!"). "¡Alto!" para detener.</li>
-          <li><strong>Tocado simultáneo:</strong> En florete NO existe. El árbitro otorga el punto al que tiene prioridad, o anula si ambos atacan sin prioridad clara.</li>
-        </ul>
-      </div>
-      <div class="card theory-section" id="theory-tactics" style="display:none;">
-        <h3>Táctica básica del floretista</h3>
-        <ul>
-          <li><strong>Tipología:</strong> El floretista es riguroso, se involucra en largos intercambios, busca mantener prioridad y desenmascarar errores del rival.</li>
-          <li><strong>Control de distancia:</strong> Domina el espacio entre tú y tu oponente. Acorta para atacar, alarga para defenderte.</li>
-          <li><strong>Tempo:</strong> Varía la velocidad de tus acciones. Acelera para sorprender, frena para provocar errores.</li>
-          <li><strong>Engaño (feint):</strong> Simula un ataque en una línea para provocar una parada, luego cambia de línea.</li>
-          <li><strong>Contra-tiempo:</strong> Tocar al oponente en el momento exacto de su ataque, aprovechando su preparación.</li>
-          <li><strong>Estudio del rival:</strong> Observa en los primeros asaltos: ¿es agresivo o pasivo? ¿tiende a parar en cuarta u octava? ¿cómo reacciona a la presión?</li>
-        </ul>
-      </div>
+      <div class="card theory-section" id="theory-positions"></div>
+      <div class="card theory-section" id="theory-priority" style="display:none;"></div>
+      <div class="card theory-section" id="theory-tactics" style="display:none;"></div>
+      <div class="card theory-section" id="theory-rules" style="display:none;"></div>
     </div>
 
     <!-- INJURIES -->
     <div class="section" id="injuries">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Lesiones & Prevención</div><div class="page-sub">Registro de molestias y plan de prevención</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-injury')">+ Registrar</button>
       </div>
       <div class="card">
         <div class="card-header"><div class="card-title">Ejercicios de prevención recomendados</div></div>
-        <div style="font-size:13px; color:var(--text2); line-height:1.7;">
-          <p><strong>Zancada del reloj:</strong> Zancada adelante, lateral, atrás y con curvas con la misma pierna. 3 series x 5 cada posición.</p>
-          <p><strong>Elevación excéntrica de pantorrilla:</strong> Sube con ambos pies, baja lento (3-5 seg) con una pierna. 8-12 reps x pierna.</p>
-          <p><strong>Inclinaciones pélvicas posteriores:</strong> Acuesta boca arriba, gira caderas hacia atrás aplanando la lumbar. 20-30 segundos.</p>
-          <p><strong>Bosu / Tabla de equilibrio:</strong> Trabaja propiocepción y estabilidad de tobillo. Esencial para esgrimistas.</p>
+        <div style="font-size:12px; color:var(--text2); line-height:1.7;">
+          <p><strong>Zancada del reloj:</strong> Zancada adelante, lateral, atrás y con curvas. 3 series x 5 cada posición.</p>
+          <p><strong>Elevación excéntrica de pantorrilla:</strong> Sube con ambos, baja lento (3-5 seg) con una pierna. 8-12 reps.</p>
+          <p><strong>Inclinaciones pélvicas posteriores:</strong> Acuesta boca arriba, gira caderas hacia atrás. 20-30 segundos.</p>
+          <p><strong>Bosu / Tabla de equilibrio:</strong> Trabaja propiocepción y estabilidad de tobillo.</p>
         </div>
       </div>
       <div id="list-injuries"></div>
@@ -540,23 +525,44 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
     <!-- RANKING -->
     <div class="section" id="ranking">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Ranking</div><div class="page-sub">Seguimiento de posición nacional e internacional</div></div>
         <button class="btn btn-primary" onclick="openModal('modal-ranking')">+ Actualizar ranking</button>
       </div>
       <div id="list-ranking"></div>
     </div>
 
-
   </main>
 </div>
 
-<!-- ===== MODALS ===== -->
 
-<!-- Training -->
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-athlete">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nuevo atleta</h3><button class="modal-close" onclick="closeModal('modal-athlete')">&times;</button></div>
+    <div class="form-row">
+      <div class="form-group"><label>Nombre</label><input type="text" id="at-name" placeholder="Nombre completo"></div>
+      <div class="form-group"><label>Apodo</label><input type="text" id="at-nick" placeholder="Opcional"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Arma</label><select id="at-weapon"><option>Florete</option><option>Espada</option><option>Sable</option></select></div>
+      <div class="form-group"><label>Categoría</label><select id="at-cat"><option>Cadete</option><option>Junior</option><option>Senior</option><option>Veterano</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>País</label><input type="text" id="at-country" placeholder="VEN"></div>
+      <div class="form-group"><label>Año de nacimiento</label><input type="number" id="at-born" placeholder="2011"></div>
+    </div>
+    <div class="form-group full"><label>Notas del entrenador</label><textarea id="at-notes" placeholder="Fortalezas, áreas de mejora..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-athlete')">Cancelar</button><button class="btn btn-primary" onclick="saveAthlete()">Guardar</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-training">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nuevo entrenamiento</h3><button class="modal-close" onclick="closeModal('modal-training')">&times;</button></div>
+    <div id="training-athlete-select" style="display:none; margin-bottom:10px;">
+      <div class="form-group"><label>Atleta</label><select id="t-athlete"></select></div>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Fecha</label><input type="date" id="t-date"></div>
       <div class="form-group"><label>Duración (min)</label><input type="number" id="t-duration" placeholder="90"></div>
@@ -566,14 +572,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Intensidad (1-10)</label><input type="number" id="t-intensity" min="1" max="10" placeholder="7"></div>
     </div>
     <div class="form-group full"><label>Notas</label><textarea id="t-notes" placeholder="¿Qué trabajaste hoy?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-training')">Cancelar</button><button class="btn btn-primary" onclick="saveTraining()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-training')">Cancelar</button><button class="btn btn-primary" onclick="saveTraining()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Competition -->
 <div class="modal-overlay" id="modal-competition">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nueva competencia</h3><button class="modal-close" onclick="closeModal('modal-competition')">&times;</button></div>
+    <div id="comp-athlete-select" style="display:none; margin-bottom:10px;">
+      <div class="form-group"><label>Atleta</label><select id="c-athlete"></select></div>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Nombre del evento</label><input type="text" id="c-name" placeholder="Ej: Copa Venezuela 2026"></div>
       <div class="form-group"><label>Fecha</label><input type="date" id="c-date"></div>
@@ -583,14 +591,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Posición final</label><input type="text" id="c-position" placeholder="Ej: 3ro / Top 8"></div>
     </div>
     <div class="form-group full"><label>Notas</label><textarea id="c-notes" placeholder="Observaciones..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-competition')">Cancelar</button><button class="btn btn-primary" onclick="saveCompetition()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-competition')">Cancelar</button><button class="btn btn-primary" onclick="saveCompetition()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Match -->
 <div class="modal-overlay" id="modal-match">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Registrar combate</h3><button class="modal-close" onclick="closeModal('modal-match')">&times;</button></div>
+    <div id="match-athlete-select" style="display:none; margin-bottom:10px;">
+      <div class="form-group"><label>Atleta</label><select id="m-athlete"></select></div>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Fecha</label><input type="date" id="m-date"></div>
       <div class="form-group"><label>Competencia</label><input type="text" id="m-comp" placeholder="Torneo (opcional)"></div>
@@ -609,14 +619,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     </div>
     <div class="form-row">
       <div class="form-group"><label>Fase</label><select id="m-phase"><option>Poule</option><option>Tabla de 128</option><option>Tabla de 64</option><option>Tabla de 32</option><option>Tabla de 16</option><option>Octavos</option><option>Cuartos</option><option>Semifinal</option><option>Final</option></select></div>
-      <div class="form-group"><label>Arma oponente</label><select id="m-weapon"><option>Florete</option><option>Espada</option><option>Sable</option></select></div>
+      <div class="form-group"><label>Arma del oponente</label><select id="m-weapon"><option>Florete</option><option>Espada</option><option>Sable</option></select></div>
     </div>
     <div class="form-group full"><label>Notas tácticas</label><textarea id="m-notes" placeholder="¿Qué funcionó? ¿Qué mejorar?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-match')">Cancelar</button><button class="btn btn-primary" onclick="saveMatch()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-match')">Cancelar</button><button class="btn btn-primary" onclick="saveMatch()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Opponent -->
 <div class="modal-overlay" id="modal-opponent">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nuevo oponente</h3><button class="modal-close" onclick="closeModal('modal-opponent')">&times;</button></div>
@@ -629,28 +638,29 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Mano</label><select id="o-hand"><option>Derecha</option><option>Izquierda</option></select></div>
     </div>
     <div class="form-group full"><label>Notas / Estilo</label><textarea id="o-notes" placeholder="¿Cómo esgrime? Puntos débiles?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-opponent')">Cancelar</button><button class="btn btn-primary" onclick="saveOpponent()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-opponent')">Cancelar</button><button class="btn btn-primary" onclick="saveOpponent()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Test -->
 <div class="modal-overlay" id="modal-test">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nuevo test físico</h3><button class="modal-close" onclick="closeModal('modal-test')">&times;</button></div>
+    <div id="test-athlete-select" style="display:none; margin-bottom:10px;">
+      <div class="form-group"><label>Atleta</label><select id="test-athlete"></select></div>
+    </div>
     <div class="form-row">
       <div class="form-group"><label>Fecha</label><input type="date" id="test-date"></div>
-      <div class="form-group"><label>Tipo de test</label><select id="test-type"><option>Lanzadera 2-4-2 (seg)</option><option>Salto vertical (cm)</option><option>Salto en profundidad (cm)</option><option>Fondos en 30s (reps)</option><option>Desplazamiento 10m (seg)</option><option>Test personalizado</option></select></div>
+      <div class="form-group"><label>Tipo de test</label><select id="test-type"></select></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Resultado</label><input type="text" id="test-result" placeholder="Ej: 12.4 seg / 45 cm"></div>
       <div class="form-group"><label>Peso corporal (kg)</label><input type="number" id="test-weight" placeholder="Opcional"></div>
     </div>
     <div class="form-group full"><label>Notas</label><textarea id="test-notes" placeholder="Condiciones, sensaciones..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-test')">Cancelar</button><button class="btn btn-primary" onclick="saveTest()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-test')">Cancelar</button><button class="btn btn-primary" onclick="saveTest()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Video -->
 <div class="modal-overlay" id="modal-video">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Agregar video</h3><button class="modal-close" onclick="closeModal('modal-video')">&times;</button></div>
@@ -663,16 +673,15 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Tipo</label><select id="v-type"><option>Propio</option><option>Rival</option><option>Referencia</option></select></div>
     </div>
     <div class="form-group full"><label>Notas de análisis</label><textarea id="v-notes" placeholder="Patrones observados, tácticas, errores..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-video')">Cancelar</button><button class="btn btn-primary" onclick="saveVideo()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-video')">Cancelar</button><button class="btn btn-primary" onclick="saveVideo()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Equipment -->
 <div class="modal-overlay" id="modal-equip">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Agregar equipo</h3><button class="modal-close" onclick="closeModal('modal-equip')">&times;</button></div>
     <div class="form-row">
-      <div class="form-group"><label>Item</label><select id="e-item"><option>Florete completo</option><option>Hoja de florete</option><option>Careta</option><option>Chaquetilla</option><option>Peto</option><option>Guante</option><option>Pantalón</option><option>Medias</option><option>Bodycord / Cable</option><option>Pinza de careta</option><option>Zapatillas</option><option>Bolsa / Saca</option><option>Otro</option></select></div>
+      <div class="form-group"><label>Item</label><select id="e-item"></select></div>
       <div class="form-group"><label>Marca / Modelo</label><input type="text" id="e-brand" placeholder="Ej: PBT, Uhlmann, Negrini"></div>
     </div>
     <div class="form-row">
@@ -680,11 +689,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Estado</label><select id="e-status"><option value="ok">✅ Perfecto</option><option value="warn">⚠️ Revisar</option><option value="bad">❌ Cambiar</option></select></div>
     </div>
     <div class="form-group full"><label>Notas / Mantenimiento</label><textarea id="e-notes" placeholder="Última revisión, problemas..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-equip')">Cancelar</button><button class="btn btn-primary" onclick="saveEquip()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-equip')">Cancelar</button><button class="btn btn-primary" onclick="saveEquip()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Nutrition -->
 <div class="modal-overlay" id="modal-nutri">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Registro nutricional</h3><button class="modal-close" onclick="closeModal('modal-nutri')">&times;</button></div>
@@ -700,12 +708,11 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Porciones de verduras</label><input type="number" id="n-veggies" placeholder="Ej: 3" min="0"></div>
       <div class="form-group"><label>Suplementos</label><input type="text" id="n-supp" placeholder="Ej: Creatina, Omega 3"></div>
     </div>
-    <div class="form-group full"><label>Observaciones</label><textarea id="n-notes" placeholder="¿Cómo te sentiste con la alimentación hoy?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-nutri')">Cancelar</button><button class="btn btn-primary" onclick="saveNutri()">Guardar</button></div>
+    <div class="form-group full"><label>Observaciones</label><textarea id="n-notes" placeholder="¿Cómo te sentiste hoy?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-nutri')">Cancelar</button><button class="btn btn-primary" onclick="saveNutri()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Psychology -->
 <div class="modal-overlay" id="modal-psych">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nuevo ejercicio psicológico</h3><button class="modal-close" onclick="closeModal('modal-psych')">&times;</button></div>
@@ -718,11 +725,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Categoría</label><select id="p-cat"><option>Pre-competitivo</option><option>Entrenamiento</option><option>Recuperación</option><option>Rutina diaria</option></select></div>
     </div>
     <div class="form-group full"><label>Descripción / Notas</label><textarea id="p-notes" placeholder="Instrucciones o reflexiones..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-psych')">Cancelar</button><button class="btn btn-primary" onclick="savePsych()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-psych')">Cancelar</button><button class="btn btn-primary" onclick="savePsych()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Music -->
 <div class="modal-overlay" id="modal-music">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Agregar música</h3><button class="modal-close" onclick="closeModal('modal-music')">&times;</button></div>
@@ -734,16 +740,18 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Categoría</label><select id="mu-cat"><option value="pre-entrenamiento">Pre-entrenamiento</option><option value="entrenamiento">Entrenamiento</option><option value="pre-competitivo">Pre-competitivo</option><option value="recuperacion">Recuperación</option></select></div>
       <div class="form-group"><label>Link (URL)</label><input type="url" id="mu-url" placeholder="https://..."></div>
     </div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-music')">Cancelar</button><button class="btn btn-primary" onclick="saveMusic()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-music')">Cancelar</button><button class="btn btn-primary" onclick="saveMusic()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Goal -->
 <div class="modal-overlay" id="modal-goal">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nuevo objetivo</h3><button class="modal-close" onclick="closeModal('modal-goal')">&times;</button></div>
+    <div id="goal-athlete-select" style="display:none; margin-bottom:10px;">
+      <div class="form-group"><label>Asignar a atleta</label><select id="g-athlete"><option value="">Todos / General</option></select></div>
+    </div>
     <div class="form-row">
-      <div class="form-group full"><label>Objetivo</label><input type="text" id="g-title" placeholder="Ej: Clasificar al Panamericano Cadete"></div>
+      <div class="form-group full"><label>Objetivo</label><input type="text" id="g-title" placeholder="Ej: Clasificar al Panamericano"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Categoría</label><select id="g-cat"><option>Técnico</option><option>Táctico</option><option>Físico</option><option>Mental</option><option>Competitivo</option><option>Académico</option></select></div>
@@ -754,11 +762,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Progreso (%)</label><input type="number" id="g-progress" min="0" max="100" value="0"></div>
     </div>
     <div class="form-group full"><label>Plan de acción</label><textarea id="g-plan" placeholder="¿Qué pasos necesitas dar?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-goal')">Cancelar</button><button class="btn btn-primary" onclick="saveGoal()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-goal')">Cancelar</button><button class="btn btn-primary" onclick="saveGoal()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Diary -->
 <div class="modal-overlay" id="modal-diary">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nueva entrada de diario</h3><button class="modal-close" onclick="closeModal('modal-diary')">&times;</button></div>
@@ -770,12 +777,11 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       <div class="form-group"><label>Nivel de energía (1-10)</label><input type="number" id="d-energy" min="1" max="10" placeholder="7"></div>
       <div class="form-group"><label>Calidad de sueño (1-10)</label><input type="number" id="d-sleep" min="1" max="10" placeholder="7"></div>
     </div>
-    <div class="form-group full"><label>Entrada</label><textarea id="d-text" placeholder="¿Cómo fue tu día? ¿Qué sentiste en el entrenamiento? ¿Qué aprendiste?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-diary')">Cancelar</button><button class="btn btn-primary" onclick="saveDiary()">Guardar</button></div>
+    <div class="form-group full"><label>Entrada</label><textarea id="d-text" placeholder="¿Cómo fue tu día? ¿Qué sentiste en el entrenamiento?"></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-diary')">Cancelar</button><button class="btn btn-primary" onclick="saveDiary()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Injury -->
 <div class="modal-overlay" id="modal-injury">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Registro de lesión / molestia</h3><button class="modal-close" onclick="closeModal('modal-injury')">&times;</button></div>
@@ -789,30 +795,28 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     </div>
     <div class="form-group full"><label>Descripción</label><textarea id="i-desc" placeholder="¿Qué te duele? ¿Cuándo empezó?"></textarea></div>
     <div class="form-group full"><label>Tratamiento / Prevención</label><textarea id="i-treatment" placeholder="¿Qué estás haciendo para mejorar?"></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-injury')">Cancelar</button><button class="btn btn-primary" onclick="saveInjury()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-injury')">Cancelar</button><button class="btn btn-primary" onclick="saveInjury()">Guardar</button></div>
   </div>
 </div>
 
-<!-- Ranking -->
 <div class="modal-overlay" id="modal-ranking">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Actualizar ranking</h3><button class="modal-close" onclick="closeModal('modal-ranking')">&times;</button></div>
     <div class="form-row">
       <div class="form-group"><label>Fecha</label><input type="date" id="r-date"></div>
-      <div class="form-group"><label>Tipo de ranking</label><select id="r-type"><option>Nacional VEN</option><option>Panamericano Cadete</option><option>Ranking FIE Cadete</option><option>Ranking FIE Junior</option><option>Ranking Club</option></select></div>
+      <div class="form-group"><label>Tipo de ranking</label><select id="r-type"><option>Nacional</option><option>Panamericano Cadete</option><option>Panamericano Junior</option><option>Ranking FIE Cadete</option><option>Ranking FIE Junior</option><option>Ranking FIE Senior</option><option>Ranking Club</option></select></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label>Posición</label><input type="number" id="r-pos" placeholder="Ej: 15"></div>
       <div class="form-group"><label>Puntos</label><input type="number" id="r-points" placeholder="Ej: 320"></div>
     </div>
     <div class="form-group full"><label>Notas</label><textarea id="r-notes" placeholder="Cambios, competencias que sumaron..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;"><button class="btn" onclick="closeModal('modal-ranking')">Cancelar</button><button class="btn btn-primary" onclick="saveRanking()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-ranking')">Cancelar</button><button class="btn btn-primary" onclick="saveRanking()">Guardar</button></div>
   </div>
 </div>
 
-<!-- H2H Modal -->
 <div class="modal-overlay" id="modal-h2h">
-  <div class="modal" style="max-width:640px;">
+  <div class="modal" style="max-width:600px;">
     <div class="modal-header"><h3 class="modal-title" id="h2h-title">Historial</h3><button class="modal-close" onclick="closeModal('modal-h2h')">&times;</button></div>
     <div id="h2h-content"></div>
   </div>
@@ -823,13 +827,169 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
 <script>
 (function(){
-  const KEY = 'fencing_pro_v2';
+  const KEY = 'fencing_pro_v2_multi';
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CONFIGURACIÓN POR ARMA
+  // ═══════════════════════════════════════════════════════════════
+  const WEAPON_CONFIG = {
+    florete: {
+      name: 'Florete',
+      tests: [
+        {name:'Lanzadera 2-4-2 (seg)', desc:'Avanza a línea central, retrocede, avanza a línea lejana, retrocede, avanza a centro, retrocede + estocada final. Mide agilidad y explosividad.'},
+        {name:'Salto vertical (cm)', desc:'Mide potencia de piernas. Compara salto estándar vs salto en profundidad desde 45cm.'},
+        {name:'Fondos en 30s (reps)', desc:'Número de fondos en 30 segundos. Mide resistencia específica.'},
+        {name:'Desplazamiento 10m (seg)', desc:'Tiempo de avance y retroceso en pista. Mide velocidad de pies.'}
+      ],
+      equip: ['Florete completo','Hoja de florete','Careta','Chaquetilla','Peto','Guante','Pantalón','Medias','Bodycord / Cable','Pinza de careta','Zapatillas','Bolsa / Saca'],
+      theory: {
+        positions: `<h3>Las 4 posiciones básicas del brazo armado (Florete)</h3>
+          <p>En cada línea, el brazo armado puede tomar 2 posiciones: una en supinación y otra en pronación.</p>
+          <ul><li><strong>Sexta:</strong> Supinación. Punta al nivel de la mano. Posición de guardia natural.</li>
+          <li><strong>Cuarta:</strong> Pronación. Punta por encima. Protege línea interior.</li>
+          <li><strong>Octava:</strong> Supinación. Punta por debajo. Protege línea inferior.</li>
+          <li><strong>Séptima:</strong> Pronación. Punta por debajo. Protege línea inferior exterior.</li></ul>
+          <h3>El fondo (estocada)</h3><p>Desde la guardia se estira el brazo sin rigidez, el cuerpo inmóvil. Se lanza el pie adelantado a ras de suelo, cae con el talón. La pierna retrasada empuja con máxima potencia.</p>
+          <h3>Desplazamientos</h3><ul><li><strong>Avance:</strong> Pie delantero avanza primero, luego el trasero.</li>
+          <li><strong>Retroceso:</strong> Pie trasero retrocede primero, luego el delantero.</li>
+          <li><strong>Fondo corto:</strong> Extensión del brazo + paso corto.</li>
+          <li><strong>Fondo largo:</strong> Extensión completa + lunge profundo.</li></ul>`,
+        priority: `<h3>Convención de prioridad (Florete)</h3>
+          <p>El florete es el "arma de la convención". No existe tocado simultáneo válido.</p>
+          <ul><li><strong>Ataque iniciado:</strong> Quien extiende el brazo primero y avanza con intención de tocar tiene la prioridad.</li>
+          <li><strong>Parada:</strong> Si el defensor realiza una parada válida, gana la prioridad y puede contraatacar.</li>
+          <li><strong>Contraataque:</strong> Si el atacante es parado y contraataca inmediatamente, puede recuperar la prioridad.</li>
+          <li><strong>Ataque en preparación:</strong> Se puede tocar al oponente mientras prepara su ataque (baja el arma, flexiona el brazo).</li>
+          <li><strong>Ataque al arco:</strong> Tocar al brazo del oponente mientras intenta atacar.</li></ul>
+          <h3>La "frase de las armas"</h3><p>Se compara con una conversación. Cada acción responde a la anterior. El floretista debe ser riguroso, mantener la prioridad y buscar los errores del oponente.</p>`,
+        tactics: `<h3>Táctica básica del floretista</h3>
+          <ul><li><strong>Tipología:</strong> Riguroso, se involucra en largos intercambios, busca mantener prioridad y desenmascarar errores.</li>
+          <li><strong>Control de distancia:</strong> Domina el espacio entre tú y tu oponente. Acorta para atacar, alarga para defenderte.</li>
+          <li><strong>Tempo:</strong> Varía la velocidad de tus acciones. Acelera para sorprender, frena para provocar errores.</li>
+          <li><strong>Engaño (feint):</strong> Simula un ataque en una línea para provocar una parada, luego cambia de línea.</li>
+          <li><strong>Contra-tiempo:</strong> Tocar al oponente en el momento exacto de su ataque, aprovechando su preparación.</li>
+          <li><strong>Estudio del rival:</strong> Observa en los primeros asaltos: ¿es agresivo o pasivo? ¿tiende a parar en cuarta u octava?</li></ul>`,
+        rules: `<h3>Reglamento básico de competencia (Florete)</h3>
+          <ul><li><strong>Pista:</strong> 14m x 1.5-2m. Líneas de guardia a 2m del centro. Líneas de advertencia a 2m de cada extremo.</li>
+          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos.</li>
+          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos de 3 min).</li>
+          <li><strong>Superficie válida:</strong> Tronco, solo sobre la chaquetilla eléctrica. No valen brazos, cabeza, piernas.</li>
+          <li><strong>Arma:</strong> Hoja de 90cm, peso total 500g, longitud máxima 110cm. Cazoleta 9.5-12cm.</li>
+          <li><strong>Órdenes:</strong> "En garde" → "¿Listos?" → "¡Allez!" / "¡Adelante!". "¡Alto!" para detener.</li>
+          <li><strong>Tocado simultáneo:</strong> NO existe en florete. El árbitro otorga el punto al que tiene prioridad.</li></ul>`
+      }
+    },
+    espada: {
+      name: 'Espada',
+      tests: [
+        {name:'Lanzadera 2-4-2 (seg)', desc:'Mide agilidad y capacidad de cambio de dirección. Fundamental en espada por los ataques al brazo.'},
+        {name:'Salto vertical (cm)', desc:'Potencia de piernas para fondos profundos y recuperación rápida.'},
+        {name:'Test Cooper (m)', desc:'Correr 12 minutos, medir distancia. La espada requiere alta resistencia aeróbica.'},
+        {name:'Desplazamiento 10m (seg)', desc:'Velocidad de pies en avance y retroceso.'},
+        {name:'Fondos en 30s (reps)', desc:'Resistencia específica de piernas para combates largos.'}
+      ],
+      equip: ['Espada completa','Hoja de espada','Careta','Chaquetilla eléctrica completa','Peto','Guante','Pantalón','Medias','Bodycord / Cable','Pinza de careta','Zapatillas','Bolsa / Saca'],
+      theory: {
+        positions: `<h3>Posiciones del brazo armado (Espada)</h3>
+          <p>La espada no tiene convención de prioridad, por lo que las posiciones se usan más para proteger el cuerpo y preparar el ataque.</p>
+          <ul><li><strong>Posición de guardia baja:</strong> Punta apuntando al suelo, codo flexionado. Usada para provocar y contraatacar.</li>
+          <li><strong>Posición de guardia media:</strong> Brazo semiflexionado, punta al nivel del pecho del oponente. La más común.</li>
+          <li><strong>Posición de guardia alta:</strong> Brazo extendido hacia arriba. Usada para ataques al brazo desde arriba.</li>
+          <li><strong>Posición de sexta:</strong> Similar al florete pero adaptada. Protege la línea exterior alta.</li></ul>
+          <h3>El fondo en espada</h3><p>El fondo en espada es más profundo y se usa para buscar el cuerpo completo. La extensión del brazo es clave para mantener distancia de seguridad.</p>
+          <h3>Desplazamientos</h3><p>Igual que en florete, pero con énfasis en el <strong>cross-step</strong> (paso cruzado) para cubrir más distancia rápidamente, ya que los combates de espada son más largos.</p>`,
+        priority: `<h3>Reglas específicas de la Espada</h3>
+          <p>La espada es el "arma de la simultaneidad". <strong>Sí existe el tocado simultáneo válido.</strong></p>
+          <ul><li><strong>Tocado doble:</strong> Si ambos tocan al mismo tiempo, ambos reciben un punto. Esto cambia completamente la táctica.</li>
+          <li><strong>Superficie válida:</strong> <strong>Todo el cuerpo</strong> — cabeza, brazos, piernas, tronco. Todo cuenta.</li>
+          <li><strong>Prioridad:</strong> <strong>NO HAY</strong>. No existe la convención de prioridad. El que toca primero no gana automáticamente.</li>
+          <li><strong>Ataque al brazo:</strong> Tocar el antebrazo del oponente es válido y muy común en espada. Es una táctica defensiva-agresiva.</li>
+          <li><strong>Timing:</strong> En espada, el timing (el momento exacto) es más importante que la prioridad. Debes tocar sin ser tocada.</li></ul>
+          <h3>Diferencias clave con el florete</h3>
+          <ul><li>No hay árbitro interpretando prioridad — los touches son eléctricos y automáticos.</li>
+          <li>Los combates son más largos (hasta 15 touches en poule también).</li>
+          <li>El juego es más físico y de resistencia.</li>
+          <li>Se puede atacar desde cualquier distancia porque todo el cuerpo vale.</li></ul>`,
+        tactics: `<h3>Táctica del espaderista</h3>
+          <ul><li><strong>Tipología:</strong> Paciente, calculador, busca el momento exacto. El espaderista es un estratega.</li>
+          <li><strong>Defensa activa:</strong> Usa el ataque al brazo para detener la iniciativa del rival sin arriesgar el cuerpo.</li>
+          <li><strong>Contraataque:</strong> Deja que el oponente ataque, desvía con la espada y toca en el momento de su preparación.</li>
+          <li><strong>Doble tempo:</strong> Realiza dos acciones consecutivas: primero provoca, luego ataca al espacio que deja.</li>
+          <li><strong>Control de distancia:</strong> Más importante que en florete. Mantener la distancia justa para atacar el brazo sin ser tocado.</li>
+          <li><strong>Fondo profundo:</strong> La espada permite fondos más profundos porque no hay prioridad que perder. Arriesgas el cuerpo pero ganas distancia.</li></ul>`,
+        rules: `<h3>Reglamento de competencia (Espada)</h3>
+          <ul><li><strong>Pista:</strong> 14m x 1.5-2m. Igual que florete y sable.</li>
+          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos (igual que florete).</li>
+          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos).</li>
+          <li><strong>Superficie válida:</strong> <strong>Todo el cuerpo</strong> completo. Cabeza, brazos, piernas, manos, espalda, todo.</li>
+          <li><strong>Arma:</strong> Hoja triangular de 90cm, peso total 770g (más pesada que florete), longitud máxima 110cm.</li>
+          <li><strong>Tocado simultáneo:</strong> <strong>SÍ existe</strong>. Ambos atletas reciben un punto si tocan al mismo tiempo.</li>
+          <li><strong>Empates:</strong> Si el marcador queda 4-4 en poule, puede haber empate. En directas, se juega hasta 15.</li></ul>`
+      }
+    },
+    sable: {
+      name: 'Sable',
+      tests: [
+        {name:'Lanzadera 2-4-2 (seg)', desc:'Máxima velocidad. En sable la reacción debe ser instantánea.'},
+        {name:'Salto vertical (cm)', desc:'Explosividad para ataques rápidos y fleche.'},
+        {name:'Test de reacción (ms)', desc:'Tiempo de respuesta a estímulo visual/auditivo. Crucial en sable.'},
+        {name:'Desplazamiento 10m (seg)', desc:'Velocidad de pies. El sable es el arma más rápida.'},
+        {name:'Fondos en 30s (reps)', desc:'Resistencia anaeróbica para asaltos cortos e intensos.'}
+      ],
+      equip: ['Sable completo','Hoja de sable','Careta metálica','Chaquetilla eléctrica','Peto metálico','Guante metálico','Pantalón','Medias','Bodycord / Cable','Zapatillas','Bolsa / Saca'],
+      theory: {
+        positions: `<h3>Posiciones del brazo armado (Sable)</h3>
+          <p>El sable permite cortes (slash) además de estocadas. Las posiciones son más bajas y defensivas.</p>
+          <ul><li><strong>Tercera:</strong> Pronación. Punta ligeramente hacia abajo. Guardia básica del sable.</li>
+          <li><strong>Cuarta:</strong> Pronación. Punta hacia arriba. Protege el flanco interior.</li>
+          <li><strong>Quinta:</strong> Supinación. Punta hacia abajo y afuera. Protege la cabeza y el flanco exterior.</li>
+          <li><strong>Segunda:</strong> Pronación. Punta hacia abajo y afuera. Protege la línea baja exterior.</li></ul>
+          <h3>El fleche (ataque en carrera)</h3>
+          <p>El sable permite el <strong>fleche</strong>: un ataque en carrera donde ambos pies dejan el suelo. Es una acción ofensiva muy rápida y espectacular, exclusiva del sable.</p>
+          <h3>Cortes (slashes)</h3>
+          <p>A diferencia del florete y la espada (solo estocadas), en sable los <strong>cortes</strong> son válidos. Se puede cortar con el filo de la hoja, no solo pinchar con la punta.</p>`,
+        priority: `<h3>Convención de prioridad (Sable)</h3>
+          <p>El sable tiene prioridad como el florete, pero con reglas diferentes debido a la velocidad y los cortes.</p>
+          <ul><li><strong>Ataque iniciado:</strong> Quien extiende el brazo y avanza primero tiene la prioridad. En sable, el ataque se inicia más rápido.</li>
+          <li><strong>Corte vs estocada:</strong> Un corte tiene la misma validez que una estocada para ganar prioridad.</li>
+          <li><strong>Parada:</strong> Si el defensor para y contraataca, gana la prioridad. Pero en sable las paradas son más difíciles por la velocidad.</li>
+          <li><strong>Ataque en preparación:</strong> Se puede tocar mientras el oponente prepara, como en florete.</li>
+          <li><strong>Retirada del brazo:</strong> Si el atacante retira el brazo (flexiona), pierde la prioridad inmediatamente.</li></ul>
+          <h3>El fleche y la prioridad</h3>
+          <p>El fleche (ataque en carrera) tiene prioridad si se inicia correctamente: brazo extendido antes de que los pies dejen el suelo. Si el brazo no está extendido, el fleche no tiene prioridad.</p>`,
+        tactics: `<h3>Táctica del sableista</h3>
+          <ul><li><strong>Tipología:</strong> Agresivo, rápido, busca el primer tempo. El sableista no espera, actúa.</li>
+          <li><strong>Velocidad de pies:</strong> Es el arma más rápida. El footwork debe ser explosivo y preciso.</li>
+          <li><strong>Ataque directo:</strong> En sable, el ataque directo (sin engaño) es muy efectivo por la velocidad.</li>
+          <li><strong>Cortes al brazo:</strong> Los cortes al antebrazo del oponente son una táctica defensiva muy usada para detener el ataque rival.</li>
+          <li><strong>Fleche:</strong> Usar el fleche para sorprender. Debe ser impredecible y con brazo ya extendido.</li>
+          <li><strong>Contraataque con corte:</strong> Esperar el ataque del rival y cortar su brazo o su cabeza en el momento justo.</li>
+          <li><strong>Distancia corta:</strong> En sable se lucha a distancias más cortas que en espada. El control del espacio es crítico.</li></ul>`,
+        rules: `<h3>Reglamento de competencia (Sable)</h3>
+          <ul><li><strong>Pista:</strong> 14m x 1.5-2m. Igual dimensiones.</li>
+          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos.</li>
+          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos).</li>
+          <li><strong>Superficie válida:</strong> <strong>Arriba de la cintura</strong> — incluye cabeza, brazos, tronco, manos. <strong>No valen piernas ni pies.</strong></li>
+          <li><strong>Arma:</strong> Hoja curva de 88cm, peso total 500g, longitud máxima 105cm. Permite cortes y estocadas.</li>
+          <li><strong>Tocado simultáneo:</strong> <strong>NO existe</strong> (como en florete). Hay prioridad.</li>
+          <li><strong>Fleche:</strong> <strong>Permitido</strong> solo en sable. Ataque en carrera con ambos pies en el aire. Requiere brazo extendido antes de despegar.</li>
+          <li><strong>Careta:</strong> Metálica (diferente al florete/espada). Guante metálico en el brazo armado.</li></ul>`
+      }
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  ESTADO GLOBAL
+  // ═══════════════════════════════════════════════════════════════
   let data = {
+    setup: { weapon:'florete', mode:'athlete', done:false },
+    athletes: [],
+    currentAthleteId: null,
     trainings: [], competitions: [], matches: [], opponents: [],
     tests: [], videos: [], equipment: [], nutrition: [], psychology: [],
     music: [], goals: [], diary: [], injuries: [], ranking: []
   };
-  let filters = { trainings: 'all', matches: 'all' };
+  let filters = { trainings:'all', matches:'all' };
   let calDate = new Date();
 
   function load() {
@@ -841,16 +1001,128 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   function save() { localStorage.setItem(KEY, JSON.stringify(data)); renderAll(); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
 
-  // Navigation
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      item.classList.add('active');
-      document.getElementById(item.dataset.section).classList.add('active');
-      document.getElementById('sidebar').classList.remove('open');
-    });
-  });
+  // ═══════════════════════════════════════════════════════════════
+  //  SETUP SCREEN
+  // ═══════════════════════════════════════════════════════════════
+  window.selectWeapon = function(el) {
+    document.querySelectorAll('.weapon-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    data.setup.weapon = el.dataset.weapon;
+  };
+  window.selectMode = function(el) {
+    document.querySelectorAll('.mode-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    data.setup.mode = el.dataset.mode;
+  };
+  window.finishSetup = function() {
+    data.setup.done = true;
+    save();
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    initApp();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  INIT APP
+  // ═══════════════════════════════════════════════════════════════
+  function initApp() {
+    const cfg = WEAPON_CONFIG[data.setup.weapon];
+    document.getElementById('sidebar-sub').textContent = cfg.name + ' · ' + (data.setup.mode==='athlete'?'Atleta':'Entrenador');
+    document.getElementById('mode-badge').textContent = data.setup.mode==='athlete'?'Atleta':'Entrenador';
+    document.getElementById('mode-badge').className = 'badge-mode ' + (data.setup.mode==='athlete'?'athlete':'coach');
+    document.getElementById('theory-sub').textContent = 'Material de estudio específico para ' + cfg.name;
+    document.getElementById('tests-sub').textContent = 'Métricas objetivas de progreso físico — ' + cfg.name;
+    document.getElementById('equip-sub').textContent = 'Control de material de ' + cfg.name + ' y mantenimiento';
+
+    // Build sidebar
+    const nav = document.getElementById('sidebar-nav');
+    let items = [];
+    if(data.setup.mode === 'athlete') {
+      items = [
+        {id:'dashboard-athlete', icon:'📊', label:'Dashboard'},
+        {id:'trainings', icon:'🤺', label:'Entrenamientos'},
+        {id:'competitions', icon:'🏆', label:'Competencias'},
+        {id:'matches', icon:'⚔️', label:'Combates'},
+        {id:'opponents', icon:'🎯', label:'Oponentes'},
+        {id:'calendar', icon:'📅', label:'Calendario'},
+        {id:'tests', icon:'📈', label:'Tests Físicos'},
+        {id:'video', icon:'🎬', label:'Video Análisis'},
+        {id:'equipment', icon:'🛡️', label:'Equipamiento'},
+        {id:'nutrition', icon:'🥗', label:'Nutrición'},
+        {id:'psychology', icon:'🧠', label:'Psicología'},
+        {id:'music', icon:'🎧', label:'Música'},
+        {id:'goals', icon:'🎯', label:'Objetivos'},
+        {id:'diary', icon:'📓', label:'Diario'},
+        {id:'theory', icon:'📖', label:'Teoría / Reglamento'},
+        {id:'injuries', icon:'🩹', label:'Lesiones / Prevención'},
+        {id:'ranking', icon:'🏅', label:'Ranking'}
+      ];
+      document.getElementById('athlete-selector-bar').style.display = 'none';
+    } else {
+      items = [
+        {id:'dashboard-coach', icon:'📊', label:'Panel Entrenador'},
+        {id:'athletes', icon:'👥', label:'Gestionar Atletas'},
+        {id:'trainings', icon:'🤺', label:'Entrenamientos'},
+        {id:'competitions', icon:'🏆', label:'Competencias'},
+        {id:'matches', icon:'⚔️', label:'Combates'},
+        {id:'opponents', icon:'🎯', label:'Oponentes'},
+        {id:'calendar', icon:'📅', label:'Calendario'},
+        {id:'tests', icon:'📈', label:'Tests Físicos'},
+        {id:'equipment', icon:'🛡️', label:'Equipamiento'},
+        {id:'goals', icon:'🎯', label:'Objetivos del Equipo'},
+        {id:'theory', icon:'📖', label:'Teoría / Reglamento'},
+        {id:'injuries', icon:'🩹', label:'Lesiones del Equipo'},
+        {id:'ranking', icon:'🏅', label:'Rankings'}
+      ];
+      document.getElementById('athlete-selector-bar').style.display = 'block';
+      renderAthleteSelector();
+    }
+    nav.innerHTML = items.map(it =>
+      `<div class="nav-item ${it.id==='dashboard-athlete'||it.id==='dashboard-coach'?'active':''}" data-section="${it.id}" onclick="navTo('${it.id}')"><span class="nav-icon">${it.icon}</span> ${it.label}</div>`
+    ).join('');
+
+    // Fill test type select
+    const testSelect = document.getElementById('test-type');
+    testSelect.innerHTML = cfg.tests.map(t => `<option value="${t.name}">${t.name}</option>`).join('') + '<option value="Test personalizado">Test personalizado</option>';
+    document.getElementById('tests-info-content').innerHTML = cfg.tests.map(t => `<p><strong>${t.name}:</strong> ${t.desc}</p>`).join('');
+
+    // Fill equipment select
+    const equipSelect = document.getElementById('e-item');
+    equipSelect.innerHTML = cfg.equip.map(e => `<option value="${e}">${e}</option>`).join('') + '<option value="Otro">Otro</option>';
+
+    // Fill theory
+    document.getElementById('theory-positions').innerHTML = cfg.theory.positions;
+    document.getElementById('theory-priority').innerHTML = cfg.theory.priority;
+    document.getElementById('theory-tactics').innerHTML = cfg.theory.tactics;
+    document.getElementById('theory-rules').innerHTML = cfg.theory.rules;
+
+    // Fill athlete selects in modals (coach mode)
+    if(data.setup.mode === 'coach') {
+      const opts = data.athletes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      ['t-athlete','c-athlete','m-athlete','test-athlete','g-athlete'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+          if(id === 'g-athlete') el.innerHTML = '<option value="">Todos / General</option>' + opts;
+          else el.innerHTML = opts;
+        }
+      });
+      document.querySelectorAll('#modal-training, #modal-competition, #modal-match, #modal-test, #modal-goal').forEach(m => {
+        const sel = m.querySelector('[id$="-athlete-select"]');
+        if(sel) sel.style.display = 'block';
+      });
+    }
+
+    renderAll();
+  }
+
+  window.navTo = function(id) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-section="${id}"]`);
+    if(navItem) navItem.classList.add('active');
+    document.getElementById(id).classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+  };
   window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('open'); };
 
   // Modals
@@ -860,7 +1132,6 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('active'); });
   });
 
-  // Theory tabs
   window.showTheoryTab = function(id) {
     document.querySelectorAll('#theory .tab').forEach(t => t.classList.remove('active'));
     event.target.classList.add('active');
@@ -868,36 +1139,88 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     document.getElementById('theory-'+id).style.display = 'block';
   };
 
-  // ===== TRAINING =====
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CRUD FUNCTIONS
+  // ═══════════════════════════════════════════════════════════════
+
+  // Helper: get current athlete context
+  function getAthleteId() {
+    if(data.setup.mode === 'athlete') return 'self';
+    return data.currentAthleteId;
+  }
+  function addTo(arr, item) {
+    item._athleteId = getAthleteId();
+    arr.unshift(item);
+    save();
+  }
+  function getItems(arr) {
+    if(data.setup.mode === 'athlete') return arr.filter(x => x._athleteId === 'self' || !x._athleteId);
+    if(data.currentAthleteId) return arr.filter(x => x._athleteId === data.currentAthleteId);
+    return arr;
+  }
+
+  // ATHLETES (coach only)
+  window.saveAthlete = function() {
+    const a = {
+      id: uid(), name: document.getElementById('at-name').value,
+      nick: document.getElementById('at-nick').value,
+      weapon: document.getElementById('at-weapon').value,
+      category: document.getElementById('at-cat').value,
+      country: document.getElementById('at-country').value,
+      born: document.getElementById('at-born').value,
+      notes: document.getElementById('at-notes').value
+    };
+    data.athletes.unshift(a);
+    if(!data.currentAthleteId) data.currentAthleteId = a.id;
+    save(); closeModal('modal-athlete');
+    document.getElementById('at-name').value=''; document.getElementById('at-nick').value='';
+    document.getElementById('at-country').value=''; document.getElementById('at-born').value='';
+    document.getElementById('at-notes').value='';
+    initApp(); // refresh selects
+  };
+  window.selectAthlete = function(id) { data.currentAthleteId = id; save(); renderAthleteSelector(); renderAll(); };
+  window.delAthlete = function(id) {
+    data.athletes = data.athletes.filter(a => a.id !== id);
+    if(data.currentAthleteId === id) data.currentAthleteId = data.athletes[0]?.id || null;
+    save(); initApp();
+  };
+
+  // TRAINING
   window.saveTraining = function() {
-    data.trainings.unshift({
+    const t = {
       id: uid(), date: document.getElementById('t-date').value,
       type: document.getElementById('t-type').value,
       duration: parseInt(document.getElementById('t-duration').value)||0,
       intensity: parseInt(document.getElementById('t-intensity').value)||5,
       notes: document.getElementById('t-notes').value
-    });
+    };
+    if(data.setup.mode==='coach') t._athleteId = document.getElementById('t-athlete').value || data.currentAthleteId;
+    data.trainings.unshift(t);
     save(); closeModal('modal-training');
     document.getElementById('t-duration').value=''; document.getElementById('t-intensity').value=''; document.getElementById('t-notes').value='';
   };
   window.filterTrainings = function(f) { filters.trainings=f; document.querySelectorAll('#trainings .filter-chip').forEach(c=>c.classList.toggle('active', (f==='all'&&c.textContent==='Todos')||c.textContent===f)); renderTrainings(); };
   window.delTraining = function(id) { data.trainings=data.trainings.filter(x=>x.id!==id); save(); };
 
-  // ===== COMPETITION =====
+  // COMPETITION
   window.saveCompetition = function() {
-    data.competitions.unshift({
+    const c = {
       id: uid(), name: document.getElementById('c-name').value,
       date: document.getElementById('c-date').value,
       location: document.getElementById('c-location').value,
       position: document.getElementById('c-position').value,
       notes: document.getElementById('c-notes').value
-    });
+    };
+    if(data.setup.mode==='coach') c._athleteId = document.getElementById('c-athlete').value || data.currentAthleteId;
+    data.competitions.unshift(c);
     save(); closeModal('modal-competition');
-    document.getElementById('c-name').value=''; document.getElementById('c-location').value=''; document.getElementById('c-position').value=''; document.getElementById('c-notes').value='';
+    document.getElementById('c-name').value=''; document.getElementById('c-location').value='';
+    document.getElementById('c-position').value=''; document.getElementById('c-notes').value='';
   };
   window.delCompetition = function(id) { data.competitions=data.competitions.filter(x=>x.id!==id); save(); };
 
-  // ===== MATCH =====
+  // MATCH
   window.saveMatch = function() {
     const opp = document.getElementById('m-opponent').value.trim();
     if(!opp) { alert('Ingresa el nombre del oponente'); return; }
@@ -915,6 +1238,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       notes: document.getElementById('m-notes').value,
       win: forScore > againstScore
     };
+    if(data.setup.mode==='coach') m._athleteId = document.getElementById('m-athlete').value || data.currentAthleteId;
     data.matches.unshift(m);
     if(!data.opponents.find(o=>o.name.toLowerCase()===opp.toLowerCase())) {
       data.opponents.push({ id: uid(), name: opp, country: m.opponentCountry, weapon: m.weapon, hand: 'Derecha', notes: '' });
@@ -927,7 +1251,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   window.filterMatches = function(f) { filters.matches=f; document.querySelectorAll('#matches .filter-chip').forEach(c=>c.classList.toggle('active', c.textContent.toLowerCase().includes(f)||(f==='all'&&c.textContent==='Todos'))); renderMatches(); };
   window.delMatch = function(id) { data.matches=data.matches.filter(x=>x.id!==id); save(); };
 
-  // ===== OPPONENT =====
+  // OPPONENT
   window.saveOpponent = function() {
     data.opponents.unshift({
       id: uid(), name: document.getElementById('o-name').value,
@@ -942,13 +1266,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   window.delOpponent = function(id) { data.opponents=data.opponents.filter(x=>x.id!==id); save(); };
   window.showH2H = function(oppId) {
     const opp = data.opponents.find(o=>o.id===oppId); if(!opp) return;
-    const h2h = data.matches.filter(m=>m.opponentName.toLowerCase()===opp.name.toLowerCase());
+    const h2h = getItems(data.matches).filter(m=>m.opponentName.toLowerCase()===opp.name.toLowerCase());
     const wins = h2h.filter(m=>m.win).length;
     const losses = h2h.length - wins;
     const tf = h2h.reduce((s,m)=>s+m.scoreFor,0);
     const ta = h2h.reduce((s,m)=>s+m.scoreAgainst,0);
     document.getElementById('h2h-title').textContent = 'Historial vs ' + opp.name;
-    let html = '<div class="stats-grid" style="margin-bottom:16px;">';
+    let html = '<div class="stats-grid" style="margin-bottom:14px;">';
     html += '<div class="stat-box"><div class="stat-value">'+h2h.length+'</div><div class="stat-label">Combates</div></div>';
     html += '<div class="stat-box"><div class="stat-value stat-win">'+wins+'</div><div class="stat-label">Victorias</div></div>';
     html += '<div class="stat-box"><div class="stat-value stat-loss">'+losses+'</div><div class="stat-label">Derrotas</div></div>';
@@ -956,7 +1280,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     html += '</div>';
     if(h2h.length===0) html += '<div class="empty-state">Sin combates registrados.</div>';
     else {
-      html += '<table class="h2h-table"><thead><tr><th>Fecha</th><th>Resultado</th><th>Score</th><th>Fase</th><th>Formato</th></tr></thead><tbody>';
+      html += '<table class="comparison-table"><thead><tr><th>Fecha</th><th>Resultado</th><th>Score</th><th>Fase</th><th>Formato</th></tr></thead><tbody>';
       h2h.forEach(m=>{
         html += '<tr><td>'+m.date+'</td><td>'+(m.win?'<span class="badge badge-win">Victoria</span>':'<span class="badge badge-loss">Derrota</span>')+'</td><td>'+m.scoreFor+' - '+m.scoreAgainst+'</td><td>'+m.phase+'</td><td>'+(m.format==='poule'?'Poule':'Directas')+'</td></tr>';
       });
@@ -966,21 +1290,23 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     openModal('modal-h2h');
   };
 
-  // ===== TEST =====
+  // TEST
   window.saveTest = function() {
-    data.tests.unshift({
+    const t = {
       id: uid(), date: document.getElementById('test-date').value,
       type: document.getElementById('test-type').value,
       result: document.getElementById('test-result').value,
       weight: document.getElementById('test-weight').value,
       notes: document.getElementById('test-notes').value
-    });
+    };
+    if(data.setup.mode==='coach') t._athleteId = document.getElementById('test-athlete').value || data.currentAthleteId;
+    data.tests.unshift(t);
     save(); closeModal('modal-test');
     document.getElementById('test-result').value=''; document.getElementById('test-weight').value=''; document.getElementById('test-notes').value='';
   };
   window.delTest = function(id) { data.tests=data.tests.filter(x=>x.id!==id); save(); };
 
-  // ===== VIDEO =====
+  // VIDEO
   window.saveVideo = function() {
     data.videos.unshift({
       id: uid(), title: document.getElementById('v-title').value,
@@ -994,23 +1320,25 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   };
   window.delVideo = function(id) { data.videos=data.videos.filter(x=>x.id!==id); save(); };
 
-  // ===== EQUIPMENT =====
+  // EQUIPMENT
   window.saveEquip = function() {
-    data.equipment.unshift({
+    const e = {
       id: uid(), item: document.getElementById('e-item').value,
       brand: document.getElementById('e-brand').value,
       date: document.getElementById('e-date').value,
       status: document.getElementById('e-status').value,
       notes: document.getElementById('e-notes').value
-    });
+    };
+    if(data.setup.mode==='coach') e._athleteId = data.currentAthleteId;
+    data.equipment.unshift(e);
     save(); closeModal('modal-equip');
     document.getElementById('e-brand').value=''; document.getElementById('e-notes').value='';
   };
   window.delEquip = function(id) { data.equipment=data.equipment.filter(x=>x.id!==id); save(); };
 
-  // ===== NUTRITION =====
+  // NUTRITION
   window.saveNutri = function() {
-    data.nutrition.unshift({
+    const n = {
       id: uid(), date: document.getElementById('n-date').value,
       water: parseInt(document.getElementById('n-water').value)||0,
       protein: parseInt(document.getElementById('n-protein').value)||0,
@@ -1018,7 +1346,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       veggies: parseInt(document.getElementById('n-veggies').value)||0,
       supp: document.getElementById('n-supp').value,
       notes: document.getElementById('n-notes').value
-    });
+    };
+    data.nutrition.unshift(n);
     save(); closeModal('modal-nutri');
     document.getElementById('n-water').value=''; document.getElementById('n-protein').value='';
     document.getElementById('n-carbs').value=''; document.getElementById('n-veggies').value='';
@@ -1026,23 +1355,24 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   };
   window.delNutri = function(id) { data.nutrition=data.nutrition.filter(x=>x.id!==id); save(); };
 
-  // ===== PSYCHOLOGY =====
+  // PSYCHOLOGY
   window.savePsych = function() {
-    data.psychology.unshift({
+    const p = {
       id: uid(), date: document.getElementById('p-date').value,
       exercise: document.getElementById('p-exercise').value,
       duration: parseInt(document.getElementById('p-duration').value)||0,
       category: document.getElementById('p-cat').value,
       notes: document.getElementById('p-notes').value,
       completed: false
-    });
+    };
+    data.psychology.unshift(p);
     save(); closeModal('modal-psych');
     document.getElementById('p-exercise').value=''; document.getElementById('p-duration').value=''; document.getElementById('p-notes').value='';
   };
   window.togglePsych = function(id) { const item=data.psychology.find(p=>p.id===id); if(item){item.completed=!item.completed;save();} };
   window.delPsych = function(id) { data.psychology=data.psychology.filter(x=>x.id!==id); save(); };
 
-  // ===== MUSIC =====
+  // MUSIC
   window.saveMusic = function() {
     data.music.unshift({
       id: uid(), title: document.getElementById('mu-title').value,
@@ -1055,9 +1385,9 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   };
   window.delMusic = function(id) { data.music=data.music.filter(x=>x.id!==id); save(); };
 
-  // ===== GOALS =====
+  // GOALS
   window.saveGoal = function() {
-    data.goals.unshift({
+    const g = {
       id: uid(), title: document.getElementById('g-title').value,
       category: document.getElementById('g-cat').value,
       term: document.getElementById('g-term').value,
@@ -1065,62 +1395,77 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       progress: parseInt(document.getElementById('g-progress').value)||0,
       plan: document.getElementById('g-plan').value,
       completed: false
-    });
+    };
+    if(data.setup.mode==='coach') {
+      const aid = document.getElementById('g-athlete').value;
+      if(aid) g._athleteId = aid;
+    }
+    data.goals.unshift(g);
     save(); closeModal('modal-goal');
     document.getElementById('g-title').value=''; document.getElementById('g-progress').value='0'; document.getElementById('g-plan').value='';
   };
   window.updateGoalProgress = function(id, val) { const g=data.goals.find(x=>x.id===id); if(g){g.progress=parseInt(val); if(g.progress>=100)g.completed=true; save();} };
   window.delGoal = function(id) { data.goals=data.goals.filter(x=>x.id!==id); save(); };
 
-  // ===== DIARY =====
+  // DIARY
   window.saveDiary = function() {
-    data.diary.unshift({
+    const d = {
       id: uid(), date: document.getElementById('d-date').value,
       mood: parseInt(document.getElementById('d-mood').value)||7,
       energy: parseInt(document.getElementById('d-energy').value)||7,
       sleep: parseInt(document.getElementById('d-sleep').value)||7,
       text: document.getElementById('d-text').value
-    });
+    };
+    data.diary.unshift(d);
     save(); closeModal('modal-diary');
     document.getElementById('d-mood').value=''; document.getElementById('d-energy').value='';
     document.getElementById('d-sleep').value=''; document.getElementById('d-text').value='';
   };
   window.delDiary = function(id) { data.diary=data.diary.filter(x=>x.id!==id); save(); };
 
-  // ===== INJURY =====
+  // INJURY
   window.saveInjury = function() {
-    data.injuries.unshift({
+    const i = {
       id: uid(), date: document.getElementById('i-date').value,
       zone: document.getElementById('i-zone').value,
       intensity: parseInt(document.getElementById('i-intensity').value)||5,
       status: document.getElementById('i-status').value,
       desc: document.getElementById('i-desc').value,
       treatment: document.getElementById('i-treatment').value
-    });
+    };
+    if(data.setup.mode==='coach') i._athleteId = data.currentAthleteId;
+    data.injuries.unshift(i);
     save(); closeModal('modal-injury');
     document.getElementById('i-intensity').value=''; document.getElementById('i-desc').value='';
     document.getElementById('i-treatment').value='';
   };
   window.delInjury = function(id) { data.injuries=data.injuries.filter(x=>x.id!==id); save(); };
 
-  // ===== RANKING =====
+  // RANKING
   window.saveRanking = function() {
-    data.ranking.unshift({
+    const r = {
       id: uid(), date: document.getElementById('r-date').value,
       type: document.getElementById('r-type').value,
       position: parseInt(document.getElementById('r-pos').value)||0,
       points: parseInt(document.getElementById('r-points').value)||0,
       notes: document.getElementById('r-notes').value
-    });
+    };
+    if(data.setup.mode==='coach') r._athleteId = data.currentAthleteId;
+    data.ranking.unshift(r);
     save(); closeModal('modal-ranking');
     document.getElementById('r-pos').value=''; document.getElementById('r-points').value=''; document.getElementById('r-notes').value='';
   };
   window.delRanking = function(id) { data.ranking=data.ranking.filter(x=>x.id!==id); save(); };
 
 
-  // ===== RENDER FUNCTIONS =====
+  // ═══════════════════════════════════════════════════════════════
+  //  RENDER FUNCTIONS
+  // ═══════════════════════════════════════════════════════════════
   function renderAll() {
-    renderDashboard();
+    renderAthleteSelector();
+    renderDashboardAthlete();
+    renderDashboardCoach();
+    renderAthletesCrud();
     renderTrainings();
     renderCompetitions();
     renderMatches();
@@ -1139,20 +1484,32 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     updateDatalist();
   }
 
-  function renderDashboard() {
-    document.getElementById('d-trainings').textContent = data.trainings.length;
-    document.getElementById('d-competitions').textContent = data.competitions.length;
-    const wins = data.matches.filter(m=>m.win).length;
-    const losses = data.matches.length - wins;
-    document.getElementById('d-wins').textContent = wins;
-    document.getElementById('d-losses').textContent = losses;
-    document.getElementById('d-winrate').textContent = data.matches.length ? Math.round((wins/data.matches.length)*100)+'%' : '0%';
-    document.getElementById('d-goals').textContent = data.goals.filter(g=>!g.completed).length;
+  function renderAthleteSelector() {
+    if(data.setup.mode !== 'coach') return;
+    const el = document.getElementById('athlete-chips');
+    if(data.athletes.length === 0) { el.innerHTML = '<span style="color:var(--text3); font-size:12px;">No hay atletas. Crea uno primero.</span>'; return; }
+    el.innerHTML = data.athletes.map(a =>
+      `<span class="athlete-chip ${a.id===data.currentAthleteId?'active':''}" onclick="selectAthlete('${a.id}')">${a.name}</span>`
+    ).join('');
+  }
 
-    // Upcoming
+  function renderDashboardAthlete() {
+    const trainings = getItems(data.trainings);
+    const comps = getItems(data.competitions);
+    const matches = getItems(data.matches);
+    const goals = getItems(data.goals).filter(g=>!g.completed);
+    const wins = matches.filter(m=>m.win).length;
+    const losses = matches.length - wins;
+    document.getElementById('da-trainings').textContent = trainings.length;
+    document.getElementById('da-competitions').textContent = comps.length;
+    document.getElementById('da-wins').textContent = wins;
+    document.getElementById('da-losses').textContent = losses;
+    document.getElementById('da-winrate').textContent = matches.length ? Math.round((wins/matches.length)*100)+'%' : '0%';
+    document.getElementById('da-goals').textContent = goals.length;
+
     const today = new Date().toISOString().split('T')[0];
-    const upcoming = [...data.competitions, ...data.trainings].filter(x=>x.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);
-    const upEl = document.getElementById('dash-upcoming');
+    const upcoming = [...comps, ...trainings].filter(x=>x.date>=today).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);
+    const upEl = document.getElementById('da-upcoming');
     if(upcoming.length===0) upEl.innerHTML = '<div class="empty-state">No hay eventos próximos.</div>';
     else upEl.innerHTML = upcoming.map(x=>`
       <div class="list-item">
@@ -1164,9 +1521,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       </div>
     `).join('');
 
-    // Recent matches
-    const recent = data.matches.slice(0,5);
-    const rmEl = document.getElementById('dash-recent');
+    const recent = matches.slice(0,5);
+    const rmEl = document.getElementById('da-recent');
     if(recent.length===0) rmEl.innerHTML = '<div class="empty-state">Aún no hay combates registrados.</div>';
     else rmEl.innerHTML = recent.map(m=>`
       <div class="list-item">
@@ -1174,31 +1530,109 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
           <div class="list-item-title">${m.opponentName} ${m.opponentCountry?'('+m.opponentCountry+')':''}</div>
           <div class="list-item-meta">${m.date} · ${m.phase} · ${m.format==='poule'?'Poule':'Directas'}</div>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
           <div class="match-score"><span class="score-me">${m.scoreFor}</span><span class="score-sep">:</span><span class="score-them">${m.scoreAgainst}</span></div>
           ${m.win?'<span class="badge badge-win">Victoria</span>':'<span class="badge badge-loss">Derrota</span>'}
         </div>
       </div>
     `).join('');
 
-    // Goals
-    const activeGoals = data.goals.filter(g=>!g.completed).slice(0,3);
-    const gEl = document.getElementById('dash-goals');
+    const activeGoals = goals.slice(0,3);
+    const gEl = document.getElementById('da-goals-list');
     if(activeGoals.length===0) gEl.innerHTML = '<div class="empty-state">No hay objetivos activos.</div>';
     else gEl.innerHTML = activeGoals.map(g=>`
-      <div style="margin-bottom:12px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-          <span style="font-size:14px; font-weight:500;">${g.title}</span>
-          <span style="font-size:12px; color:var(--text3);">${g.progress}%</span>
+      <div style="margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+          <span style="font-size:13px; font-weight:500;">${g.title}</span>
+          <span style="font-size:11px; color:var(--text3);">${g.progress}%</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%; background:${g.progress>=75?'var(--win)':g.progress>=40?'var(--accent)':'var(--warn)'}"></div></div>
       </div>
     `).join('');
   }
 
+  function renderDashboardCoach() {
+    const allMatches = data.matches;
+    const teamWins = allMatches.filter(m=>m.win).length;
+    const teamLosses = allMatches.length - teamWins;
+    document.getElementById('dc-athletes').textContent = data.athletes.length;
+    document.getElementById('dc-team-wins').textContent = teamWins;
+    document.getElementById('dc-team-losses').textContent = teamLosses;
+    document.getElementById('dc-team-rate').textContent = allMatches.length ? Math.round((teamWins/allMatches.length)*100)+'%' : '0%';
+
+    const today = new Date().toISOString().split('T')[0];
+    const nextComp = data.competitions.filter(c=>c.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0];
+    document.getElementById('dc-next-comp').textContent = nextComp ? nextComp.name : '—';
+
+    // Best win rate athlete
+    let bestAthlete = '—';
+    let bestRate = -1;
+    data.athletes.forEach(a => {
+      const am = data.matches.filter(m => m._athleteId === a.id);
+      const aw = am.filter(m=>m.win).length;
+      const rate = am.length ? aw/am.length : 0;
+      if(rate > bestRate) { bestRate = rate; bestAthlete = a.name; }
+    });
+    document.getElementById('dc-top-athlete').textContent = bestAthlete;
+
+    // Comparison table
+    const compEl = document.getElementById('dc-comparison');
+    if(data.athletes.length === 0) compEl.innerHTML = '<div class="empty-state">Agrega atletas para ver comparativas.</div>';
+    else {
+      let html = '<table class="comparison-table"><thead><tr><th>Atleta</th><th>Combates</th><th>V</th><th>D</th><th>% V</th><th>Entrenos</th><th>Competencias</th></tr></thead><tbody>';
+      data.athletes.forEach(a => {
+        const am = data.matches.filter(m => m._athleteId === a.id);
+        const aw = am.filter(m=>m.win).length;
+        const al = am.length - aw;
+        const rate = am.length ? Math.round((aw/am.length)*100) : 0;
+        const at = data.trainings.filter(t => t._athleteId === a.id).length;
+        const ac = data.competitions.filter(c => c._athleteId === a.id).length;
+        html += `<tr><td><strong>${a.name}</strong> <span style="color:var(--text3); font-size:11px;">${a.weapon}</span></td><td>${am.length}</td><td style="color:var(--win)">${aw}</td><td style="color:var(--loss)">${al}</td><td>${rate}%</td><td>${at}</td><td>${ac}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      compEl.innerHTML = html;
+    }
+
+    // Athletes list
+    const listEl = document.getElementById('dc-athletes-list');
+    if(data.athletes.length === 0) listEl.innerHTML = '<div class="empty-state">No hay atletas registrados.</div>';
+    else listEl.innerHTML = data.athletes.map(a => {
+      const am = data.matches.filter(m => m._athleteId === a.id);
+      const aw = am.filter(m=>m.win).length;
+      return `<div class="list-item" onclick="selectAthlete('${a.id}'); navTo('dashboard-athlete');" style="cursor:pointer;">
+        <div class="list-item-content">
+          <div class="list-item-title">${a.name} ${a.nick?'"'+a.nick+'"':''}</div>
+          <div class="list-item-meta">${a.weapon} · ${a.category}${a.country?' · '+a.country:''}${a.born?' · '+a.born:''}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="badge badge-win">${aw}V</span>
+          <button class="btn btn-sm" onclick="event.stopPropagation(); delAthlete('${a.id}')">Eliminar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAthletesCrud() {
+    const el = document.getElementById('list-athletes-crud');
+    if(data.athletes.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">Sin atletas</div>Crea el primer perfil de tu equipo.</div>'; return; }
+    el.innerHTML = data.athletes.map(a => `
+      <div class="list-item">
+        <div class="list-item-content">
+          <div class="list-item-title">${a.name} ${a.nick?'"'+a.nick+'"':''}</div>
+          <div class="list-item-meta">${a.weapon} · ${a.category}${a.country?' · '+a.country:''}${a.born?' · Nac: '+a.born:''}</div>
+          ${a.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+a.notes+'</div>':''}
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn btn-sm" onclick="selectAthlete('${a.id}'); navTo('dashboard-athlete');">Ver datos</button>
+          <div class="list-item-actions"><button onclick="delAthlete('${a.id}')">Eliminar</button></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
   function renderTrainings() {
     const el = document.getElementById('list-trainings');
-    let items = data.trainings;
+    let items = getItems(data.trainings);
     if(filters.trainings!=='all') items = items.filter(t=>t.type===filters.trainings);
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤺</div><div class="empty-state-title">Sin entrenamientos</div>Registra tu primer entrenamiento.</div>'; return; }
     el.innerHTML = items.map(t=>`
@@ -1214,8 +1648,9 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderCompetitions() {
     const el = document.getElementById('list-competitions');
-    if(data.competitions.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-title">Sin competencias</div>Registra tus torneos.</div>'; return; }
-    el.innerHTML = data.competitions.map(c=>`
+    const items = getItems(data.competitions);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-title">Sin competencias</div>Registra tus torneos.</div>'; return; }
+    el.innerHTML = items.map(c=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${c.name}</div>
@@ -1228,7 +1663,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderMatches() {
     const el = document.getElementById('list-matches');
-    let items = data.matches;
+    let items = getItems(data.matches);
     if(filters.matches!=='all') {
       if(filters.matches==='individual'||filters.matches==='team') items=items.filter(m=>m.type===filters.matches);
       else items=items.filter(m=>m.format===filters.matches);
@@ -1239,13 +1674,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
         <div class="list-item-content">
           <div class="list-item-title">${m.opponentName} ${m.opponentCountry?'('+m.opponentCountry+')':''}</div>
           <div class="list-item-meta">${m.date} · ${m.competition||'Amistoso'} · ${m.phase}</div>
-          <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+          <div style="margin-top:5px; display:flex; gap:5px; flex-wrap:wrap;">
             <span class="badge ${m.type==='team'?'badge-team':'badge-ind'}">${m.type==='team'?'Equipo':'Individual'}</span>
             <span class="badge ${m.format==='poule'?'badge-poule':'badge-direct'}">${m.format==='poule'?'Poule':'Directas'}</span>
             <span class="badge ${m.win?'badge-win':'badge-loss'}">${m.win?'Victoria':'Derrota'}</span>
           </div>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
           <div class="match-score"><span class="score-me">${m.scoreFor}</span><span class="score-sep">:</span><span class="score-them">${m.scoreAgainst}</span></div>
           <div class="list-item-actions"><button onclick="delMatch('${m.id}')">Eliminar</button></div>
         </div>
@@ -1257,26 +1692,26 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     const el = document.getElementById('list-opponents');
     if(data.opponents.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin oponentes</div>Agrega rivales para ver estadísticas H2H.</div>'; return; }
     el.innerHTML = data.opponents.map(o=>{
-      const h2h = data.matches.filter(m=>m.opponentName.toLowerCase()===o.name.toLowerCase());
+      const h2h = getItems(data.matches).filter(m=>m.opponentName.toLowerCase()===o.name.toLowerCase());
       const wins = h2h.filter(m=>m.win).length;
       const losses = h2h.length - wins;
-      return `<div class="opponent-card" style="border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; background:var(--surface2);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+      return `<div style="border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:8px; background:var(--surface2);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
           <div>
-            <div style="font-weight:600; font-size:15px; color:var(--text);">${o.name} ${o.country?'('+o.country+')':''}</div>
-            <div style="font-size:13px; color:var(--text3); margin-top:2px;">${o.weapon} · ${o.hand}</div>
+            <div style="font-weight:600; font-size:14px; color:var(--text);">${o.name} ${o.country?'('+o.country+')':''}</div>
+            <div style="font-size:12px; color:var(--text3); margin-top:1px;">${o.weapon} · ${o.hand}</div>
           </div>
-          <div style="display:flex; gap:6px;">
+          <div style="display:flex; gap:5px;">
             <button class="btn btn-sm" onclick="showH2H('${o.id}')">Ver historial</button>
             <button class="btn btn-sm" onclick="delOpponent('${o.id}')">Eliminar</button>
           </div>
         </div>
-        <div style="display:flex; gap:16px; font-size:13px; color:var(--text2);">
+        <div style="display:flex; gap:14px; font-size:12px; color:var(--text2);">
           <div><strong style="color:var(--text);">${h2h.length}</strong> combates</div>
           <div><strong style="color:var(--win);">${wins}</strong> victorias</div>
           <div><strong style="color:var(--loss);">${losses}</strong> derrotas</div>
         </div>
-        ${o.notes?'<div style="margin-top:8px; font-size:13px; color:var(--text2); font-style:italic;">"'+o.notes+'"</div>':''}
+        ${o.notes?'<div style="margin-top:6px; font-size:12px; color:var(--text2); font-style:italic;">"'+o.notes+'"</div>':''}
       </div>`;
     }).join('');
   }
@@ -1293,12 +1728,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
     for(let i=firstDay-1; i>=0; i--) html+=`<div class="cal-day other"><span class="cal-day-num">${prevDays-i}</span></div>`;
     const today = new Date().toISOString().split('T')[0];
+    const trainings = getItems(data.trainings);
+    const comps = getItems(data.competitions);
+    const matches = getItems(data.matches);
+    const psych = getItems(data.psychology);
     for(let d=1; d<=daysInMonth; d++) {
       const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const hasTrain = data.trainings.some(t=>t.date===dateStr);
-      const hasComp = data.competitions.some(c=>c.date===dateStr);
-      const hasMatch = data.matches.some(m=>m.date===dateStr);
-      const hasPsych = data.psychology.some(p=>p.date===dateStr);
+      const hasTrain = trainings.some(t=>t.date===dateStr);
+      const hasComp = comps.some(c=>c.date===dateStr);
+      const hasMatch = matches.some(m=>m.date===dateStr);
+      const hasPsych = psych.some(p=>p.date===dateStr);
       const isToday = dateStr===today;
       html+=`<div class="cal-day ${isToday?'today':''}"><span class="cal-day-num">${d}</span>`;
       if(hasTrain) html+='<span class="cal-dot train"></span>';
@@ -1316,13 +1755,14 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderTests() {
     const el = document.getElementById('list-tests');
-    if(data.tests.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><div class="empty-state-title">Sin tests</div>Registra tus primeros resultados físicos.</div>'; return; }
-    el.innerHTML = data.tests.map(t=>`
+    const items = getItems(data.tests);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><div class="empty-state-title">Sin tests</div>Registra tus primeros resultados físicos.</div>'; return; }
+    el.innerHTML = items.map(t=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${t.type}</div>
           <div class="list-item-meta">${t.date} · Resultado: <strong>${t.result}</strong>${t.weight?' · Peso: '+t.weight+'kg':''}</div>
-          ${t.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+t.notes+'</div>':''}
+          ${t.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+t.notes+'</div>':''}
         </div>
         <div class="list-item-actions"><button onclick="delTest('${t.id}')">Eliminar</button></div>
       </div>
@@ -1337,10 +1777,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
         <div class="list-item-content">
           <div class="list-item-title">${v.title}</div>
           <div class="list-item-meta">${v.date} · ${v.type}</div>
-          ${v.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+v.notes+'</div>':''}
+          ${v.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+v.notes+'</div>':''}
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <a href="${v.url}" target="_blank" rel="noopener" class="btn btn-sm" style="text-decoration:none;">Ver video →</a>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <a href="${v.url}" target="_blank" rel="noopener" class="btn btn-sm" style="text-decoration:none;">Ver →</a>
           <div class="list-item-actions"><button onclick="delVideo('${v.id}')">Eliminar</button></div>
         </div>
       </div>
@@ -1349,15 +1789,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderEquipment() {
     const el = document.getElementById('list-equipment');
-    if(data.equipment.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛡️</div><div class="empty-state-title">Sin equipamiento</div>Registra tu material de esgrima.</div>'; return; }
+    const items = getItems(data.equipment);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛡️</div><div class="empty-state-title">Sin equipamiento</div>Registra tu material de esgrima.</div>'; return; }
     const statusMap = {ok:'✅ Perfecto', warn:'⚠️ Revisar', bad:'❌ Cambiar'};
     const statusColor = {ok:'var(--win)', warn:'var(--warn)', bad:'var(--loss)'};
-    el.innerHTML = data.equipment.map(e=>`
+    el.innerHTML = items.map(e=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${e.item}${e.brand?' · '+e.brand:''}</div>
           <div class="list-item-meta">Comprado: ${e.date} · <span style="color:${statusColor[e.status]}">${statusMap[e.status]}</span></div>
-          ${e.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+e.notes+'</div>':''}
+          ${e.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+e.notes+'</div>':''}
         </div>
         <div class="list-item-actions"><button onclick="delEquip('${e.id}')">Eliminar</button></div>
       </div>
@@ -1366,7 +1807,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderNutrition() {
     const today = new Date().toISOString().split('T')[0];
-    const todayEntry = data.nutrition.find(n=>n.date===today);
+    const todayEntry = data.nutrition.find(n=>n.date===today && (n._athleteId===getAthleteId()||!n._athleteId));
     if(todayEntry) {
       document.getElementById('n-water').textContent = todayEntry.water;
       document.getElementById('n-protein').textContent = todayEntry.protein + 'g';
@@ -1379,13 +1820,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
       document.getElementById('n-veggies').textContent = '0';
     }
     const el = document.getElementById('list-nutrition');
-    const items = data.nutrition.slice(0,14);
+    const items = data.nutrition.filter(n => n._athleteId===getAthleteId()||!n._athleteId).slice(0,14);
     if(items.length===0) { el.innerHTML = '<div class="empty-state">Sin registros nutricionales.</div>'; return; }
     el.innerHTML = items.map(n=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${n.date}</div>
-          <div class="list-item-meta">💧 ${n.water} vasos · 🥩 ${n.protein}g proteína · 🍚 ${n.carbs}g carbs · 🥬 ${n.veggies} verduras${n.supp?' · 💊 '+n.supp:''}</div>
+          <div class="list-item-meta">💧 ${n.water} vasos · 🥩 ${n.protein}g · 🍚 ${n.carbs}g · 🥬 ${n.veggies}${n.supp?' · 💊 '+n.supp:''}</div>
         </div>
         <div class="list-item-actions"><button onclick="delNutri('${n.id}')">Eliminar</button></div>
       </div>
@@ -1394,16 +1835,17 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderPsychology() {
     const el = document.getElementById('list-psychology');
-    if(data.psychology.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧠</div><div class="empty-state-title">Sin ejercicios</div>Registra los ejercicios de tu psicólogo.</div>'; return; }
-    el.innerHTML = data.psychology.map(p=>`
+    const items = getItems(data.psychology);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧠</div><div class="empty-state-title">Sin ejercicios</div>Registra los ejercicios de tu psicólogo.</div>'; return; }
+    el.innerHTML = items.map(p=>`
       <div class="list-item" style="${p.completed?'opacity:.5;':''}">
         <div class="list-item-content">
           <div class="list-item-title">${p.exercise}</div>
           <div class="list-item-meta">${p.date} · ${p.category}${p.duration?' · '+p.duration+' min':''}</div>
-          ${p.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+p.notes+'</div>':''}
+          ${p.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+p.notes+'</div>':''}
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-          <label class="checkbox-wrap"><input type="checkbox" ${p.completed?'checked':''} onchange="togglePsych('${p.id}')"><span style="font-size:13px; color:var(--text2);">Listo</span></label>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <label class="checkbox-wrap"><input type="checkbox" ${p.completed?'checked':''} onchange="togglePsych('${p.id}')"><span style="font-size:12px; color:var(--text2);">Listo</span></label>
           <div class="list-item-actions"><button onclick="delPsych('${p.id}')">Eliminar</button></div>
         </div>
       </div>
@@ -1423,13 +1865,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     Object.keys(cats).forEach(cat=>{
       const items = data.music.filter(m=>m.category===cat);
       if(items.length>0) {
-        html += `<div style="margin-bottom:16px;"><div style="font-size:15px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;">${cats[cat].icon} ${cats[cat].label}</div>`;
+        html += `<div style="margin-bottom:14px;"><div style="font-size:14px; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:5px;">${cats[cat].icon} ${cats[cat].label}</div>`;
         html += items.map(m=>`
-          <a href="${m.url}" target="_blank" rel="noopener" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid var(--border); border-radius:8px; margin-bottom:6px; text-decoration:none; color:var(--text); background:var(--surface2); transition:all .2s;" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
-            <span style="font-size:14px;">${m.title}${m.artist?' — '+m.artist:''}</span>
+          <a href="${m.url}" target="_blank" rel="noopener" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:7px; margin-bottom:5px; text-decoration:none; color:var(--text); background:var(--surface2);" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
+            <span style="font-size:13px;">${m.title}${m.artist?' — '+m.artist:''}</span>
             <span style="color:var(--text3);">→</span>
           </a>
-          <div style="text-align:right; margin-bottom:6px;"><button class="btn btn-sm" style="font-size:12px; padding:3px 8px;" onclick="event.preventDefault(); delMusic('${m.id}')">Eliminar</button></div>
+          <div style="text-align:right; margin-bottom:5px;"><button class="btn btn-sm" style="font-size:11px; padding:2px 6px;" onclick="event.preventDefault(); delMusic('${m.id}')">Eliminar</button></div>
         `).join('');
         html += '</div>';
       }
@@ -1439,37 +1881,39 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderGoals() {
     const el = document.getElementById('list-goals');
-    if(data.goals.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin objetivos</div>Define tus metas SMART.</div>'; return; }
+    const items = getItems(data.goals);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin objetivos</div>Define tus metas SMART.</div>'; return; }
     const termLabels = {short:'Corto plazo', medium:'Mediano plazo', long:'Largo plazo'};
-    el.innerHTML = data.goals.map(g=>`
+    el.innerHTML = items.map(g=>`
       <div class="goal-card">
         <div class="goal-header">
           <div>
             <div class="goal-title">${g.title}</div>
             <div class="goal-meta">${g.category} · ${termLabels[g.term]}${g.deadline?' · Vence: '+g.deadline:''}</div>
           </div>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <input type="number" value="${g.progress}" min="0" max="100" style="width:60px; text-align:center; padding:4px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);" onchange="updateGoalProgress('${g.id}', this.value)">
-            <span style="font-size:12px; color:var(--text3);">%</span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="number" value="${g.progress}" min="0" max="100" style="width:50px; text-align:center; padding:3px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); font-size:12px;" onchange="updateGoalProgress('${g.id}', this.value)">
+            <span style="font-size:11px; color:var(--text3);">%</span>
             <button class="btn btn-sm" onclick="delGoal('${g.id}')">Eliminar</button>
           </div>
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%; background:${g.progress>=75?'var(--win)':g.progress>=40?'var(--accent)':'var(--warn)'}"></div></div>
-        ${g.plan?'<div style="margin-top:8px; font-size:13px; color:var(--text2);"><strong>Plan:</strong> '+g.plan+'</div>':''}
+        ${g.plan?'<div style="margin-top:6px; font-size:12px; color:var(--text2);"><strong>Plan:</strong> '+g.plan+'</div>':''}
       </div>
     `).join('');
   }
 
   function renderDiary() {
     const el = document.getElementById('list-diary');
-    if(data.diary.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📓</div><div class="empty-state-title">Sin entradas</div>Escribe sobre tu día, sensaciones y aprendizajes.</div>'; return; }
+    const items = getItems(data.diary);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📓</div><div class="empty-state-title">Sin entradas</div>Escribe sobre tu día, sensaciones y aprendizajes.</div>'; return; }
     const moodEmoji = {1:'😫',2:'😞',3:'😟',4:'😐',5:'🙂',6:'😊',7:'😃',8:'🤩',9:'🔥',10:'⚡'};
-    el.innerHTML = data.diary.map(d=>`
+    el.innerHTML = items.map(d=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${d.date} ${moodEmoji[d.mood]||'😐'}</div>
           <div class="list-item-meta">Ánimo: ${d.mood}/10 · Energía: ${d.energy}/10 · Sueño: ${d.sleep}/10</div>
-          <div style="margin-top:6px; font-size:13px; color:var(--text2); line-height:1.5;">${d.text}</div>
+          <div style="margin-top:5px; font-size:12px; color:var(--text2); line-height:1.5;">${d.text}</div>
         </div>
         <div class="list-item-actions"><button onclick="delDiary('${d.id}')">Eliminar</button></div>
       </div>
@@ -1478,15 +1922,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderInjuries() {
     const el = document.getElementById('list-injuries');
-    if(data.injuries.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩹</div><div class="empty-state-title">Sin registros</div>Buen signo. Pero registra cualquier molestia.</div>'; return; }
+    const items = getItems(data.injuries);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩹</div><div class="empty-state-title">Sin registros</div>Buen signo. Pero registra cualquier molestia.</div>'; return; }
     const statusLabels = {active:'🔴 Activa', recovered:'🟢 Recuperada', chronic:'🟡 Crónica'};
-    el.innerHTML = data.injuries.map(i=>`
+    el.innerHTML = items.map(i=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${i.zone} · Intensidad ${i.intensity}/10</div>
           <div class="list-item-meta">${i.date} · ${statusLabels[i.status]}</div>
-          ${i.desc?'<div style="font-size:12px; color:var(--text2); margin-top:2px;">'+i.desc+'</div>':''}
-          ${i.treatment?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">Tratamiento: '+i.treatment+'</div>':''}
+          ${i.desc?'<div style="font-size:11px; color:var(--text2); margin-top:2px;">'+i.desc+'</div>':''}
+          ${i.treatment?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">Tratamiento: '+i.treatment+'</div>':''}
         </div>
         <div class="list-item-actions"><button onclick="delInjury('${i.id}')">Eliminar</button></div>
       </div>
@@ -1495,13 +1940,14 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 
   function renderRanking() {
     const el = document.getElementById('list-ranking');
-    if(data.ranking.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏅</div><div class="empty-state-title">Sin rankings</div>Registra tu posición en cada actualización.</div>'; return; }
-    el.innerHTML = data.ranking.map(r=>`
+    const items = getItems(data.ranking);
+    if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏅</div><div class="empty-state-title">Sin rankings</div>Registra tu posición en cada actualización.</div>'; return; }
+    el.innerHTML = items.map(r=>`
       <div class="list-item">
         <div class="list-item-content">
           <div class="list-item-title">${r.type}</div>
           <div class="list-item-meta">${r.date} · Posición: <strong>#${r.position}</strong> · Puntos: <strong>${r.points}</strong></div>
-          ${r.notes?'<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+r.notes+'</div>':''}
+          ${r.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+r.notes+'</div>':''}
         </div>
         <div class="list-item-actions"><button onclick="delRanking('${r.id}')">Eliminar</button></div>
       </div>
@@ -1513,15 +1959,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     dl.innerHTML = data.opponents.map(o=>`<option value="${o.name}">`).join('');
   }
 
+  // ═══════════════════════════════════════════════════════════════
+  //  BOOT
+  // ═══════════════════════════════════════════════════════════════
   load();
-  renderAll();
+  if(data.setup && data.setup.done) {
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    initApp();
+  }
 })();
-</script>
-<script>
-if('serviceWorker' in navigator){
-  const swUrl = URL.createObjectURL(new Blob([atob('CmNvbnN0IENBQ0hFX05BTUUgPSAnZmVuY2luZy1wcm8tdjEnOwpjb25zdCB1cmxzVG9DYWNoZSA9IFtzZWxmLmxvY2F0aW9uLmhyZWZdOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2luc3RhbGwnLCBlID0+IHsKICBlLndhaXRVbnRpbChjYWNoZXMub3BlbihDQUNIRV9OQU1FKS50aGVuKGNhY2hlID0+IGNhY2hlLmFkZEFsbCh1cmxzVG9DYWNoZSkpKTsKICBzZWxmLnNraXBXYWl0aW5nKCk7Cn0pOwpzZWxmLmFkZEV2ZW50TGlzdGVuZXIoJ2FjdGl2YXRlJywgZSA9PiB7CiAgZS53YWl0VW50aWwoc2VsZi5jbGllbnRzLmNsYWltKCkpOwp9KTsKc2VsZi5hZGRFdmVudExpc3RlbmVyKCdmZXRjaCcsIGUgPT4gewogIGUucmVzcG9uZFdpdGgoY2FjaGVzLm1hdGNoKGUucmVxdWVzdCkudGhlbihyID0+IHIgfHwgZmV0Y2goZS5yZXF1ZXN0KSkpOwp9KTsK')], {type:'application/javascript'}));
-  navigator.serviceWorker.register(swUrl).catch(()=>{});
-}
 </script>
 </body>
 </html>
