@@ -6,12 +6,14 @@
 - ✅ **3 armas**: Florete, Espada, Sable (teoría, reglamento, táctica, tests y equipamiento específicos)
 - ✅ **2 modos**: Atleta (personal) y Entrenador (gestión de equipo)
 - ✅ **17 secciones**: entrenamientos, competencias, combates, oponentes, tests físicos, video análisis, equipamiento, nutrición, psicología, música, objetivos, diario, teoría, lesiones, ranking y calendario
+- ✅ **Cambiar perfil**: Botón en la barra lateral para volver a la pantalla de inicio y cambiar de arma o modo
 
 ### Cómo usar
 1. Abre el archivo `index.html` con Chrome, Safari o Edge
 2. Selecciona tu arma (Florete/Espada/Sable)
 3. Selecciona tu modo (Atleta o Entrenador)
 4. ¡Listo! Todo se guarda en tu dispositivo (offline)
+5. Para cambiar de arma o modo más tarde, usa el botón **⚙️ Cambiar perfil** en la barra lateral
 
 ### Cómo instalar como app en el celular
 **Android (Chrome):**

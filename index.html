@@ -254,7 +254,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="sidebar-header">
       <h1>⚔️ Fencing Pro v2</h1>
       <div class="sub" id="sidebar-sub">Florete · Cadete</div>
-      <span class="badge-mode athlete" id="mode-badge">Atleta</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <span class="badge-mode athlete" id="mode-badge">Atleta</span>
+        <button class="btn btn-sm" onclick="showSetup()" style="font-size:11px; padding:4px 10px;">⚙️ Cambiar perfil</button>
+      </div>
     </div>
     <nav class="sidebar-nav" id="sidebar-nav">
       <!-- Se llena dinámicamente por JS -->
@@ -1020,6 +1023,18 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('main-app').style.display = 'flex';
     initApp();
+  };
+
+  window.showSetup = function() {
+    // Pre-seleccionar valores actuales
+    document.querySelectorAll('.weapon-opt').forEach(o => {
+      o.classList.toggle('selected', o.dataset.weapon === data.setup.weapon);
+    });
+    document.querySelectorAll('.mode-opt').forEach(o => {
+      o.classList.toggle('selected', o.dataset.mode === data.setup.mode);
+    });
+    document.getElementById('main-app').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'flex';
   };
 
   // ═══════════════════════════════════════════════════════════════
