@@ -863,11 +863,11 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   //  SUPABASE & AUTH
   // ═══════════════════════════════════════════════════════════════
   async function initSupabase() {
-    if (!window.supabaseJs) {
+    if (!window.supabase) {
       console.error('Supabase JS no cargado');
       return false;
     }
-    supabase = window.supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return true;
   }
 
