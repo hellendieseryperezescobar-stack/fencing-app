@@ -13,7 +13,7 @@
 <script>
 const SUPABASE_URL = 'https://lglujkcpkeybchhpckns.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbHVqa2Nwa2V5YmNoaHBja25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NDc0NTIsImV4cCI6MjEwMTQyMzQ1Mn0.J0qSgX5yudbRqCGu_TECocyPPFEZNt3uzfd68obYbtY';
-</script>  
+</script>
 <style>
 :root {
   --bg:#0f0f12; --surface:#1a1a20; --surface2:#22222a; --surface3:#2a2a35; --border:#33333d;
@@ -27,12 +27,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
 ::-webkit-scrollbar { width:6px; }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
-
 .app { display:flex; min-height:100vh; }
-.sidebar {
-  width:260px; background:var(--surface); border-right:1px solid var(--border);
-  position:fixed; height:100vh; overflow-y:auto; z-index:100; transition:transform .3s;
-}
+.sidebar { width:260px; background:var(--surface); border-right:1px solid var(--border); position:fixed; height:100vh; overflow-y:auto; z-index:100; transition:transform .3s; }
 .sidebar-header { padding:20px; border-bottom:1px solid var(--border); }
 .sidebar-header h1 { font-size:17px; font-weight:600; color:var(--accent); letter-spacing:.5px; }
 .sidebar-header .sub { font-size:11px; color:var(--text3); margin-top:3px; }
@@ -48,32 +44,21 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .mobile-header { display:none; padding:14px 16px; background:var(--surface); border-bottom:1px solid var(--border); align-items:center; justify-content:space-between; }
 .mobile-header h1 { font-size:15px; color:var(--accent); }
 .menu-btn { background:none; border:none; color:var(--text); font-size:20px; cursor:pointer; }
-
-@media(max-width:900px){
-  .sidebar { transform:translateX(-100%); }
-  .sidebar.open { transform:translateX(0); }
-  .main { margin-left:0; padding:14px; }
-  .mobile-header { display:flex; }
-}
-
+@media(max-width:900px){ .sidebar { transform:translateX(-100%); } .sidebar.open { transform:translateX(0); } .main { margin-left:0; padding:14px; } .mobile-header { display:flex; } }
 .section { display:none; animation:fadeIn .3s ease; }
 .section.active { display:block; }
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
 .page-title { font-size:22px; font-weight:600; margin-bottom:4px; }
 .page-sub { color:var(--text3); font-size:13px; margin-bottom:18px; }
-
 .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:14px; }
 .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
 .card-title { font-size:15px; font-weight:600; }
 .card-sub { font-size:12px; color:var(--text3); margin-top:2px; }
-
 .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:18px; }
 .stat-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 14px; text-align:center; transition:transform .2s; }
 .stat-box:hover { transform:translateY(-2px); border-color:var(--surface3); }
 .stat-value { font-size:28px; font-weight:600; line-height:1; margin-bottom:4px; font-variant-numeric:tabular-nums; }
 .stat-label { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.5px; }
-
 .btn { padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--text); cursor:pointer; font-weight:500; font-size:12px; transition:all .2s; }
 .btn:hover { background:var(--surface3); }
 .btn-primary { background:var(--accent); color:#1a1500; border-color:var(--accent); }
@@ -81,18 +66,13 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .btn-danger { color:var(--loss); border-color:var(--loss); background:rgba(248,113,113,.08); }
 .btn-sm { padding:4px 10px; font-size:11px; }
 .btn-ghost { background:transparent; border-color:transparent; }
-
 .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
 .form-group { display:flex; flex-direction:column; gap:3px; }
 .form-group.full { grid-column:1/-1; }
 .form-group label { font-size:11px; color:var(--text2); font-weight:500; text-transform:uppercase; letter-spacing:.3px; }
-.form-group input, .form-group select, .form-group textarea {
-  padding:9px 11px; border:1px solid var(--border); border-radius:8px; background:var(--bg);
-  color:var(--text); font-size:13px; outline:none; transition:border-color .2s;
-}
+.form-group input, .form-group select, .form-group textarea { padding:9px 11px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); font-size:13px; outline:none; transition:border-color .2s; }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--accent); }
 .form-group textarea { resize:vertical; min-height:70px; }
-
 .list-item { display:flex; justify-content:space-between; align-items:flex-start; padding:12px; border:1px solid var(--border); border-radius:10px; margin-bottom:7px; background:var(--surface2); transition:all .2s; }
 .list-item:hover { border-color:var(--surface3); }
 .list-item-content { flex:1; min-width:0; }
@@ -102,7 +82,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .list-item:hover .list-item-actions { opacity:1; }
 .list-item-actions button { padding:3px 7px; font-size:10px; border-radius:5px; border:1px solid var(--border); background:var(--surface3); cursor:pointer; color:var(--text2); }
 .list-item-actions button:hover { background:var(--surface); color:var(--text); }
-
 .badge { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:5px; font-size:10px; font-weight:600; }
 .badge-win { background:rgba(74,222,128,.12); color:var(--win); }
 .badge-loss { background:rgba(248,113,113,.12); color:var(--loss); }
@@ -110,10 +89,8 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .badge-direct { background:rgba(167,139,250,.12); color:var(--accent4); }
 .badge-team { background:rgba(232,197,71,.12); color:var(--accent); }
 .badge-ind { background:rgba(176,176,189,.12); color:var(--text2); }
-
 .match-score { display:flex; align-items:center; gap:5px; font-size:18px; font-weight:700; font-family:var(--mono); }
 .score-me { color:var(--text); } .score-sep { color:var(--text3); } .score-them { color:var(--text3); }
-
 .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:200; padding:16px; }
 .modal-overlay.active { display:flex; }
 .modal { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.5); }
@@ -121,43 +98,34 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .modal-title { font-size:16px; font-weight:600; }
 .modal-close { background:none; border:none; font-size:20px; cursor:pointer; color:var(--text3); width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:8px; }
 .modal-close:hover { background:var(--surface2); color:var(--text); }
-
 .filter-bar { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
 .filter-chip { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:var(--surface2); font-size:12px; cursor:pointer; color:var(--text2); transition:all .2s; }
 .filter-chip:hover { border-color:var(--text3); }
 .filter-chip.active { background:var(--accent); color:#1a1500; border-color:var(--accent); font-weight:600; }
-
 .empty-state { text-align:center; padding:40px 16px; color:var(--text3); }
 .empty-state-icon { font-size:36px; margin-bottom:10px; opacity:.4; }
 .empty-state-title { font-size:14px; font-weight:600; color:var(--text2); margin-bottom:3px; }
-
 .checkbox-wrap { display:flex; align-items:center; gap:6px; cursor:pointer; }
 .checkbox-wrap input { width:16px; height:16px; accent-color:var(--accent); }
-
 .progress-bar { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; margin-top:5px; }
 .progress-fill { height:100%; border-radius:3px; transition:width .4s ease; }
-
 .tabs { display:flex; gap:3px; border-bottom:1px solid var(--border); margin-bottom:14px; }
 .tab { padding:9px 14px; border:none; background:none; color:var(--text3); cursor:pointer; font-size:13px; font-weight:500; border-bottom:2px solid transparent; margin-bottom:-1px; }
 .tab:hover { color:var(--text2); }
 .tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-
 .theory-section { line-height:1.7; font-size:13px; color:var(--text2); }
 .theory-section h3 { color:var(--accent); font-size:15px; margin:18px 0 8px; }
 .theory-section p { margin-bottom:8px; }
 .theory-section ul { margin-left:18px; margin-bottom:10px; }
 .theory-section li { margin-bottom:5px; }
-
 .goal-card { border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:8px; background:var(--surface2); }
 .goal-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
 .goal-title { font-weight:600; font-size:13px; }
 .goal-meta { font-size:11px; color:var(--text3); }
-
 .nutri-track { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:10px; }
 .nutri-item { text-align:center; padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface2); }
 .nutri-val { font-size:18px; font-weight:600; color:var(--accent2); }
 .nutri-label { font-size:10px; color:var(--text3); margin-top:3px; }
-
 .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
 .cal-day-header { text-align:center; font-size:10px; color:var(--text3); padding:6px; text-transform:uppercase; }
 .cal-day { aspect-ratio:1; border:1px solid var(--border); border-radius:7px; padding:4px; font-size:12px; cursor:pointer; position:relative; background:var(--surface2); display:flex; flex-direction:column; align-items:flex-start; min-height:50px; }
@@ -170,8 +138,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .cal-dot.comp { background:var(--accent); }
 .cal-dot.match { background:var(--win); }
 .cal-dot.psych { background:var(--accent4); }
-
-/* Selector inicial */
 .setup-screen { position:fixed; inset:0; background:var(--bg); z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; }
 .setup-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:32px 28px; width:100%; max-width:420px; text-align:center; }
 .setup-card h2 { font-size:20px; margin-bottom:6px; color:var(--accent); }
@@ -183,35 +149,24 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 .weapon-opt .icon { font-size:32px; margin-bottom:6px; }
 .weapon-opt .name { font-size:13px; font-weight:600; }
 .weapon-opt .desc { font-size:10px; color:var(--text3); margin-top:2px; }
-
 .mode-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px; }
 .mode-opt { padding:14px; border:2px solid var(--border); border-radius:12px; cursor:pointer; background:var(--surface2); transition:all .2s; }
 .mode-opt:hover { border-color:var(--text3); }
 .mode-opt.selected { border-color:var(--accent2); background:rgba(78,205,196,.08); }
 .mode-opt .name { font-size:13px; font-weight:600; }
 .mode-opt .desc { font-size:11px; color:var(--text3); margin-top:3px; }
-
 .athlete-selector { display:flex; gap:8px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
 .athlete-chip { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:var(--surface2); font-size:12px; cursor:pointer; color:var(--text2); }
 .athlete-chip.active { background:var(--accent); color:#1a1500; border-color:var(--accent); font-weight:600; }
-
 .comparison-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
 .comparison-table th { text-align:left; padding:8px; color:var(--text2); font-weight:600; border-bottom:1px solid var(--border); background:var(--surface2); }
 .comparison-table td { padding:8px; border-bottom:1px solid var(--border); color:var(--text); }
 .comparison-table tr:hover td { background:var(--surface2); }
-
-@media(max-width:600px){
-  .form-row { grid-template-columns:1fr; }
-  .stats-grid { grid-template-columns:repeat(2,1fr); }
-  .nutri-track { grid-template-columns:repeat(2,1fr); }
-  .weapon-options { grid-template-columns:1fr; }
-  .list-item-actions { opacity:1; }
-}
+@media(max-width:600px){ .form-row { grid-template-columns:1fr; } .stats-grid { grid-template-columns:repeat(2,1fr); } .nutri-track { grid-template-columns:repeat(2,1fr); } .weapon-options { grid-template-columns:1fr; } .list-item-actions { opacity:1; } }
 </style>
 </head>
 <body>
 
-<!-- SETUP SCREEN -->
 <div class="setup-screen" id="setup-screen">
   <div class="setup-card" id="setup-card-content">
     <div style="font-size:48px; margin-bottom:12px;">🤺</div>
@@ -224,7 +179,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div class="app" id="main-app" style="display:none;">
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -248,7 +202,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div style="width:28px"></div>
     </div>
 
-    <!-- ATHLETE SELECTOR (coach mode) -->
     <div id="athlete-selector-bar" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <span style="font-size:12px; color:var(--text3); font-weight:600; text-transform:uppercase;">Atleta seleccionado</span>
@@ -257,7 +210,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div class="athlete-selector" id="athlete-chips"></div>
     </div>
 
-    <!-- DASHBOARD ATHLETE -->
     <div class="section active" id="dashboard-athlete">
       <div class="page-title">Dashboard</div>
       <div class="page-sub" id="dash-athlete-sub">Tu rendimiento en un vistazo</div>
@@ -283,7 +235,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       </div>
     </div>
 
-    <!-- DASHBOARD COACH -->
     <div class="section" id="dashboard-coach">
       <div class="page-title">Panel del Entrenador</div>
       <div class="page-sub">Vista general de tu equipo</div>
@@ -305,7 +256,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       </div>
     </div>
 
-    <!-- ATHLETES (coach CRUD) -->
     <div class="section" id="athletes">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Gestión de Atletas</div><div class="page-sub">Crea y administra los perfiles de tu equipo</div></div>
@@ -314,7 +264,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-athletes-crud"></div>
     </div>
 
-    <!-- TRAININGS -->
     <div class="section" id="trainings">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Entrenamientos</div><div class="page-sub">Registra cada sesión de trabajo</div></div>
@@ -331,7 +280,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-trainings"></div>
     </div>
 
-    <!-- COMPETITIONS -->
     <div class="section" id="competitions">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Competencias</div><div class="page-sub">Torneos, resultados y posiciones</div></div>
@@ -340,7 +288,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-competitions"></div>
     </div>
 
-    <!-- MATCHES -->
     <div class="section" id="matches">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Combates</div><div class="page-sub">Registro completo tipo Fencing Time</div></div>
@@ -356,7 +303,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-matches"></div>
     </div>
 
-    <!-- OPPONENTS -->
     <div class="section" id="opponents">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Oponentes</div><div class="page-sub">Base de datos de rivales con historial H2H</div></div>
@@ -365,7 +311,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-opponents"></div>
     </div>
 
-    <!-- CALENDAR -->
     <div class="section" id="calendar">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Calendario</div><div class="page-sub">Planificación de temporada</div></div>
@@ -384,7 +329,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div class="calendar-grid" id="cal-grid"></div>
     </div>
 
-    <!-- TESTS -->
     <div class="section" id="tests">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Tests de Rendimiento</div><div class="page-sub" id="tests-sub">Métricas objetivas de progreso físico</div></div>
@@ -397,7 +341,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-tests"></div>
     </div>
 
-    <!-- VIDEO -->
     <div class="section" id="video">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Video Análisis</div><div class="page-sub">Estudia combates propios y de rivales</div></div>
@@ -406,7 +349,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-video"></div>
     </div>
 
-    <!-- EQUIPMENT -->
     <div class="section" id="equipment">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Equipamiento</div><div class="page-sub" id="equip-sub">Control de material y mantenimiento</div></div>
@@ -415,7 +357,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-equipment"></div>
     </div>
 
-    <!-- NUTRITION -->
     <div class="section" id="nutrition">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Nutrición & Hidratación</div><div class="page-sub">Seguimiento diario de alimentación</div></div>
@@ -433,7 +374,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-nutrition"></div>
     </div>
 
-    <!-- PSYCHOLOGY -->
     <div class="section" id="psychology">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Psicología</div><div class="page-sub">Ejercicios mentales del psicólogo</div></div>
@@ -442,7 +382,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-psychology"></div>
     </div>
 
-    <!-- MUSIC -->
     <div class="section" id="music">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Música</div><div class="page-sub">Playlists por momento de entrenamiento</div></div>
@@ -451,7 +390,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-music"></div>
     </div>
 
-    <!-- GOALS -->
     <div class="section" id="goals">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Objetivos</div><div class="page-sub">Metas SMART a corto, mediano y largo plazo</div></div>
@@ -460,7 +398,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-goals"></div>
     </div>
 
-    <!-- DIARY -->
     <div class="section" id="diary">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Diario de Atleta</div><div class="page-sub">Reflexiones diarias, sensaciones y estado de ánimo</div></div>
@@ -469,7 +406,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-diary"></div>
     </div>
 
-    <!-- THEORY -->
     <div class="section" id="theory">
       <div class="page-title">Teoría & Reglamento</div>
       <div class="page-sub" id="theory-sub">Material de estudio específico para tu arma</div>
@@ -485,7 +421,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div class="card theory-section" id="theory-rules" style="display:none;"></div>
     </div>
 
-    <!-- INJURIES -->
     <div class="section" id="injuries">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Lesiones & Prevención</div><div class="page-sub">Registro de molestias y plan de prevención</div></div>
@@ -503,7 +438,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       <div id="list-injuries"></div>
     </div>
 
-    <!-- RANKING -->
     <div class="section" id="ranking">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Ranking</div><div class="page-sub">Seguimiento de posición nacional e internacional</div></div>
@@ -515,7 +449,6 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   </main>
 </div>
 
-<!-- MODALS -->
 <div class="modal-overlay" id="modal-athlete">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Invitar atleta</h3><button class="modal-close" onclick="closeModal('modal-athlete')">&times;</button></div>
@@ -668,14 +601,14 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="modal-header"><h3 class="modal-title">Registro nutricional</h3><button class="modal-close" onclick="closeModal('modal-nutri')">&times;</button></div>
     <div class="form-row">
       <div class="form-group"><label>Fecha</label><input type="date" id="n-date"></div>
-      <div class="form-group"><label>Vasos de agua</label><input type="number" id="n-water" placeholder="8" min="0"></div>
+      <div class="form-group"><label>Vasos de agua</label><input type="number" id="n-water-input" placeholder="8" min="0"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Proteínas (g)</label><input type="number" id="n-protein" placeholder="Ej: 80"></div>
-      <div class="form-group"><label>Carbohidratos (g)</label><input type="number" id="n-carbs" placeholder="Ej: 200"></div>
+      <div class="form-group"><label>Proteínas (g)</label><input type="number" id="n-protein-input" placeholder="Ej: 80"></div>
+      <div class="form-group"><label>Carbohidratos (g)</label><input type="number" id="n-carbs-input" placeholder="Ej: 200"></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Porciones de verduras</label><input type="number" id="n-veggies" placeholder="Ej: 3" min="0"></div>
+      <div class="form-group"><label>Porciones de verduras</label><input type="number" id="n-veggies-input" placeholder="Ej: 3" min="0"></div>
       <div class="form-group"><label>Suplementos</label><input type="text" id="n-supp" placeholder="Ej: Creatina, Omega 3"></div>
     </div>
     <div class="form-group full"><label>Observaciones</label><textarea id="n-notes" placeholder="¿Cómo te sentiste hoy?"></textarea></div>
@@ -813,6 +746,882 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
 <datalist id="dl-opponents"></datalist>
 
+<script>
+(function(){
+  // ═══════════════════════════════════════════════════════════════
+  //  VARIABLES GLOBALES
+  // ═══════════════════════════════════════════════════════════════
+  let supabase = null;
+  let currentUser = null;
+  let userProfile = null;
+
+  const data = {
+    trainings: [], competitions: [], matches: [], opponents: [],
+    tests: [], videos: [], equipment: [], nutrition: [],
+    psychology: [], music: [], goals: [], diary: [],
+    injuries: [], ranking: [], athletes: [],
+    setup: { mode: 'athlete', weapon: 'florete' },
+    currentAthleteId: null
+  };
+
+  const filters = { trainings: 'all', matches: 'all' };
+  let calDate = new Date();
+
+  const navItemsAthlete = [
+    {id:'dashboard-athlete', label:'Dashboard', icon:'📊'},
+    {id:'trainings', label:'Entrenamientos', icon:'🤺'},
+    {id:'competitions', label:'Competencias', icon:'🏆'},
+    {id:'matches', label:'Combates', icon:'⚔️'},
+    {id:'opponents', label:'Oponentes', icon:'🎯'},
+    {id:'calendar', label:'Calendario', icon:'📅'},
+    {id:'tests', label:'Tests', icon:'📈'},
+    {id:'video', label:'Video', icon:'🎬'},
+    {id:'equipment', label:'Equipamiento', icon:'🛡️'},
+    {id:'nutrition', label:'Nutrición', icon:'🥗'},
+    {id:'psychology', label:'Psicología', icon:'🧠'},
+    {id:'music', label:'Música', icon:'🎧'},
+    {id:'goals', label:'Objetivos', icon:'🎯'},
+    {id:'diary', label:'Diario', icon:'📓'},
+    {id:'theory', label:'Teoría', icon:'📖'},
+    {id:'injuries', label:'Lesiones', icon:'🩹'},
+    {id:'ranking', label:'Ranking', icon:'🏅'}
+  ];
+
+  const navItemsCoach = [
+    {id:'dashboard-coach', label:'Panel Coach', icon:'👨‍🏫'},
+    {id:'athletes', label:'Atletas', icon:'👥'},
+    {id:'trainings', label:'Entrenamientos', icon:'🤺'},
+    {id:'competitions', label:'Competencias', icon:'🏆'},
+    {id:'matches', label:'Combates', icon:'⚔️'},
+    {id:'calendar', label:'Calendario', icon:'📅'},
+    {id:'tests', label:'Tests', icon:'📈'},
+    {id:'goals', label:'Objetivos', icon:'🎯'},
+    {id:'theory', label:'Teoría', icon:'📖'}
+  ];
+
+  const testTypes = [
+    'Test de agilidad (5-10-5)','Sprint 10m','Sprint 30m','Salto vertical (cm)',
+    'Salto horizontal (cm)','Flexibilidad (cm)','Plancha abdominal (seg)',
+    'Test de Leger (VO2max)','Test de Ruffier','Test de reacción (ms)'
+  ];
+
+  const equipItems = [
+    'Máscara','Chaqueta','Pantalón','Guante','Peto eléctrico','Cable de máquina',
+    'Florete completo','Espada completa','Sable completo','Zapatillas','Calcetines'
+  ];
+
+  const theoryContent = {
+    florete: {
+      positions: `<h3>Posiciones de Florete</h3><p><strong>En guardia:</strong> Piernas separadas a la altura de los hombros, pie delantero apuntando al oponente, pie trasero perpendicular. Rodillas flexionadas, torso erguido.</p><p><strong>Posición de la mano:</strong> El pulgar en el lado plano de la empuñadura, dedos relajados. La punta del florete apunta hacia el hombro del oponente (línea de amenaza).</p><ul><li><strong>Quinta:</strong> Mano en pronación, punta arriba. Protege la cabeza y el flanco exterior.</li><li><strong>Cuarta:</strong> Mano en supinación, punta arriba. Protege el interior del cuerpo.</li><li><strong>Sexta:</strong> Mano en pronación, punta abajo. Protege el flanco exterior bajo.</li></ul>`,
+      priority: `<h3>Prioridad en Florete</h3><p>El florete es el único arma con <strong>prioridad de ataque</strong>. Quien inicia el ataque primero tiene derecho al toque, salvo que:</p><ul><li>El ataque falle (falla o pared).</li><li>El atacante detenga su acción (cambio de ritmo, parada).</li><li>El defensor ejecute una <strong>parada-riposte</strong> válida.</li></ul><p><strong>Regla de la extensión del brazo:</strong> El ataque debe iniciarse con el brazo extendido. Un ataque con brazo flexionado puede ser cedido como preparación.</p>`,
+      tactics: `<h3>Táctica de Florete</h3><p><strong>Distancia:</strong> Controla la distancia de combate. Acorta para atacar, alarga para defenderte.</p><p><strong>Segundas intenciones:</strong> El florete es el reino de las segundas intenciones. Ataque falso para provocar la parada del rival y luego contra-ripostar.</p><ul><li><strong>Appel:</strong> Golpe de pie para romper el ritmo.</li><li><strong>Beat attack:</strong> Golpe en la hoja para desplazar la punta rival.</li><li><strong>Press:</strong> Presionar la hoja del rival para tomar el centro.</li></ul>`,
+      rules: `<h3>Reglamento FIE - Florete</h3><p><strong>Blanco válido:</strong> Torso (incluyendo espalda y cuello). No valen brazos, cabeza ni piernas.</p><p><strong>Tiempo de un asalto:</strong> 3 minutos. Quien llegue a 5 touches gana (poule) o 15 (directas).</p><p><strong>Tarjetas:</strong> Amarilla (advertencia), Roja (toque en contra), Negra (descalificación).</p><p><strong>Material obligatorio:</strong> Máscara con conductor eléctrico, chaqueta 800N, peto eléctrico, guante con recubrimiento.</p>`
+    },
+    espada: {
+      positions: `<h3>Posiciones de Espada</h3><p><strong>En guardia:</strong> Similar al florete pero más baja y compacta. El peso está más centrado porque no hay prioridad: todo el cuerpo es blanco.</p><p><strong>Posición de la mano:</strong> Más relajada que en florete. La punta apunta al centro del oponente.</p><ul><li><strong>Primera:</strong> Mano en pronación, punta abajo. Protege la pierna delantera.</li><li><strong>Segunda:</strong> Mano en pronación, punta arriba. Protege el flanco exterior alto.</li><li><strong>Tercera:</strong> Mano en pronación, punta al frente. Posición neutral.</li></ul>`,
+      priority: `<h3>Prioridad en Espada</h3><p>La espada <strong>no tiene prioridad</strong>. Si ambos tocan simultáneamente, ambos reciben el punto (doble touch).</p><p>Esto cambia completamente la táctica: no importa quién ataca primero, sino quién toca sin ser tocado.</p><p><strong>Consejo clave:</strong> En espada, la defensa es tan importante como el ataque. Un error de distancia cuesta un punto.</p>`,
+      tactics: `<h3>Táctica de Espada</h3><p><strong>Control de distancia:</strong> Es aún más crítico que en florete. La extensión del brazo del rival determina su alcance máximo.</p><p><strong>Contrataque:</strong> Muy efectiva. Deja que el rival ataque, esquiva ligeramente y toca en el momento de su extensión máxima.</p><ul><li><strong>Flick:</strong> Toque con la punta flexible doblando la hoja. Requiere perfecto control de distancia.</li><li><strong>Stop-hit:</strong> Toque en el avance del oponente antes de que complete su acción.</li><li><strong>Second intention:</strong> Ataque preparado para esquivar la respuesta.</li></ul>`,
+      rules: `<h3>Reglamento FIE - Espada</h3><p><strong>Blanco válido:</strong> Todo el cuerpo, incluyendo máscara, manos y pies.</p><p><strong>Tiempo de un asalto:</strong> 3 minutos. 5 touches (poule) o hasta 15 (directas), con diferencia de 1 en el último minuto.</p><p><strong>Doble touch:</strong> Si ambos tocan dentro de 40ms, ambos reciben punto. En directas, si el marcador queda empatado tras el tiempo, se juega un minuto de desempate.</p>`
+    },
+    sable: {
+      positions: `<h3>Posiciones de Sable</h3><p><strong>En guardia:</strong> Más dinámica y móvil que en florete/espada. Los asaltos son rápidos y explosivos.</p><p><strong>Posición de la mano:</strong> Similar al florete pero con más libertad de movimiento lateral.</p><ul><li><strong>Tercera:</strong> Posición base, mano en pronación.</li><li><strong>Cuarta:</strong> Protege el interior, usada frecuentemente en defensa.</li><li><strong>Quinta:</strong> Protege la cabeza, fundamental en sable.</li></ul>`,
+      priority: `<h3>Prioridad en Sable</h3><p>El sable tiene <strong>prioridad de ataque</strong> como el florete, pero con diferencias clave:</p><ul><li>El ataque se considera iniciado desde el <strong>momento en que el brazo comienza a extenderse hacia adelante</strong>, no necesariamente con el brazo totalmente extendido.</li><li>Un ataque con paso adelante mantiene la prioridad si continúa la extensión.</li><li>La acción del brazo tiene prioridad sobre la del pie.</li></ul>`,
+      tactics: `<h3>Táctica de Sable</h3><p><strong>Ritmo:</strong> El sable es el arma más rápida. El ritmo y la explosividad son clave.</p><p><strong>Ataque en avance:</strong> El ataque con paso adelante es la acción más común y efectiva.</p><ul><li><strong>Flunge:</strong> Flecha (fleche) combinada con lunge. Máxima extensión y velocidad.</li><li><strong>Parry-riposte rápida:</strong> En sable, las paradas deben ser rápidas y seguidas inmediatamente del riposte.</li><li><strong>Attack au fer:</strong> Golpe en la hoja del rival para desviarla y atacar.</li></ul>`,
+      rules: `<h3>Reglamento FIE - Sable</h3><p><strong>Blanco válido:</strong> Todo el cuerpo por encima de la cintura, incluyendo máscara y brazos. No valen piernas ni pies.</p><p><strong>Tiempo de un asalto:</strong> Igual que florete: 3 minutos, 5 o 15 touches.</p><p><strong>Material:</strong> Chaqueta 800N, pantalón 800N, máscara con recubrimiento eléctrico, guante con recubrimiento metálico en el dorso.</p>`
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  UTILIDADES
+  // ═══════════════════════════════════════════════════════════════
+  function uuid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  function saveLocal() {
+    localStorage.setItem('fencing_data', JSON.stringify(data));
+  }
+
+  function loadLocal() {
+    const saved = localStorage.getItem('fencing_data');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        Object.keys(parsed).forEach(k => { if (data[k] !== undefined) data[k] = parsed[k]; });
+      } catch(e) { console.error('Error cargando localStorage', e); }
+    }
+  }
+
+  function todayStr() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  SUPABASE & AUTH
+  // ═══════════════════════════════════════════════════════════════
+  async function initSupabase() {
+    if (!window.supabaseJs) {
+      console.error('Supabase JS no cargado');
+      return false;
+    }
+    supabase = window.supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return true;
+  }
+
+  async function initAuth() {
+    loadLocal();
+    const ok = await initSupabase();
+    if (!ok) {
+      document.getElementById('setup-msg').textContent = 'Error cargando Supabase. Verifica tu conexión.';
+      return;
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      await loadUserProfile();
+    } else {
+      showLoginScreen();
+    }
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user;
+        await loadUserProfile();
+      } else if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        userProfile = null;
+        showLoginScreen();
+      }
+    });
+  }
+
+  async function loadUserProfile() {
+    if (!currentUser) return;
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', currentUser.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error cargando perfil:', error);
+    }
+
+    if (profile && profile.full_name && profile.role) {
+      userProfile = profile;
+      data.setup.mode = profile.role;
+      data.setup.weapon = profile.weapon || 'florete';
+      data.setup.category = profile.category || 'Cadete';
+      data.setup.country = profile.country || 'VEN';
+      data.setup.name = profile.full_name;
+
+      // Si es coach, cargar atletas
+      if (profile.role === 'coach') {
+        await loadCoachAthletes();
+      }
+
+      await syncFromCloud();
+      showApp();
+    } else {
+      // Perfil incompleto, mostrar modal de perfil
+      openModal('modal-profile');
+      document.getElementById('setup-screen').style.display = 'none';
+      document.getElementById('main-app').style.display = 'flex';
+    }
+  }
+
+  async function loadCoachAthletes() {
+    if (!currentUser || data.setup.mode !== 'coach') return;
+    const { data: relations, error } = await supabase
+      .from('coach_athletes')
+      .select('athlete_id, profiles:athlete_id(id, full_name, weapon, category)')
+      .eq('coach_id', currentUser.id);
+
+    if (error) { console.error('Error cargando atletas:', error); return; }
+
+    data.athletes = (relations || []).map(r => ({
+      id: r.profiles.id,
+      name: r.profiles.full_name,
+      weapon: r.profiles.weapon || 'florete',
+      category: r.profiles.category || 'Cadete'
+    }));
+
+    if (data.athletes.length > 0 && !data.currentAthleteId) {
+      data.currentAthleteId = data.athletes[0].id;
+    }
+  }
+
+  async function syncFromCloud() {
+    if (!currentUser) return;
+    const tables = ['trainings','competitions','matches','opponents','tests','videos','equipment','nutrition','psychology','music','goals','diary','injuries','ranking'];
+    for (const table of tables) {
+      const { data: rows, error } = await supabase.from(table).select('*').eq('user_id', currentUser.id);
+      if (!error && rows) {
+        data[table] = rows.map(r => { delete r.user_id; return r; });
+      }
+    }
+    saveLocal();
+    renderAll();
+  }
+
+  async function syncToCloud() {
+    if (!currentUser) { alert('No hay sesión activa'); return; }
+    document.getElementById('sync-status').textContent = '🟡 Sincronizando...';
+
+    const tables = ['trainings','competitions','matches','opponents','tests','videos','equipment','nutrition','psychology','music','goals','diary','injuries','ranking'];
+
+    for (const table of tables) {
+      const items = data[table] || [];
+      for (const item of items) {
+        const payload = { ...item, user_id: currentUser.id };
+        if (!payload.id) payload.id = uuid();
+        const { error } = await supabase.from(table).upsert(payload, { onConflict: 'id' });
+        if (error) console.error('Sync error', table, error);
+      }
+    }
+
+    document.getElementById('sync-status').textContent = '🟢 Sincronizado';
+    setTimeout(() => document.getElementById('sync-status').textContent = '🟢 Online', 2000);
+  }
+
+  window.signInWithGoogle = async function() {
+    if (!supabase) { alert('Supabase no inicializado'); return; }
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+    if (error) alert('Error al iniciar sesión: ' + error.message);
+  };
+
+  window.logout = async function() {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    localStorage.removeItem('fencing_data');
+    location.reload();
+  };
+
+  window.manualSync = function() {
+    syncToCloud();
+  };
+
+  function showLoginScreen() {
+    document.getElementById('setup-screen').style.display = 'flex';
+    document.getElementById('main-app').style.display = 'none';
+  }
+
+  function showApp() {
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+
+    document.getElementById('sidebar-sub').textContent = data.setup.name || 'Atleta';
+    document.getElementById('mode-badge').textContent = data.setup.mode === 'coach' ? 'Entrenador' : 'Atleta';
+    document.getElementById('mode-badge').className = 'badge-mode ' + (data.setup.mode === 'coach' ? 'coach' : 'athlete');
+
+    buildSidebar();
+    renderAll();
+
+    if (data.setup.mode === 'coach') {
+      document.getElementById('athlete-selector-bar').style.display = 'block';
+      renderAthleteSelector();
+      navTo('dashboard-coach');
+    } else {
+      document.getElementById('athlete-selector-bar').style.display = 'none';
+      navTo('dashboard-athlete');
+    }
+
+    // Set default dates
+    document.querySelectorAll('input[type="date"]').forEach(el => {
+      if (!el.value) el.value = todayStr();
+    });
+
+    // Fill selects
+    const testSel = document.getElementById('test-type');
+    if (testSel) testSel.innerHTML = testTypes.map(t => `<option>${t}</option>`).join('');
+
+    const equipSel = document.getElementById('e-item');
+    if (equipSel) equipSel.innerHTML = equipItems.map(t => `<option>${t}</option>`).join('');
+
+    // Theory
+    renderTheory();
+  }
+
+  window.showSetup = function() {
+    if (userProfile) {
+      document.getElementById('pf-name').value = userProfile.full_name || '';
+      document.getElementById('pf-role').value = userProfile.role || 'athlete';
+      document.getElementById('pf-weapon').value = userProfile.weapon || 'florete';
+      document.getElementById('pf-cat').value = userProfile.category || 'Cadete';
+      document.getElementById('pf-country').value = userProfile.country || 'VEN';
+    }
+    openModal('modal-profile');
+  };
+
+  window.completeProfile = async function() {
+    const name = document.getElementById('pf-name').value.trim();
+    const role = document.getElementById('pf-role').value;
+    const weapon = document.getElementById('pf-weapon').value;
+    const cat = document.getElementById('pf-cat').value;
+    const country = document.getElementById('pf-country').value.trim() || 'VEN';
+    const teamCode = document.getElementById('pf-team-code').value.trim();
+
+    if (!name) { alert('Ingresa tu nombre'); return; }
+
+    const updates = {
+      id: currentUser.id,
+      full_name: name,
+      role: role,
+      weapon: weapon,
+      category: cat,
+      country: country,
+      updated_at: new Date().toISOString()
+    };
+
+    const { error } = await supabase.from('profiles').upsert(updates);
+    if (error) { alert('Error guardando perfil: ' + error.message); return; }
+
+    // Si atleta ingresó código de equipo
+    if (teamCode && role === 'athlete') {
+      const { data: invite } = await supabase.from('team_invites').select('coach_id').eq('code', teamCode).single();
+      if (invite) {
+        await supabase.from('coach_athletes').insert({ coach_id: invite.coach_id, athlete_id: currentUser.id });
+      } else {
+        alert('Código de equipo no válido');
+      }
+    }
+
+    userProfile = updates;
+    data.setup.mode = role;
+    data.setup.weapon = weapon;
+    data.setup.category = cat;
+    data.setup.country = country;
+    data.setup.name = name;
+
+    closeModal('modal-profile');
+    showApp();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  NAVEGACIÓN & UI
+  // ═══════════════════════════════════════════════════════════════
+  function buildSidebar() {
+    const nav = document.getElementById('sidebar-nav');
+    const items = data.setup.mode === 'coach' ? navItemsCoach : navItemsAthlete;
+    nav.innerHTML = items.map(it =>
+      `<div class="nav-item" data-section="${it.id}" onclick="navTo('${it.id}')">
+        <span class="nav-icon">${it.icon}</span><span>${it.label}</span>
+      </div>`
+    ).join('');
+  }
+
+  window.navTo = function(section) {
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById(section);
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.section === section);
+    });
+
+    if (window.innerWidth <= 900) {
+      document.getElementById('sidebar').classList.remove('open');
+    }
+
+    renderAll();
+    window.scrollTo(0,0);
+  };
+
+  window.toggleSidebar = function() {
+    document.getElementById('sidebar').classList.toggle('open');
+  };
+
+  window.openModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+
+    // Rellenar selects de atletas en modales si es coach
+    if (data.setup.mode === 'coach') {
+      const athleteSelects = ['t-athlete','c-athlete','m-athlete','test-athlete','g-athlete'];
+      athleteSelects.forEach(selId => {
+        const sel = document.getElementById(selId);
+        if (sel) {
+          sel.innerHTML = data.athletes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+        }
+      });
+
+      ['training-athlete-select','comp-athlete-select','match-athlete-select','test-athlete-select','goal-athlete-select'].forEach(divId => {
+        const div = document.getElementById(divId);
+        if (div) div.style.display = 'block';
+      });
+    }
+  };
+
+  window.closeModal = function(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('active');
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  COACH / ATLETAS
+  // ═══════════════════════════════════════════════════════════════
+  window.generateInviteCode = async function() {
+    if (!currentUser || data.setup.mode !== 'coach') return;
+    const code = 'FENCING' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const { error } = await supabase.from('team_invites').insert({ coach_id: currentUser.id, code: code });
+    if (error) { alert('Error generando código: ' + error.message); return; }
+    document.getElementById('gen-code').value = code;
+  };
+
+  window.selectAthlete = function(id) {
+    data.currentAthleteId = id;
+    renderAthleteSelector();
+    renderAll();
+  };
+
+  window.delAthlete = async function(id) {
+    if (!confirm('¿Eliminar este atleta de tu equipo?')) return;
+    await supabase.from('coach_athletes').delete().eq('athlete_id', id).eq('coach_id', currentUser.id);
+    data.athletes = data.athletes.filter(a => a.id !== id);
+    if (data.currentAthleteId === id) data.currentAthleteId = data.athletes[0]?.id || null;
+    renderAthleteSelector();
+    renderAll();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CRUD HELPERS
+  // ═══════════════════════════════════════════════════════════════
+  function getUserId() {
+    if (data.setup.mode === 'coach' && data.currentAthleteId) return data.currentAthleteId;
+    return currentUser ? currentUser.id : null;
+  }
+
+  function addItem(key, item) {
+    item.id = item.id || uuid();
+    item.user_id = getUserId();
+    data[key].unshift(item);
+    saveLocal();
+    renderAll();
+    if (supabase && currentUser) {
+      const payload = { ...item, user_id: currentUser.id };
+      supabase.from(key).upsert(payload, { onConflict: 'id' }).then(({error}) => {
+        if (error) console.error('Sync error', key, error);
+      });
+    }
+  }
+
+  function delItem(key, id) {
+    if (!confirm('¿Eliminar este registro?')) return;
+    data[key] = data[key].filter(x => x.id !== id);
+    saveLocal();
+    renderAll();
+    if (supabase && currentUser) {
+      supabase.from(key).delete().eq('id', id).then(({error}) => {
+        if (error) console.error('Delete error', key, error);
+      });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  SAVE FUNCTIONS
+  // ═══════════════════════════════════════════════════════════════
+  window.saveTraining = function() {
+    const item = {
+      date: document.getElementById('t-date').value,
+      duration: parseInt(document.getElementById('t-duration').value) || 0,
+      type: document.getElementById('t-type').value,
+      intensity: parseInt(document.getElementById('t-intensity').value) || 5,
+      notes: document.getElementById('t-notes').value
+    };
+    if (data.setup.mode === 'coach') {
+      const uid = document.getElementById('t-athlete').value;
+      if (uid) item.user_id = uid;
+    }
+    if (!item.date) { alert('Selecciona una fecha'); return; }
+    addItem('trainings', item);
+    closeModal('modal-training');
+    document.getElementById('t-notes').value = '';
+  };
+
+  window.saveCompetition = function() {
+    const item = {
+      name: document.getElementById('c-name').value,
+      date: document.getElementById('c-date').value,
+      location: document.getElementById('c-location').value,
+      position: document.getElementById('c-position').value,
+      notes: document.getElementById('c-notes').value
+    };
+    if (data.setup.mode === 'coach') {
+      const uid = document.getElementById('c-athlete').value;
+      if (uid) item.user_id = uid;
+    }
+    if (!item.name) { alert('Ingresa el nombre del evento'); return; }
+    addItem('competitions', item);
+    closeModal('modal-competition');
+    document.getElementById('c-name').value = '';
+    document.getElementById('c-location').value = '';
+    document.getElementById('c-position').value = '';
+    document.getElementById('c-notes').value = '';
+  };
+
+  window.saveMatch = function() {
+    const forScore = parseInt(document.getElementById('m-for').value) || 0;
+    const againstScore = parseInt(document.getElementById('m-against').value) || 0;
+    const item = {
+      date: document.getElementById('m-date').value,
+      competition: document.getElementById('m-comp').value,
+      opponent_name: document.getElementById('m-opponent').value,
+      opponent_country: document.getElementById('m-country').value,
+      type: document.getElementById('m-type').value,
+      format: document.getElementById('m-format').value,
+      score_for: forScore,
+      score_against: againstScore,
+      phase: document.getElementById('m-phase').value,
+      weapon: document.getElementById('m-weapon').value,
+      notes: document.getElementById('m-notes').value,
+      win: forScore > againstScore
+    };
+    if (data.setup.mode === 'coach') {
+      const uid = document.getElementById('m-athlete').value;
+      if (uid) item.user_id = uid;
+    }
+    if (!item.date || !item.opponent_name) { alert('Completa fecha y oponente'); return; }
+    addItem('matches', item);
+    closeModal('modal-match');
+    document.getElementById('m-opponent').value = '';
+    document.getElementById('m-for').value = '';
+    document.getElementById('m-against').value = '';
+    document.getElementById('m-notes').value = '';
+  };
+
+  window.saveOpponent = function() {
+    const item = {
+      name: document.getElementById('o-name').value,
+      country: document.getElementById('o-country').value,
+      weapon: document.getElementById('o-weapon').value,
+      hand: document.getElementById('o-hand').value,
+      notes: document.getElementById('o-notes').value
+    };
+    if (!item.name) { alert('Ingresa el nombre'); return; }
+    addItem('opponents', item);
+    closeModal('modal-opponent');
+    document.getElementById('o-name').value = '';
+    document.getElementById('o-notes').value = '';
+  };
+
+  window.saveTest = function() {
+    const item = {
+      date: document.getElementById('test-date').value,
+      type: document.getElementById('test-type').value,
+      result: document.getElementById('test-result').value,
+      weight: parseInt(document.getElementById('test-weight').value) || null,
+      notes: document.getElementById('test-notes').value
+    };
+    if (data.setup.mode === 'coach') {
+      const uid = document.getElementById('test-athlete').value;
+      if (uid) item.user_id = uid;
+    }
+    if (!item.date || !item.result) { alert('Completa fecha y resultado'); return; }
+    addItem('tests', item);
+    closeModal('modal-test');
+    document.getElementById('test-result').value = '';
+    document.getElementById('test-notes').value = '';
+  };
+
+  window.saveVideo = function() {
+    const item = {
+      title: document.getElementById('v-title').value,
+      date: document.getElementById('v-date').value,
+      url: document.getElementById('v-url').value,
+      type: document.getElementById('v-type').value,
+      notes: document.getElementById('v-notes').value
+    };
+    if (!item.title || !item.url) { alert('Completa título y URL'); return; }
+    addItem('videos', item);
+    closeModal('modal-video');
+    document.getElementById('v-title').value = '';
+    document.getElementById('v-url').value = '';
+    document.getElementById('v-notes').value = '';
+  };
+
+  window.saveEquip = function() {
+    const item = {
+      item: document.getElementById('e-item').value,
+      brand: document.getElementById('e-brand').value,
+      date: document.getElementById('e-date').value,
+      status: document.getElementById('e-status').value,
+      notes: document.getElementById('e-notes').value
+    };
+    addItem('equipment', item);
+    closeModal('modal-equip');
+    document.getElementById('e-brand').value = '';
+    document.getElementById('e-notes').value = '';
+  };
+
+  window.saveNutri = function() {
+    const item = {
+      date: document.getElementById('n-date').value,
+      water: parseInt(document.getElementById('n-water-input').value) || 0,
+      protein: parseInt(document.getElementById('n-protein-input').value) || 0,
+      carbs: parseInt(document.getElementById('n-carbs-input').value) || 0,
+      veggies: parseInt(document.getElementById('n-veggies-input').value) || 0,
+      supp: document.getElementById('n-supp').value,
+      notes: document.getElementById('n-notes').value
+    };
+    if (!item.date) { alert('Selecciona fecha'); return; }
+    // Reemplazar si ya existe para esa fecha
+    data.nutrition = data.nutrition.filter(n => n.date !== item.date);
+    addItem('nutrition', item);
+    closeModal('modal-nutri');
+  };
+
+  window.savePsych = function() {
+    const item = {
+      date: document.getElementById('p-date').value,
+      exercise: document.getElementById('p-exercise').value,
+      duration: parseInt(document.getElementById('p-duration').value) || 0,
+      category: document.getElementById('p-cat').value,
+      notes: document.getElementById('p-notes').value,
+      completed: false
+    };
+    if (!item.date || !item.exercise) { alert('Completa fecha y ejercicio'); return; }
+    addItem('psychology', item);
+    closeModal('modal-psych');
+    document.getElementById('p-exercise').value = '';
+    document.getElementById('p-notes').value = '';
+  };
+
+  window.saveMusic = function() {
+    const item = {
+      title: document.getElementById('mu-title').value,
+      artist: document.getElementById('mu-artist').value,
+      category: document.getElementById('mu-cat').value,
+      url: document.getElementById('mu-url').value
+    };
+    if (!item.title) { alert('Ingresa el título'); return; }
+    addItem('music', item);
+    closeModal('modal-music');
+    document.getElementById('mu-title').value = '';
+    document.getElementById('mu-artist').value = '';
+    document.getElementById('mu-url').value = '';
+  };
+
+  window.saveGoal = function() {
+    const item = {
+      title: document.getElementById('g-title').value,
+      category: document.getElementById('g-cat').value,
+      term: document.getElementById('g-term').value,
+      deadline: document.getElementById('g-deadline').value,
+      progress: parseInt(document.getElementById('g-progress').value) || 0,
+      plan: document.getElementById('g-plan').value,
+      completed: false
+    };
+    if (data.setup.mode === 'coach') {
+      const uid = document.getElementById('g-athlete').value;
+      if (uid) item.user_id = uid;
+    }
+    if (!item.title) { alert('Ingresa el objetivo'); return; }
+    addItem('goals', item);
+    closeModal('modal-goal');
+    document.getElementById('g-title').value = '';
+    document.getElementById('g-plan').value = '';
+    document.getElementById('g-progress').value = '0';
+  };
+
+  window.saveDiary = function() {
+    const item = {
+      date: document.getElementById('d-date').value,
+      mood: parseInt(document.getElementById('d-mood').value) || 5,
+      energy: parseInt(document.getElementById('d-energy').value) || 5,
+      sleep: parseInt(document.getElementById('d-sleep').value) || 5,
+      text: document.getElementById('d-text').value
+    };
+    if (!item.date || !item.text) { alert('Completa fecha y entrada'); return; }
+    addItem('diary', item);
+    closeModal('modal-diary');
+    document.getElementById('d-text').value = '';
+  };
+
+  window.saveInjury = function() {
+    const item = {
+      date: document.getElementById('i-date').value,
+      zone: document.getElementById('i-zone').value,
+      intensity: parseInt(document.getElementById('i-intensity').value) || 1,
+      status: document.getElementById('i-status').value,
+      description: document.getElementById('i-desc').value,
+      treatment: document.getElementById('i-treatment').value
+    };
+    if (!item.date) { alert('Selecciona fecha'); return; }
+    addItem('injuries', item);
+    closeModal('modal-injury');
+    document.getElementById('i-desc').value = '';
+    document.getElementById('i-treatment').value = '';
+  };
+
+  window.saveRanking = function() {
+    const item = {
+      date: document.getElementById('r-date').value,
+      type: document.getElementById('r-type').value,
+      position: parseInt(document.getElementById('r-pos').value) || 0,
+      points: parseInt(document.getElementById('r-points').value) || 0,
+      notes: document.getElementById('r-notes').value
+    };
+    if (!item.date) { alert('Selecciona fecha'); return; }
+    addItem('ranking', item);
+    closeModal('modal-ranking');
+    document.getElementById('r-pos').value = '';
+    document.getElementById('r-points').value = '';
+    document.getElementById('r-notes').value = '';
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  DELETE & UPDATE
+  // ═══════════════════════════════════════════════════════════════
+  window.delTraining = function(id) { delItem('trainings', id); };
+  window.delCompetition = function(id) { delItem('competitions', id); };
+  window.delMatch = function(id) { delItem('matches', id); };
+  window.delOpponent = function(id) { delItem('opponents', id); };
+  window.delTest = function(id) { delItem('tests', id); };
+  window.delVideo = function(id) { delItem('videos', id); };
+  window.delEquip = function(id) { delItem('equipment', id); };
+  window.delNutri = function(id) { delItem('nutrition', id); };
+  window.delPsych = function(id) { delItem('psychology', id); };
+  window.delMusic = function(id) { delItem('music', id); };
+  window.delGoal = function(id) { delItem('goals', id); };
+  window.delDiary = function(id) { delItem('diary', id); };
+  window.delInjury = function(id) { delItem('injuries', id); };
+  window.delRanking = function(id) { delItem('ranking', id); };
+
+  window.updateGoalProgress = function(id, val) {
+    const g = data.goals.find(x => x.id === id);
+    if (g) { g.progress = Math.min(100, Math.max(0, parseInt(val) || 0)); saveLocal(); renderAll(); }
+  };
+
+  window.togglePsych = function(id) {
+    const p = data.psychology.find(x => x.id === id);
+    if (p) { p.completed = !p.completed; saveLocal(); renderAll(); }
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  FILTERS
+  // ═══════════════════════════════════════════════════════════════
+  window.filterTrainings = function(type) {
+    filters.trainings = type;
+    document.querySelectorAll('#trainings .filter-chip').forEach(btn => {
+      btn.classList.toggle('active', (type === 'all' && btn.textContent === 'Todos') || btn.textContent === type);
+    });
+    renderTrainings();
+  };
+
+  window.filterMatches = function(type) {
+    filters.matches = type;
+    document.querySelectorAll('#matches .filter-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase().includes(type) || (type === 'all' && btn.textContent === 'Todos'));
+    });
+    renderMatches();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CALENDAR
+  // ═══════════════════════════════════════════════════════════════
+  window.changeMonth = function(dir) {
+    calDate.setMonth(calDate.getMonth() + dir);
+    renderCalendar();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  THEORY
+  // ═══════════════════════════════════════════════════════════════
+  window.showTheoryTab = function(tab) {
+    document.querySelectorAll('#theory .tab').forEach(t => t.classList.toggle('active', t.textContent.toLowerCase().includes(tab)));
+    document.querySelectorAll('#theory .theory-section').forEach(s => s.style.display = 'none');
+    document.getElementById('theory-' + tab).style.display = 'block';
+  };
+
+  function renderTheory() {
+    const w = data.setup.weapon || 'florete';
+    const content = theoryContent[w] || theoryContent.florete;
+    document.getElementById('theory-sub').textContent = 'Material de estudio específico para ' + w;
+    document.getElementById('theory-positions').innerHTML = content.positions;
+    document.getElementById('theory-priority').innerHTML = content.priority;
+    document.getElementById('theory-tactics').innerHTML = content.tactics;
+    document.getElementById('theory-rules').innerHTML = content.rules;
+
+    const testInfo = {
+      florete: '<p><strong>Test de agilidad (5-10-5):</strong> Cambio de dirección lateral. Objetivo: < 4.5 seg.</p><p><strong>Test de reacción:</strong> Tiempo de respuesta visual. Objetivo: < 200ms.</p><p><strong>Sprint 10m:</strong> Ataque explosivo. Objetivo: < 1.8 seg.</p><p><strong>Salto vertical:</strong> Potencia de piernas. Objetivo: > 45 cm.</p>',
+      espada: '<p><strong>Test de agilidad (5-10-5):</strong> Cambio de dirección. Objetivo: < 4.6 seg.</p><p><strong>Plancha abdominal:</strong> Core estable. Objetivo: > 90 seg.</p><p><strong>Flexibilidad:</strong> Sentado con piernas extendidas. Objetivo: > +15 cm.</p><p><strong>Sprint 30m:</strong> Resistencia anaeróbica. Objetivo: < 4.5 seg.</p>',
+      sable: '<p><strong>Sprint 10m:</strong> Velocidad pura. Objetivo: < 1.7 seg.</p><p><strong>Test de agilidad (5-10-5):</strong> Objetivo: < 4.4 seg.</p><p><strong>Salto vertical:</strong> Potencia. Objetivo: > 48 cm.</p><p><strong>Test de Leger:</strong> VO2max. Objetivo: Nivel > 12.</p>'
+    };
+    document.getElementById('tests-info-content').innerHTML = testInfo[w] || testInfo.florete;
+
+    const equipSub = {
+      florete: 'Control de máscara eléctrica, peto, cable y floretes. Revisa puntas y resortes.',
+      espada: 'Control de chaqueta 800N, máscara, guante y espadas. Revisa puntas y cables.',
+      sable: 'Control de guante metálico, máscara con recubrimiento y sables. Revisa cableado.'
+    };
+    const es = document.getElementById('equip-sub');
+    if (es) es.textContent = equipSub[w] || equipSub.florete;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  H2H
+  // ═══════════════════════════════════════════════════════════════
+  window.showH2H = function(id) {
+    const opp = data.opponents.find(o => o.id === id);
+    if (!opp) return;
+    const h2h = data.matches.filter(m => m.opponent_name && m.opponent_name.toLowerCase() === opp.name.toLowerCase());
+    document.getElementById('h2h-title').textContent = 'Historial vs ' + opp.name;
+    let html = '';
+    if (h2h.length === 0) html = '<p style="color:var(--text3);">Sin combates registrados.</p>';
+    else {
+      html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+      h2h.forEach(m => {
+        html += `<div style="padding:10px; border:1px solid var(--border); border-radius:8px; background:var(--surface2);">
+          <div style="display:flex; justify-content:space-between;">
+            <span style="font-weight:600;">${m.date}</span>
+            <span class="badge ${m.win?'badge-win':'badge-loss'}">${m.win?'Victoria':'Derrota'}</span>
+          </div>
+          <div style="font-size:12px; color:var(--text2); margin-top:4px;">
+            ${m.competition||'Amistoso'} · ${m.phase} · <strong>${m.score_for}:${m.score_against}</strong>
+          </div>
+          ${m.notes?`<div style="font-size:11px; color:var(--text3); margin-top:4px;">${m.notes}</div>`:''}
+        </div>`;
+      });
+      html += '</div>';
+    }
+    document.getElementById('h2h-content').innerHTML = html;
+    openModal('modal-h2h');
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  RENDER ALL
+  // ═══════════════════════════════════════════════════════════════
+  function renderAll() {
+    renderAthleteSelector();
+    renderDashboardAthlete();
+    renderDashboardCoach();
+    renderAthletesCrud();
+    renderTrainings();
+    renderCompetitions();
+    renderMatches();
+    renderOpponents();
+    renderCalendar();
+    renderTests();
+    renderVideos();
+    renderEquipment();
+    renderNutrition();
+    renderPsychology();
+    renderMusic();
+    renderGoals();
+    renderDiary();
+    renderInjuries();
+    renderRanking();
+    updateDatalist();
+  }
+
   function renderAthleteSelector() {
     if(data.setup.mode !== 'coach') return;
     const el = document.getElementById('athlete-chips');
@@ -823,10 +1632,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   }
 
   function renderDashboardAthlete() {
-    const trainings = data.trainings;
-    const comps = data.competitions;
-    const matches = data.matches;
-    const goals = data.goals.filter(g=>!g.completed);
+    const trainings = data.setup.mode === 'coach' && data.currentAthleteId ? data.trainings.filter(t => t.user_id === data.currentAthleteId) : data.trainings;
+    const comps = data.setup.mode === 'coach' && data.currentAthleteId ? data.competitions.filter(c => c.user_id === data.currentAthleteId) : data.competitions;
+    const matches = data.setup.mode === 'coach' && data.currentAthleteId ? data.matches.filter(m => m.user_id === data.currentAthleteId) : data.matches;
+    const goals = data.goals.filter(g=>!g.completed && (data.setup.mode !== 'coach' || !data.currentAthleteId || g.user_id === data.currentAthleteId));
     const wins = matches.filter(m=>m.win).length;
     const losses = matches.length - wins;
     document.getElementById('da-trainings').textContent = trainings.length;
@@ -846,7 +1655,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           <div class="list-item-title">${x.name||x.type||'Entrenamiento'}</div>
           <div class="list-item-meta">${x.date}${x.location?' · '+x.location:''}${x.duration?' · '+x.duration+' min':''}</div>
         </div>
-        <span class="badge ${x.name?'badge-comp':'badge-train'}">${x.name?'Competencia':'Entrenamiento'}</span>
+        <span class="badge ${x.name?'badge-ind':'badge-train'}">${x.name?'Competencia':'Entrenamiento'}</span>
       </div>
     `).join('');
 
@@ -955,7 +1764,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderTrainings() {
     const el = document.getElementById('list-trainings');
-    let items = data.trainings;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.trainings.filter(t => t.user_id === data.currentAthleteId) : data.trainings;
     if(filters.trainings!=='all') items = items.filter(t=>t.type===filters.trainings);
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤺</div><div class="empty-state-title">Sin entrenamientos</div>Registra tu primer entrenamiento.</div>'; return; }
     el.innerHTML = items.map(t=>`
@@ -971,7 +1780,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderCompetitions() {
     const el = document.getElementById('list-competitions');
-    const items = data.competitions;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.competitions.filter(c => c.user_id === data.currentAthleteId) : data.competitions;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-title">Sin competencias</div>Registra tus torneos.</div>'; return; }
     el.innerHTML = items.map(c=>`
       <div class="list-item">
@@ -986,7 +1795,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderMatches() {
     const el = document.getElementById('list-matches');
-    let items = data.matches;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.matches.filter(m => m.user_id === data.currentAthleteId) : data.matches;
     if(filters.matches!=='all') {
       if(filters.matches==='individual'||filters.matches==='team') items=items.filter(m=>m.type===filters.matches);
       else items=items.filter(m=>m.format===filters.matches);
@@ -1015,7 +1824,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     const el = document.getElementById('list-opponents');
     if(data.opponents.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin oponentes</div>Agrega rivales para ver estadísticas H2H.</div>'; return; }
     el.innerHTML = data.opponents.map(o=>{
-      const h2h = data.matches.filter(m=>m.opponent_name.toLowerCase()===o.name.toLowerCase());
+      const h2h = data.matches.filter(m=>m.opponent_name && m.opponent_name.toLowerCase()===o.name.toLowerCase());
       const wins = h2h.filter(m=>m.win).length;
       const losses = h2h.length - wins;
       return `<div style="border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:8px; background:var(--surface2);">
@@ -1051,10 +1860,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
     for(let i=firstDay-1; i>=0; i--) html+=`<div class="cal-day other"><span class="cal-day-num">${prevDays-i}</span></div>`;
     const today = new Date().toISOString().split('T')[0];
-    const trainings = data.trainings;
-    const comps = data.competitions;
-    const matches = data.matches;
-    const psych = data.psychology;
+    const trainings = data.setup.mode === 'coach' && data.currentAthleteId ? data.trainings.filter(t => t.user_id === data.currentAthleteId) : data.trainings;
+    const comps = data.setup.mode === 'coach' && data.currentAthleteId ? data.competitions.filter(c => c.user_id === data.currentAthleteId) : data.competitions;
+    const matches = data.setup.mode === 'coach' && data.currentAthleteId ? data.matches.filter(m => m.user_id === data.currentAthleteId) : data.matches;
+    const psych = data.setup.mode === 'coach' && data.currentAthleteId ? data.psychology.filter(p => p.user_id === data.currentAthleteId) : data.psychology;
     for(let d=1; d<=daysInMonth; d++) {
       const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const hasTrain = trainings.some(t=>t.date===dateStr);
@@ -1074,11 +1883,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     for(let i=1; i<=nextDays; i++) html+=`<div class="cal-day other"><span class="cal-day-num">${i}</span></div>`;
     grid.innerHTML = html;
   }
-  window.changeMonth = function(dir) { calDate.setMonth(calDate.getMonth()+dir); renderCalendar(); };
 
   function renderTests() {
     const el = document.getElementById('list-tests');
-    const items = data.tests;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.tests.filter(t => t.user_id === data.currentAthleteId) : data.tests;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><div class="empty-state-title">Sin tests</div>Registra tus primeros resultados físicos.</div>'; return; }
     el.innerHTML = items.map(t=>`
       <div class="list-item">
@@ -1158,7 +1966,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderPsychology() {
     const el = document.getElementById('list-psychology');
-    const items = data.psychology;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.psychology.filter(p => p.user_id === data.currentAthleteId) : data.psychology;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧠</div><div class="empty-state-title">Sin ejercicios</div>Registra los ejercicios de tu psicólogo.</div>'; return; }
     el.innerHTML = items.map(p=>`
       <div class="list-item" style="${p.completed?'opacity:.5;':''}">
@@ -1204,7 +2012,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderGoals() {
     const el = document.getElementById('list-goals');
-    const items = data.goals;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.goals.filter(g => g.user_id === data.currentAthleteId) : data.goals;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin objetivos</div>Define tus metas SMART.</div>'; return; }
     const termLabels = {short:'Corto plazo', medium:'Mediano plazo', long:'Largo plazo'};
     el.innerHTML = items.map(g=>`
@@ -1228,7 +2036,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderDiary() {
     const el = document.getElementById('list-diary');
-    const items = data.diary;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.diary.filter(d => d.user_id === data.currentAthleteId) : data.diary;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📓</div><div class="empty-state-title">Sin entradas</div>Escribe sobre tu día, sensaciones y aprendizajes.</div>'; return; }
     const moodEmoji = {1:'😫',2:'😞',3:'😟',4:'😐',5:'🙂',6:'😊',7:'😃',8:'🤩',9:'🔥',10:'⚡'};
     el.innerHTML = items.map(d=>`
@@ -1245,7 +2053,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderInjuries() {
     const el = document.getElementById('list-injuries');
-    const items = data.injuries;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.injuries.filter(i => i.user_id === data.currentAthleteId) : data.injuries;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩹</div><div class="empty-state-title">Sin registros</div>Buen signo. Pero registra cualquier molestia.</div>'; return; }
     const statusLabels = {active:'🔴 Activa', recovered:'🟢 Recuperada', chronic:'🟡 Crónica'};
     el.innerHTML = items.map(i=>`
@@ -1263,7 +2071,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderRanking() {
     const el = document.getElementById('list-ranking');
-    const items = data.ranking;
+    let items = data.setup.mode === 'coach' && data.currentAthleteId ? data.ranking.filter(r => r.user_id === data.currentAthleteId) : data.ranking;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏅</div><div class="empty-state-title">Sin rankings</div>Registra tu posición en cada actualización.</div>'; return; }
     el.innerHTML = items.map(r=>`
       <div class="list-item">
