@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Fencing Pro">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRmVuY2luZyBQcm8gdjIiLCJzaG9ydF9uYW1lIjoiRmVuY2luZyBQcm8iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYxMiIsInRoZW1lX2NvbG9yIjoiIzBmMGYxMiIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJyUzRSUzQ3JlY3QgZmlsbD0nJTIzZThjNTQ3JyB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5Micgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMjAnIGZvbnQtc2l6ZT0nMTAwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNjc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNlJTNjcmVjdCBmaWxsPSclMjNlOGM1NDcnIHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nNjQnLyUzZSUzY3RleHQgeD0nMjU2JyB5PSczMjAnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg:#0f0f12; --surface:#1a1a20; --surface2:#22222a; --surface3:#2a2a35; --border:#33333d;
@@ -208,43 +209,14 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
 <!-- SETUP SCREEN -->
 <div class="setup-screen" id="setup-screen">
-  <div class="setup-card">
+  <div class="setup-card" id="setup-card-content">
     <div style="font-size:48px; margin-bottom:12px;">🤺</div>
     <h2>Fencing Pro v2</h2>
-    <p>Configura tu perfil para empezar</p>
-
-    <div style="text-align:left; margin-bottom:8px; font-size:11px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Selecciona tu arma</div>
-    <div class="weapon-options">
-      <div class="weapon-opt selected" data-weapon="florete" onclick="selectWeapon(this)">
-        <div class="icon">⚔️</div>
-        <div class="name">Florete</div>
-        <div class="desc">Convención de prioridad</div>
-      </div>
-      <div class="weapon-opt" data-weapon="espada" onclick="selectWeapon(this)">
-        <div class="icon">🗡️</div>
-        <div class="name">Espada</div>
-        <div class="desc">Tocado simultáneo</div>
-      </div>
-      <div class="weapon-opt" data-weapon="sable" onclick="selectWeapon(this)">
-        <div class="icon">🔪</div>
-        <div class="name">Sable</div>
-        <div class="desc">Prioridad + corte</div>
-      </div>
-    </div>
-
-    <div style="text-align:left; margin-bottom:8px; font-size:11px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.5px;">Modo de uso</div>
-    <div class="mode-options">
-      <div class="mode-opt selected" data-mode="athlete" onclick="selectMode(this)">
-        <div class="name">👤 Modo Atleta</div>
-        <div class="desc">Soy esgrimista y quiero seguir mi progreso personal</div>
-      </div>
-      <div class="mode-opt" data-mode="coach" onclick="selectMode(this)">
-        <div class="name">👨‍🏫 Modo Entrenador</div>
-        <div class="desc">Soy entrenador y quiero gestionar mi equipo</div>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" style="width:100%; padding:12px; font-size:14px;" onclick="finishSetup()">Comenzar →</button>
+    <p id="setup-msg">Ingresa para sincronizar tus datos</p>
+    <button class="btn btn-primary" style="width:100%; padding:12px; font-size:14px; margin-bottom:10px;" onclick="signInWithGoogle()">
+      🔑 Ingresar con Google
+    </button>
+    <p style="font-size:11px; color:var(--text3);">Tus datos se guardan en la nube y están protegidos</p>
   </div>
 </div>
 
@@ -253,15 +225,16 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <h1>⚔️ Fencing Pro v2</h1>
-      <div class="sub" id="sidebar-sub">Florete · Cadete</div>
+      <div class="sub" id="sidebar-sub">Cargando...</div>
       <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-        <span class="badge-mode athlete" id="mode-badge">Atleta</span>
-        <button class="btn btn-sm" onclick="showSetup()" style="font-size:11px; padding:4px 10px;">⚙️ Cambiar perfil</button>
+        <span class="badge-mode athlete" id="mode-badge">...</span>
+        <button class="btn btn-sm" onclick="showSetup()" style="font-size:11px; padding:4px 10px;">⚙️ Perfil</button>
       </div>
+      <div id="sync-status" style="margin-top:8px; font-size:11px; font-weight:600; color:var(--text3);">🟢 Online</div>
+      <button class="btn btn-sm" onclick="manualSync()" style="margin-top:6px; width:100%; font-size:11px;">☁️ Sincronizar ahora</button>
+      <button class="btn btn-sm btn-danger" onclick="logout()" style="margin-top:6px; width:100%; font-size:11px;">🚪 Cerrar sesión</button>
     </div>
-    <nav class="sidebar-nav" id="sidebar-nav">
-      <!-- Se llena dinámicamente por JS -->
-    </nav>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
   </aside>
 
   <main class="main">
@@ -275,7 +248,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div id="athlete-selector-bar" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <span style="font-size:12px; color:var(--text3); font-weight:600; text-transform:uppercase;">Atleta seleccionado</span>
-        <button class="btn btn-sm btn-primary" onclick="openModal('modal-athlete')">+ Nuevo atleta</button>
+        <button class="btn btn-sm btn-primary" onclick="openModal('modal-athlete')">+ Generar código</button>
       </div>
       <div class="athlete-selector" id="athlete-chips"></div>
     </div>
@@ -332,7 +305,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="section" id="athletes">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Gestión de Atletas</div><div class="page-sub">Crea y administra los perfiles de tu equipo</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-athlete')">+ Nuevo atleta</button>
+        <button class="btn btn-primary" onclick="openModal('modal-athlete')">+ Generar código</button>
       </div>
       <div id="list-athletes-crud"></div>
     </div>
@@ -538,25 +511,15 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   </main>
 </div>
 
-
 <!-- MODALS -->
 <div class="modal-overlay" id="modal-athlete">
   <div class="modal">
-    <div class="modal-header"><h3 class="modal-title">Nuevo atleta</h3><button class="modal-close" onclick="closeModal('modal-athlete')">&times;</button></div>
+    <div class="modal-header"><h3 class="modal-title">Invitar atleta</h3><button class="modal-close" onclick="closeModal('modal-athlete')">&times;</button></div>
+    <p style="font-size:13px; color:var(--text2); margin-bottom:14px;">Genera un código y compártelo con tu atleta para que se una a tu equipo.</p>
     <div class="form-row">
-      <div class="form-group"><label>Nombre</label><input type="text" id="at-name" placeholder="Nombre completo"></div>
-      <div class="form-group"><label>Apodo</label><input type="text" id="at-nick" placeholder="Opcional"></div>
+      <div class="form-group full"><label>Código generado</label><input type="text" id="gen-code" readonly style="font-weight:600; color:var(--accent);"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Arma</label><select id="at-weapon"><option>Florete</option><option>Espada</option><option>Sable</option></select></div>
-      <div class="form-group"><label>Categoría</label><select id="at-cat"><option>Cadete</option><option>Junior</option><option>Senior</option><option>Veterano</option></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>País</label><input type="text" id="at-country" placeholder="VEN"></div>
-      <div class="form-group"><label>Año de nacimiento</label><input type="number" id="at-born" placeholder="2011"></div>
-    </div>
-    <div class="form-group full"><label>Notas del entrenador</label><textarea id="at-notes" placeholder="Fortalezas, áreas de mejora..."></textarea></div>
-    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-athlete')">Cancelar</button><button class="btn btn-primary" onclick="saveAthlete()">Guardar</button></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-athlete')">Cerrar</button><button class="btn btn-primary" onclick="generateInviteCode()">Generar código</button></div>
   </div>
 </div>
 
@@ -825,694 +788,41 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-profile">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Completar perfil</h3></div>
+    <div class="form-row">
+      <div class="form-group"><label>Nombre completo</label><input type="text" id="pf-name" placeholder="Tu nombre"></div>
+      <div class="form-group"><label>Rol</label><select id="pf-role"><option value="athlete">Atleta</option><option value="coach">Entrenador</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Arma</label><select id="pf-weapon"><option value="florete">Florete</option><option value="espada">Espada</option><option value="sable">Sable</option></select></div>
+      <div class="form-group"><label>Categoría</label><select id="pf-cat"><option>Cadete</option><option>Junior</option><option>Senior</option><option>Veterano</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>País</label><input type="text" id="pf-country" placeholder="VEN"></div>
+      <div class="form-group"><label>Unirme a equipo (código)</label><input type="text" id="pf-team-code" placeholder="Opcional — solo atletas"></div>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn btn-primary" onclick="completeProfile()">Guardar y continuar</button></div>
+  </div>
+</div>
+
 <datalist id="dl-opponents"></datalist>
-
-
-<script>
-(function(){
-  const KEY = 'fencing_pro_v2_multi';
-
-  // ═══════════════════════════════════════════════════════════════
-  //  CONFIGURACIÓN POR ARMA
-  // ═══════════════════════════════════════════════════════════════
-  const WEAPON_CONFIG = {
-    florete: {
-      name: 'Florete',
-      tests: [
-        {name:'Lanzadera 2-4-2 (seg)', desc:'Avanza a línea central, retrocede, avanza a línea lejana, retrocede, avanza a centro, retrocede + estocada final. Mide agilidad y explosividad.'},
-        {name:'Salto vertical (cm)', desc:'Mide potencia de piernas. Compara salto estándar vs salto en profundidad desde 45cm.'},
-        {name:'Fondos en 30s (reps)', desc:'Número de fondos en 30 segundos. Mide resistencia específica.'},
-        {name:'Desplazamiento 10m (seg)', desc:'Tiempo de avance y retroceso en pista. Mide velocidad de pies.'}
-      ],
-      equip: ['Florete completo','Hoja de florete','Careta','Chaquetilla','Peto','Guante','Pantalón','Medias','Bodycord / Cable','Pinza de careta','Zapatillas','Bolsa / Saca'],
-      theory: {
-        positions: `<h3>Las 4 posiciones básicas del brazo armado (Florete)</h3>
-          <p>En cada línea, el brazo armado puede tomar 2 posiciones: una en supinación y otra en pronación.</p>
-          <ul><li><strong>Sexta:</strong> Supinación. Punta al nivel de la mano. Posición de guardia natural.</li>
-          <li><strong>Cuarta:</strong> Pronación. Punta por encima. Protege línea interior.</li>
-          <li><strong>Octava:</strong> Supinación. Punta por debajo. Protege línea inferior.</li>
-          <li><strong>Séptima:</strong> Pronación. Punta por debajo. Protege línea inferior exterior.</li></ul>
-          <h3>El fondo (estocada)</h3><p>Desde la guardia se estira el brazo sin rigidez, el cuerpo inmóvil. Se lanza el pie adelantado a ras de suelo, cae con el talón. La pierna retrasada empuja con máxima potencia.</p>
-          <h3>Desplazamientos</h3><ul><li><strong>Avance:</strong> Pie delantero avanza primero, luego el trasero.</li>
-          <li><strong>Retroceso:</strong> Pie trasero retrocede primero, luego el delantero.</li>
-          <li><strong>Fondo corto:</strong> Extensión del brazo + paso corto.</li>
-          <li><strong>Fondo largo:</strong> Extensión completa + lunge profundo.</li></ul>`,
-        priority: `<h3>Convención de prioridad (Florete)</h3>
-          <p>El florete es el "arma de la convención". No existe tocado simultáneo válido.</p>
-          <ul><li><strong>Ataque iniciado:</strong> Quien extiende el brazo primero y avanza con intención de tocar tiene la prioridad.</li>
-          <li><strong>Parada:</strong> Si el defensor realiza una parada válida, gana la prioridad y puede contraatacar.</li>
-          <li><strong>Contraataque:</strong> Si el atacante es parado y contraataca inmediatamente, puede recuperar la prioridad.</li>
-          <li><strong>Ataque en preparación:</strong> Se puede tocar al oponente mientras prepara su ataque (baja el arma, flexiona el brazo).</li>
-          <li><strong>Ataque al arco:</strong> Tocar al brazo del oponente mientras intenta atacar.</li></ul>
-          <h3>La "frase de las armas"</h3><p>Se compara con una conversación. Cada acción responde a la anterior. El floretista debe ser riguroso, mantener la prioridad y buscar los errores del oponente.</p>`,
-        tactics: `<h3>Táctica básica del floretista</h3>
-          <ul><li><strong>Tipología:</strong> Riguroso, se involucra en largos intercambios, busca mantener prioridad y desenmascarar errores.</li>
-          <li><strong>Control de distancia:</strong> Domina el espacio entre tú y tu oponente. Acorta para atacar, alarga para defenderte.</li>
-          <li><strong>Tempo:</strong> Varía la velocidad de tus acciones. Acelera para sorprender, frena para provocar errores.</li>
-          <li><strong>Engaño (feint):</strong> Simula un ataque en una línea para provocar una parada, luego cambia de línea.</li>
-          <li><strong>Contra-tiempo:</strong> Tocar al oponente en el momento exacto de su ataque, aprovechando su preparación.</li>
-          <li><strong>Estudio del rival:</strong> Observa en los primeros asaltos: ¿es agresivo o pasivo? ¿tiende a parar en cuarta u octava?</li></ul>`,
-        rules: `<h3>Reglamento básico de competencia (Florete)</h3>
-          <ul><li><strong>Pista:</strong> 14m x 1.5-2m. Líneas de guardia a 2m del centro. Líneas de advertencia a 2m de cada extremo.</li>
-          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos.</li>
-          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos de 3 min).</li>
-          <li><strong>Superficie válida:</strong> Tronco, solo sobre la chaquetilla eléctrica. No valen brazos, cabeza, piernas.</li>
-          <li><strong>Arma:</strong> Hoja de 90cm, peso total 500g, longitud máxima 110cm. Cazoleta 9.5-12cm.</li>
-          <li><strong>Órdenes:</strong> "En garde" → "¿Listos?" → "¡Allez!" / "¡Adelante!". "¡Alto!" para detener.</li>
-          <li><strong>Tocado simultáneo:</strong> NO existe en florete. El árbitro otorga el punto al que tiene prioridad.</li></ul>`
-      }
-    },
-    espada: {
-      name: 'Espada',
-      tests: [
-        {name:'Lanzadera 2-4-2 (seg)', desc:'Mide agilidad y capacidad de cambio de dirección. Fundamental en espada por los ataques al brazo.'},
-        {name:'Salto vertical (cm)', desc:'Potencia de piernas para fondos profundos y recuperación rápida.'},
-        {name:'Test Cooper (m)', desc:'Correr 12 minutos, medir distancia. La espada requiere alta resistencia aeróbica.'},
-        {name:'Desplazamiento 10m (seg)', desc:'Velocidad de pies en avance y retroceso.'},
-        {name:'Fondos en 30s (reps)', desc:'Resistencia específica de piernas para combates largos.'}
-      ],
-      equip: ['Espada completa','Hoja de espada','Careta','Chaquetilla eléctrica completa','Peto','Guante','Pantalón','Medias','Bodycord / Cable','Pinza de careta','Zapatillas','Bolsa / Saca'],
-      theory: {
-        positions: `<h3>Posiciones del brazo armado (Espada)</h3>
-          <p>La espada no tiene convención de prioridad, por lo que las posiciones se usan más para proteger el cuerpo y preparar el ataque.</p>
-          <ul><li><strong>Posición de guardia baja:</strong> Punta apuntando al suelo, codo flexionado. Usada para provocar y contraatacar.</li>
-          <li><strong>Posición de guardia media:</strong> Brazo semiflexionado, punta al nivel del pecho del oponente. La más común.</li>
-          <li><strong>Posición de guardia alta:</strong> Brazo extendido hacia arriba. Usada para ataques al brazo desde arriba.</li>
-          <li><strong>Posición de sexta:</strong> Similar al florete pero adaptada. Protege la línea exterior alta.</li></ul>
-          <h3>El fondo en espada</h3><p>El fondo en espada es más profundo y se usa para buscar el cuerpo completo. La extensión del brazo es clave para mantener distancia de seguridad.</p>
-          <h3>Desplazamientos</h3><p>Igual que en florete, pero con énfasis en el <strong>cross-step</strong> (paso cruzado) para cubrir más distancia rápidamente, ya que los combates de espada son más largos.</p>`,
-        priority: `<h3>Reglas específicas de la Espada</h3>
-          <p>La espada es el "arma de la simultaneidad". <strong>Sí existe el tocado simultáneo válido.</strong></p>
-          <ul><li><strong>Tocado doble:</strong> Si ambos tocan al mismo tiempo, ambos reciben un punto. Esto cambia completamente la táctica.</li>
-          <li><strong>Superficie válida:</strong> <strong>Todo el cuerpo</strong> — cabeza, brazos, piernas, tronco. Todo cuenta.</li>
-          <li><strong>Prioridad:</strong> <strong>NO HAY</strong>. No existe la convención de prioridad. El que toca primero no gana automáticamente.</li>
-          <li><strong>Ataque al brazo:</strong> Tocar el antebrazo del oponente es válido y muy común en espada. Es una táctica defensiva-agresiva.</li>
-          <li><strong>Timing:</strong> En espada, el timing (el momento exacto) es más importante que la prioridad. Debes tocar sin ser tocada.</li></ul>
-          <h3>Diferencias clave con el florete</h3>
-          <ul><li>No hay árbitro interpretando prioridad — los touches son eléctricos y automáticos.</li>
-          <li>Los combates son más largos (hasta 15 touches en poule también).</li>
-          <li>El juego es más físico y de resistencia.</li>
-          <li>Se puede atacar desde cualquier distancia porque todo el cuerpo vale.</li></ul>`,
-        tactics: `<h3>Táctica del espaderista</h3>
-          <ul><li><strong>Tipología:</strong> Paciente, calculador, busca el momento exacto. El espaderista es un estratega.</li>
-          <li><strong>Defensa activa:</strong> Usa el ataque al brazo para detener la iniciativa del rival sin arriesgar el cuerpo.</li>
-          <li><strong>Contraataque:</strong> Deja que el oponente ataque, desvía con la espada y toca en el momento de su preparación.</li>
-          <li><strong>Doble tempo:</strong> Realiza dos acciones consecutivas: primero provoca, luego ataca al espacio que deja.</li>
-          <li><strong>Control de distancia:</strong> Más importante que en florete. Mantener la distancia justa para atacar el brazo sin ser tocado.</li>
-          <li><strong>Fondo profundo:</strong> La espada permite fondos más profundos porque no hay prioridad que perder. Arriesgas el cuerpo pero ganas distancia.</li></ul>`,
-        rules: `<h3>Reglamento de competencia (Espada)</h3>
-          <ul><li><strong>Pista:</strong> 14m x 1.5-2m. Igual que florete y sable.</li>
-          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos (igual que florete).</li>
-          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos).</li>
-          <li><strong>Superficie válida:</strong> <strong>Todo el cuerpo</strong> completo. Cabeza, brazos, piernas, manos, espalda, todo.</li>
-          <li><strong>Arma:</strong> Hoja triangular de 90cm, peso total 770g (más pesada que florete), longitud máxima 110cm.</li>
-          <li><strong>Tocado simultáneo:</strong> <strong>SÍ existe</strong>. Ambos atletas reciben un punto si tocan al mismo tiempo.</li>
-          <li><strong>Empates:</strong> Si el marcador queda 4-4 en poule, puede haber empate. En directas, se juega hasta 15.</li></ul>`
-      }
-    },
-    sable: {
-      name: 'Sable',
-      tests: [
-        {name:'Lanzadera 2-4-2 (seg)', desc:'Máxima velocidad. En sable la reacción debe ser instantánea.'},
-        {name:'Salto vertical (cm)', desc:'Explosividad para ataques rápidos y fleche.'},
-        {name:'Test de reacción (ms)', desc:'Tiempo de respuesta a estímulo visual/auditivo. Crucial en sable.'},
-        {name:'Desplazamiento 10m (seg)', desc:'Velocidad de pies. El sable es el arma más rápida.'},
-        {name:'Fondos en 30s (reps)', desc:'Resistencia anaeróbica para asaltos cortos e intensos.'}
-      ],
-      equip: ['Sable completo','Hoja de sable','Careta metálica','Chaquetilla eléctrica','Peto metálico','Guante metálico','Pantalón','Medias','Bodycord / Cable','Zapatillas','Bolsa / Saca'],
-      theory: {
-        positions: `<h3>Posiciones del brazo armado (Sable)</h3>
-          <p>El sable permite cortes (slash) además de estocadas. Las posiciones son más bajas y defensivas.</p>
-          <ul><li><strong>Tercera:</strong> Pronación. Punta ligeramente hacia abajo. Guardia básica del sable.</li>
-          <li><strong>Cuarta:</strong> Pronación. Punta hacia arriba. Protege el flanco interior.</li>
-          <li><strong>Quinta:</strong> Supinación. Punta hacia abajo y afuera. Protege la cabeza y el flanco exterior.</li>
-          <li><strong>Segunda:</strong> Pronación. Punta hacia abajo y afuera. Protege la línea baja exterior.</li></ul>
-          <h3>El fleche (ataque en carrera)</h3>
-          <p>El sable permite el <strong>fleche</strong>: un ataque en carrera donde ambos pies dejan el suelo. Es una acción ofensiva muy rápida y espectacular, exclusiva del sable.</p>
-          <h3>Cortes (slashes)</h3>
-          <p>A diferencia del florete y la espada (solo estocadas), en sable los <strong>cortes</strong> son válidos. Se puede cortar con el filo de la hoja, no solo pinchar con la punta.</p>`,
-        priority: `<h3>Convención de prioridad (Sable)</h3>
-          <p>El sable tiene prioridad como el florete, pero con reglas diferentes debido a la velocidad y los cortes.</p>
-          <ul><li><strong>Ataque iniciado:</strong> Quien extiende el brazo y avanza primero tiene la prioridad. En sable, el ataque se inicia más rápido.</li>
-          <li><strong>Corte vs estocada:</strong> Un corte tiene la misma validez que una estocada para ganar prioridad.</li>
-          <li><strong>Parada:</strong> Si el defensor para y contraataca, gana la prioridad. Pero en sable las paradas son más difíciles por la velocidad.</li>
-          <li><strong>Ataque en preparación:</strong> Se puede tocar mientras el oponente prepara, como en florete.</li>
-          <li><strong>Retirada del brazo:</strong> Si el atacante retira el brazo (flexiona), pierde la prioridad inmediatamente.</li></ul>
-          <h3>El fleche y la prioridad</h3>
-          <p>El fleche (ataque en carrera) tiene prioridad si se inicia correctamente: brazo extendido antes de que los pies dejen el suelo. Si el brazo no está extendido, el fleche no tiene prioridad.</p>`,
-        tactics: `<h3>Táctica del sableista</h3>
-          <ul><li><strong>Tipología:</strong> Agresivo, rápido, busca el primer tempo. El sableista no espera, actúa.</li>
-          <li><strong>Velocidad de pies:</strong> Es el arma más rápida. El footwork debe ser explosivo y preciso.</li>
-          <li><strong>Ataque directo:</strong> En sable, el ataque directo (sin engaño) es muy efectivo por la velocidad.</li>
-          <li><strong>Cortes al brazo:</strong> Los cortes al antebrazo del oponente son una táctica defensiva muy usada para detener el ataque rival.</li>
-          <li><strong>Fleche:</strong> Usar el fleche para sorprender. Debe ser impredecible y con brazo ya extendido.</li>
-          <li><strong>Contraataque con corte:</strong> Esperar el ataque del rival y cortar su brazo o su cabeza en el momento justo.</li>
-          <li><strong>Distancia corta:</strong> En sable se lucha a distancias más cortas que en espada. El control del espacio es crítico.</li></ul>`,
-        rules: `<h3>Reglamento de competencia (Sable)</h3>
-          <ul><li><strong>Pista:</strong> 14m x 1.5-2m. Igual dimensiones.</li>
-          <li><strong>Asalto de poule:</strong> A 5 touches, máximo 3 minutos.</li>
-          <li><strong>Eliminación directa:</strong> A 15 touches, máximo 9 minutos (3 periodos).</li>
-          <li><strong>Superficie válida:</strong> <strong>Arriba de la cintura</strong> — incluye cabeza, brazos, tronco, manos. <strong>No valen piernas ni pies.</strong></li>
-          <li><strong>Arma:</strong> Hoja curva de 88cm, peso total 500g, longitud máxima 105cm. Permite cortes y estocadas.</li>
-          <li><strong>Tocado simultáneo:</strong> <strong>NO existe</strong> (como en florete). Hay prioridad.</li>
-          <li><strong>Fleche:</strong> <strong>Permitido</strong> solo en sable. Ataque en carrera con ambos pies en el aire. Requiere brazo extendido antes de despegar.</li>
-          <li><strong>Careta:</strong> Metálica (diferente al florete/espada). Guante metálico en el brazo armado.</li></ul>`
-      }
-    }
-  };
-
-  // ═══════════════════════════════════════════════════════════════
-  //  ESTADO GLOBAL
-  // ═══════════════════════════════════════════════════════════════
-  let data = {
-    setup: { weapon:'florete', mode:'athlete', done:false },
-    athletes: [],
-    currentAthleteId: null,
-    trainings: [], competitions: [], matches: [], opponents: [],
-    tests: [], videos: [], equipment: [], nutrition: [], psychology: [],
-    music: [], goals: [], diary: [], injuries: [], ranking: []
-  };
-  let filters = { trainings:'all', matches:'all' };
-  let calDate = new Date();
-
-  function load() {
-    try { const raw = localStorage.getItem(KEY); if(raw) data = JSON.parse(raw); }
-    catch(e) {}
-    const today = new Date().toISOString().split('T')[0];
-    document.querySelectorAll('input[type="date"]').forEach(el => { if(!el.value) el.value = today; });
-  }
-  function save() { localStorage.setItem(KEY, JSON.stringify(data)); renderAll(); }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2,5); }
-
-  // ═══════════════════════════════════════════════════════════════
-  //  SETUP SCREEN
-  // ═══════════════════════════════════════════════════════════════
-  window.selectWeapon = function(el) {
-    document.querySelectorAll('.weapon-opt').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    data.setup.weapon = el.dataset.weapon;
-  };
-  window.selectMode = function(el) {
-    document.querySelectorAll('.mode-opt').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    data.setup.mode = el.dataset.mode;
-  };
-  window.finishSetup = function() {
-    data.setup.done = true;
-    save();
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('main-app').style.display = 'flex';
-    initApp();
-  };
-
-  window.showSetup = function() {
-    // Pre-seleccionar valores actuales
-    document.querySelectorAll('.weapon-opt').forEach(o => {
-      o.classList.toggle('selected', o.dataset.weapon === data.setup.weapon);
-    });
-    document.querySelectorAll('.mode-opt').forEach(o => {
-      o.classList.toggle('selected', o.dataset.mode === data.setup.mode);
-    });
-    document.getElementById('main-app').style.display = 'none';
-    document.getElementById('setup-screen').style.display = 'flex';
-  };
-
-  // ═══════════════════════════════════════════════════════════════
-  //  INIT APP
-  // ═══════════════════════════════════════════════════════════════
-  function initApp() {
-    const cfg = WEAPON_CONFIG[data.setup.weapon];
-    document.getElementById('sidebar-sub').textContent = cfg.name + ' · ' + (data.setup.mode==='athlete'?'Atleta':'Entrenador');
-    document.getElementById('mode-badge').textContent = data.setup.mode==='athlete'?'Atleta':'Entrenador';
-    document.getElementById('mode-badge').className = 'badge-mode ' + (data.setup.mode==='athlete'?'athlete':'coach');
-    document.getElementById('theory-sub').textContent = 'Material de estudio específico para ' + cfg.name;
-    document.getElementById('tests-sub').textContent = 'Métricas objetivas de progreso físico — ' + cfg.name;
-    document.getElementById('equip-sub').textContent = 'Control de material de ' + cfg.name + ' y mantenimiento';
-
-    // Build sidebar
-    const nav = document.getElementById('sidebar-nav');
-    let items = [];
-    if(data.setup.mode === 'athlete') {
-      items = [
-        {id:'dashboard-athlete', icon:'📊', label:'Dashboard'},
-        {id:'trainings', icon:'🤺', label:'Entrenamientos'},
-        {id:'competitions', icon:'🏆', label:'Competencias'},
-        {id:'matches', icon:'⚔️', label:'Combates'},
-        {id:'opponents', icon:'🎯', label:'Oponentes'},
-        {id:'calendar', icon:'📅', label:'Calendario'},
-        {id:'tests', icon:'📈', label:'Tests Físicos'},
-        {id:'video', icon:'🎬', label:'Video Análisis'},
-        {id:'equipment', icon:'🛡️', label:'Equipamiento'},
-        {id:'nutrition', icon:'🥗', label:'Nutrición'},
-        {id:'psychology', icon:'🧠', label:'Psicología'},
-        {id:'music', icon:'🎧', label:'Música'},
-        {id:'goals', icon:'🎯', label:'Objetivos'},
-        {id:'diary', icon:'📓', label:'Diario'},
-        {id:'theory', icon:'📖', label:'Teoría / Reglamento'},
-        {id:'injuries', icon:'🩹', label:'Lesiones / Prevención'},
-        {id:'ranking', icon:'🏅', label:'Ranking'}
-      ];
-      document.getElementById('athlete-selector-bar').style.display = 'none';
-    } else {
-      items = [
-        {id:'dashboard-coach', icon:'📊', label:'Panel Entrenador'},
-        {id:'athletes', icon:'👥', label:'Gestionar Atletas'},
-        {id:'trainings', icon:'🤺', label:'Entrenamientos'},
-        {id:'competitions', icon:'🏆', label:'Competencias'},
-        {id:'matches', icon:'⚔️', label:'Combates'},
-        {id:'opponents', icon:'🎯', label:'Oponentes'},
-        {id:'calendar', icon:'📅', label:'Calendario'},
-        {id:'tests', icon:'📈', label:'Tests Físicos'},
-        {id:'equipment', icon:'🛡️', label:'Equipamiento'},
-        {id:'goals', icon:'🎯', label:'Objetivos del Equipo'},
-        {id:'theory', icon:'📖', label:'Teoría / Reglamento'},
-        {id:'injuries', icon:'🩹', label:'Lesiones del Equipo'},
-        {id:'ranking', icon:'🏅', label:'Rankings'}
-      ];
-      document.getElementById('athlete-selector-bar').style.display = 'block';
-      renderAthleteSelector();
-    }
-    nav.innerHTML = items.map(it =>
-      `<div class="nav-item ${it.id==='dashboard-athlete'||it.id==='dashboard-coach'?'active':''}" data-section="${it.id}" onclick="navTo('${it.id}')"><span class="nav-icon">${it.icon}</span> ${it.label}</div>`
-    ).join('');
-
-    // Fill test type select
-    const testSelect = document.getElementById('test-type');
-    testSelect.innerHTML = cfg.tests.map(t => `<option value="${t.name}">${t.name}</option>`).join('') + '<option value="Test personalizado">Test personalizado</option>';
-    document.getElementById('tests-info-content').innerHTML = cfg.tests.map(t => `<p><strong>${t.name}:</strong> ${t.desc}</p>`).join('');
-
-    // Fill equipment select
-    const equipSelect = document.getElementById('e-item');
-    equipSelect.innerHTML = cfg.equip.map(e => `<option value="${e}">${e}</option>`).join('') + '<option value="Otro">Otro</option>';
-
-    // Fill theory
-    document.getElementById('theory-positions').innerHTML = cfg.theory.positions;
-    document.getElementById('theory-priority').innerHTML = cfg.theory.priority;
-    document.getElementById('theory-tactics').innerHTML = cfg.theory.tactics;
-    document.getElementById('theory-rules').innerHTML = cfg.theory.rules;
-
-    // Fill athlete selects in modals (coach mode)
-    if(data.setup.mode === 'coach') {
-      const opts = data.athletes.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
-      ['t-athlete','c-athlete','m-athlete','test-athlete','g-athlete'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) {
-          if(id === 'g-athlete') el.innerHTML = '<option value="">Todos / General</option>' + opts;
-          else el.innerHTML = opts;
-        }
-      });
-      document.querySelectorAll('#modal-training, #modal-competition, #modal-match, #modal-test, #modal-goal').forEach(m => {
-        const sel = m.querySelector('[id$="-athlete-select"]');
-        if(sel) sel.style.display = 'block';
-      });
-    }
-
-    renderAll();
-  }
-
-  window.navTo = function(id) {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    const navItem = document.querySelector(`.nav-item[data-section="${id}"]`);
-    if(navItem) navItem.classList.add('active');
-    document.getElementById(id).classList.add('active');
-    document.getElementById('sidebar').classList.remove('open');
-  };
-  window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('open'); };
-
-  // Modals
-  window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
-  window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
-  document.querySelectorAll('.modal-overlay').forEach(ov => {
-    ov.addEventListener('click', e => { if(e.target === ov) ov.classList.remove('active'); });
-  });
-
-  window.showTheoryTab = function(id) {
-    document.querySelectorAll('#theory .tab').forEach(t => t.classList.remove('active'));
-    event.target.classList.add('active');
-    document.querySelectorAll('.theory-section').forEach(s => s.style.display = 'none');
-    document.getElementById('theory-'+id).style.display = 'block';
-  };
-
-
-  // ═══════════════════════════════════════════════════════════════
-  //  CRUD FUNCTIONS
-  // ═══════════════════════════════════════════════════════════════
-
-  // Helper: get current athlete context
-  function getAthleteId() {
-    if(data.setup.mode === 'athlete') return 'self';
-    return data.currentAthleteId;
-  }
-  function addTo(arr, item) {
-    item._athleteId = getAthleteId();
-    arr.unshift(item);
-    save();
-  }
-  function getItems(arr) {
-    if(data.setup.mode === 'athlete') return arr.filter(x => x._athleteId === 'self' || !x._athleteId);
-    if(data.currentAthleteId) return arr.filter(x => x._athleteId === data.currentAthleteId);
-    return arr;
-  }
-
-  // ATHLETES (coach only)
-  window.saveAthlete = function() {
-    const a = {
-      id: uid(), name: document.getElementById('at-name').value,
-      nick: document.getElementById('at-nick').value,
-      weapon: document.getElementById('at-weapon').value,
-      category: document.getElementById('at-cat').value,
-      country: document.getElementById('at-country').value,
-      born: document.getElementById('at-born').value,
-      notes: document.getElementById('at-notes').value
-    };
-    data.athletes.unshift(a);
-    if(!data.currentAthleteId) data.currentAthleteId = a.id;
-    save(); closeModal('modal-athlete');
-    document.getElementById('at-name').value=''; document.getElementById('at-nick').value='';
-    document.getElementById('at-country').value=''; document.getElementById('at-born').value='';
-    document.getElementById('at-notes').value='';
-    initApp(); // refresh selects
-  };
-  window.selectAthlete = function(id) { data.currentAthleteId = id; save(); renderAthleteSelector(); renderAll(); };
-  window.delAthlete = function(id) {
-    data.athletes = data.athletes.filter(a => a.id !== id);
-    if(data.currentAthleteId === id) data.currentAthleteId = data.athletes[0]?.id || null;
-    save(); initApp();
-  };
-
-  // TRAINING
-  window.saveTraining = function() {
-    const t = {
-      id: uid(), date: document.getElementById('t-date').value,
-      type: document.getElementById('t-type').value,
-      duration: parseInt(document.getElementById('t-duration').value)||0,
-      intensity: parseInt(document.getElementById('t-intensity').value)||5,
-      notes: document.getElementById('t-notes').value
-    };
-    if(data.setup.mode==='coach') t._athleteId = document.getElementById('t-athlete').value || data.currentAthleteId;
-    data.trainings.unshift(t);
-    save(); closeModal('modal-training');
-    document.getElementById('t-duration').value=''; document.getElementById('t-intensity').value=''; document.getElementById('t-notes').value='';
-  };
-  window.filterTrainings = function(f) { filters.trainings=f; document.querySelectorAll('#trainings .filter-chip').forEach(c=>c.classList.toggle('active', (f==='all'&&c.textContent==='Todos')||c.textContent===f)); renderTrainings(); };
-  window.delTraining = function(id) { data.trainings=data.trainings.filter(x=>x.id!==id); save(); };
-
-  // COMPETITION
-  window.saveCompetition = function() {
-    const c = {
-      id: uid(), name: document.getElementById('c-name').value,
-      date: document.getElementById('c-date').value,
-      location: document.getElementById('c-location').value,
-      position: document.getElementById('c-position').value,
-      notes: document.getElementById('c-notes').value
-    };
-    if(data.setup.mode==='coach') c._athleteId = document.getElementById('c-athlete').value || data.currentAthleteId;
-    data.competitions.unshift(c);
-    save(); closeModal('modal-competition');
-    document.getElementById('c-name').value=''; document.getElementById('c-location').value='';
-    document.getElementById('c-position').value=''; document.getElementById('c-notes').value='';
-  };
-  window.delCompetition = function(id) { data.competitions=data.competitions.filter(x=>x.id!==id); save(); };
-
-  // MATCH
-  window.saveMatch = function() {
-    const opp = document.getElementById('m-opponent').value.trim();
-    if(!opp) { alert('Ingresa el nombre del oponente'); return; }
-    const forScore = parseInt(document.getElementById('m-for').value)||0;
-    const againstScore = parseInt(document.getElementById('m-against').value)||0;
-    const m = {
-      id: uid(), date: document.getElementById('m-date').value,
-      competition: document.getElementById('m-comp').value,
-      opponentName: opp, opponentCountry: document.getElementById('m-country').value,
-      type: document.getElementById('m-type').value,
-      format: document.getElementById('m-format').value,
-      scoreFor: forScore, scoreAgainst: againstScore,
-      phase: document.getElementById('m-phase').value,
-      weapon: document.getElementById('m-weapon').value,
-      notes: document.getElementById('m-notes').value,
-      win: forScore > againstScore
-    };
-    if(data.setup.mode==='coach') m._athleteId = document.getElementById('m-athlete').value || data.currentAthleteId;
-    data.matches.unshift(m);
-    if(!data.opponents.find(o=>o.name.toLowerCase()===opp.toLowerCase())) {
-      data.opponents.push({ id: uid(), name: opp, country: m.opponentCountry, weapon: m.weapon, hand: 'Derecha', notes: '' });
-    }
-    save(); closeModal('modal-match');
-    document.getElementById('m-opponent').value=''; document.getElementById('m-country').value='';
-    document.getElementById('m-for').value=''; document.getElementById('m-against').value='';
-    document.getElementById('m-notes').value=''; document.getElementById('m-comp').value='';
-  };
-  window.filterMatches = function(f) { filters.matches=f; document.querySelectorAll('#matches .filter-chip').forEach(c=>c.classList.toggle('active', c.textContent.toLowerCase().includes(f)||(f==='all'&&c.textContent==='Todos'))); renderMatches(); };
-  window.delMatch = function(id) { data.matches=data.matches.filter(x=>x.id!==id); save(); };
-
-  // OPPONENT
-  window.saveOpponent = function() {
-    data.opponents.unshift({
-      id: uid(), name: document.getElementById('o-name').value,
-      country: document.getElementById('o-country').value,
-      weapon: document.getElementById('o-weapon').value,
-      hand: document.getElementById('o-hand').value,
-      notes: document.getElementById('o-notes').value
-    });
-    save(); closeModal('modal-opponent');
-    document.getElementById('o-name').value=''; document.getElementById('o-country').value=''; document.getElementById('o-notes').value='';
-  };
-  window.delOpponent = function(id) { data.opponents=data.opponents.filter(x=>x.id!==id); save(); };
-  window.showH2H = function(oppId) {
-    const opp = data.opponents.find(o=>o.id===oppId); if(!opp) return;
-    const h2h = getItems(data.matches).filter(m=>m.opponentName.toLowerCase()===opp.name.toLowerCase());
-    const wins = h2h.filter(m=>m.win).length;
-    const losses = h2h.length - wins;
-    const tf = h2h.reduce((s,m)=>s+m.scoreFor,0);
-    const ta = h2h.reduce((s,m)=>s+m.scoreAgainst,0);
-    document.getElementById('h2h-title').textContent = 'Historial vs ' + opp.name;
-    let html = '<div class="stats-grid" style="margin-bottom:14px;">';
-    html += '<div class="stat-box"><div class="stat-value">'+h2h.length+'</div><div class="stat-label">Combates</div></div>';
-    html += '<div class="stat-box"><div class="stat-value stat-win">'+wins+'</div><div class="stat-label">Victorias</div></div>';
-    html += '<div class="stat-box"><div class="stat-value stat-loss">'+losses+'</div><div class="stat-label">Derrotas</div></div>';
-    html += '<div class="stat-box"><div class="stat-value">'+tf+':'+ta+'</div><div class="stat-label">Touches</div></div>';
-    html += '</div>';
-    if(h2h.length===0) html += '<div class="empty-state">Sin combates registrados.</div>';
-    else {
-      html += '<table class="comparison-table"><thead><tr><th>Fecha</th><th>Resultado</th><th>Score</th><th>Fase</th><th>Formato</th></tr></thead><tbody>';
-      h2h.forEach(m=>{
-        html += '<tr><td>'+m.date+'</td><td>'+(m.win?'<span class="badge badge-win">Victoria</span>':'<span class="badge badge-loss">Derrota</span>')+'</td><td>'+m.scoreFor+' - '+m.scoreAgainst+'</td><td>'+m.phase+'</td><td>'+(m.format==='poule'?'Poule':'Directas')+'</td></tr>';
-      });
-      html += '</tbody></table>';
-    }
-    document.getElementById('h2h-content').innerHTML = html;
-    openModal('modal-h2h');
-  };
-
-  // TEST
-  window.saveTest = function() {
-    const t = {
-      id: uid(), date: document.getElementById('test-date').value,
-      type: document.getElementById('test-type').value,
-      result: document.getElementById('test-result').value,
-      weight: document.getElementById('test-weight').value,
-      notes: document.getElementById('test-notes').value
-    };
-    if(data.setup.mode==='coach') t._athleteId = document.getElementById('test-athlete').value || data.currentAthleteId;
-    data.tests.unshift(t);
-    save(); closeModal('modal-test');
-    document.getElementById('test-result').value=''; document.getElementById('test-weight').value=''; document.getElementById('test-notes').value='';
-  };
-  window.delTest = function(id) { data.tests=data.tests.filter(x=>x.id!==id); save(); };
-
-  // VIDEO
-  window.saveVideo = function() {
-    data.videos.unshift({
-      id: uid(), title: document.getElementById('v-title').value,
-      date: document.getElementById('v-date').value,
-      url: document.getElementById('v-url').value,
-      type: document.getElementById('v-type').value,
-      notes: document.getElementById('v-notes').value
-    });
-    save(); closeModal('modal-video');
-    document.getElementById('v-title').value=''; document.getElementById('v-url').value=''; document.getElementById('v-notes').value='';
-  };
-  window.delVideo = function(id) { data.videos=data.videos.filter(x=>x.id!==id); save(); };
-
-  // EQUIPMENT
-  window.saveEquip = function() {
-    const e = {
-      id: uid(), item: document.getElementById('e-item').value,
-      brand: document.getElementById('e-brand').value,
-      date: document.getElementById('e-date').value,
-      status: document.getElementById('e-status').value,
-      notes: document.getElementById('e-notes').value
-    };
-    if(data.setup.mode==='coach') e._athleteId = data.currentAthleteId;
-    data.equipment.unshift(e);
-    save(); closeModal('modal-equip');
-    document.getElementById('e-brand').value=''; document.getElementById('e-notes').value='';
-  };
-  window.delEquip = function(id) { data.equipment=data.equipment.filter(x=>x.id!==id); save(); };
-
-  // NUTRITION
-  window.saveNutri = function() {
-    const n = {
-      id: uid(), date: document.getElementById('n-date').value,
-      water: parseInt(document.getElementById('n-water').value)||0,
-      protein: parseInt(document.getElementById('n-protein').value)||0,
-      carbs: parseInt(document.getElementById('n-carbs').value)||0,
-      veggies: parseInt(document.getElementById('n-veggies').value)||0,
-      supp: document.getElementById('n-supp').value,
-      notes: document.getElementById('n-notes').value
-    };
-    data.nutrition.unshift(n);
-    save(); closeModal('modal-nutri');
-    document.getElementById('n-water').value=''; document.getElementById('n-protein').value='';
-    document.getElementById('n-carbs').value=''; document.getElementById('n-veggies').value='';
-    document.getElementById('n-supp').value=''; document.getElementById('n-notes').value='';
-  };
-  window.delNutri = function(id) { data.nutrition=data.nutrition.filter(x=>x.id!==id); save(); };
-
-  // PSYCHOLOGY
-  window.savePsych = function() {
-    const p = {
-      id: uid(), date: document.getElementById('p-date').value,
-      exercise: document.getElementById('p-exercise').value,
-      duration: parseInt(document.getElementById('p-duration').value)||0,
-      category: document.getElementById('p-cat').value,
-      notes: document.getElementById('p-notes').value,
-      completed: false
-    };
-    data.psychology.unshift(p);
-    save(); closeModal('modal-psych');
-    document.getElementById('p-exercise').value=''; document.getElementById('p-duration').value=''; document.getElementById('p-notes').value='';
-  };
-  window.togglePsych = function(id) { const item=data.psychology.find(p=>p.id===id); if(item){item.completed=!item.completed;save();} };
-  window.delPsych = function(id) { data.psychology=data.psychology.filter(x=>x.id!==id); save(); };
-
-  // MUSIC
-  window.saveMusic = function() {
-    data.music.unshift({
-      id: uid(), title: document.getElementById('mu-title').value,
-      artist: document.getElementById('mu-artist').value,
-      category: document.getElementById('mu-cat').value,
-      url: document.getElementById('mu-url').value
-    });
-    save(); closeModal('modal-music');
-    document.getElementById('mu-title').value=''; document.getElementById('mu-artist').value=''; document.getElementById('mu-url').value='';
-  };
-  window.delMusic = function(id) { data.music=data.music.filter(x=>x.id!==id); save(); };
-
-  // GOALS
-  window.saveGoal = function() {
-    const g = {
-      id: uid(), title: document.getElementById('g-title').value,
-      category: document.getElementById('g-cat').value,
-      term: document.getElementById('g-term').value,
-      deadline: document.getElementById('g-deadline').value,
-      progress: parseInt(document.getElementById('g-progress').value)||0,
-      plan: document.getElementById('g-plan').value,
-      completed: false
-    };
-    if(data.setup.mode==='coach') {
-      const aid = document.getElementById('g-athlete').value;
-      if(aid) g._athleteId = aid;
-    }
-    data.goals.unshift(g);
-    save(); closeModal('modal-goal');
-    document.getElementById('g-title').value=''; document.getElementById('g-progress').value='0'; document.getElementById('g-plan').value='';
-  };
-  window.updateGoalProgress = function(id, val) { const g=data.goals.find(x=>x.id===id); if(g){g.progress=parseInt(val); if(g.progress>=100)g.completed=true; save();} };
-  window.delGoal = function(id) { data.goals=data.goals.filter(x=>x.id!==id); save(); };
-
-  // DIARY
-  window.saveDiary = function() {
-    const d = {
-      id: uid(), date: document.getElementById('d-date').value,
-      mood: parseInt(document.getElementById('d-mood').value)||7,
-      energy: parseInt(document.getElementById('d-energy').value)||7,
-      sleep: parseInt(document.getElementById('d-sleep').value)||7,
-      text: document.getElementById('d-text').value
-    };
-    data.diary.unshift(d);
-    save(); closeModal('modal-diary');
-    document.getElementById('d-mood').value=''; document.getElementById('d-energy').value='';
-    document.getElementById('d-sleep').value=''; document.getElementById('d-text').value='';
-  };
-  window.delDiary = function(id) { data.diary=data.diary.filter(x=>x.id!==id); save(); };
-
-  // INJURY
-  window.saveInjury = function() {
-    const i = {
-      id: uid(), date: document.getElementById('i-date').value,
-      zone: document.getElementById('i-zone').value,
-      intensity: parseInt(document.getElementById('i-intensity').value)||5,
-      status: document.getElementById('i-status').value,
-      desc: document.getElementById('i-desc').value,
-      treatment: document.getElementById('i-treatment').value
-    };
-    if(data.setup.mode==='coach') i._athleteId = data.currentAthleteId;
-    data.injuries.unshift(i);
-    save(); closeModal('modal-injury');
-    document.getElementById('i-intensity').value=''; document.getElementById('i-desc').value='';
-    document.getElementById('i-treatment').value='';
-  };
-  window.delInjury = function(id) { data.injuries=data.injuries.filter(x=>x.id!==id); save(); };
-
-  // RANKING
-  window.saveRanking = function() {
-    const r = {
-      id: uid(), date: document.getElementById('r-date').value,
-      type: document.getElementById('r-type').value,
-      position: parseInt(document.getElementById('r-pos').value)||0,
-      points: parseInt(document.getElementById('r-points').value)||0,
-      notes: document.getElementById('r-notes').value
-    };
-    if(data.setup.mode==='coach') r._athleteId = data.currentAthleteId;
-    data.ranking.unshift(r);
-    save(); closeModal('modal-ranking');
-    document.getElementById('r-pos').value=''; document.getElementById('r-points').value=''; document.getElementById('r-notes').value='';
-  };
-  window.delRanking = function(id) { data.ranking=data.ranking.filter(x=>x.id!==id); save(); };
-
-
-  // ═══════════════════════════════════════════════════════════════
-  //  RENDER FUNCTIONS
-  // ═══════════════════════════════════════════════════════════════
-  function renderAll() {
-    renderAthleteSelector();
-    renderDashboardAthlete();
-    renderDashboardCoach();
-    renderAthletesCrud();
-    renderTrainings();
-    renderCompetitions();
-    renderMatches();
-    renderOpponents();
-    renderCalendar();
-    renderTests();
-    renderVideos();
-    renderEquipment();
-    renderNutrition();
-    renderPsychology();
-    renderMusic();
-    renderGoals();
-    renderDiary();
-    renderInjuries();
-    renderRanking();
-    updateDatalist();
-  }
 
   function renderAthleteSelector() {
     if(data.setup.mode !== 'coach') return;
     const el = document.getElementById('athlete-chips');
-    if(data.athletes.length === 0) { el.innerHTML = '<span style="color:var(--text3); font-size:12px;">No hay atletas. Crea uno primero.</span>'; return; }
+    if(data.athletes.length === 0) { el.innerHTML = '<span style="color:var(--text3); font-size:12px;">No hay atletas. Genera un código de invitación.</span>'; return; }
     el.innerHTML = data.athletes.map(a =>
       `<span class="athlete-chip ${a.id===data.currentAthleteId?'active':''}" onclick="selectAthlete('${a.id}')">${a.name}</span>`
     ).join('');
   }
 
   function renderDashboardAthlete() {
-    const trainings = getItems(data.trainings);
-    const comps = getItems(data.competitions);
-    const matches = getItems(data.matches);
-    const goals = getItems(data.goals).filter(g=>!g.completed);
+    const trainings = data.trainings;
+    const comps = data.competitions;
+    const matches = data.matches;
+    const goals = data.goals.filter(g=>!g.completed);
     const wins = matches.filter(m=>m.win).length;
     const losses = matches.length - wins;
     document.getElementById('da-trainings').textContent = trainings.length;
@@ -1542,11 +852,11 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     else rmEl.innerHTML = recent.map(m=>`
       <div class="list-item">
         <div class="list-item-content">
-          <div class="list-item-title">${m.opponentName} ${m.opponentCountry?'('+m.opponentCountry+')':''}</div>
+          <div class="list-item-title">${m.opponent_name} ${m.opponent_country?'('+m.opponent_country+')':''}</div>
           <div class="list-item-meta">${m.date} · ${m.phase} · ${m.format==='poule'?'Poule':'Directas'}</div>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
-          <div class="match-score"><span class="score-me">${m.scoreFor}</span><span class="score-sep">:</span><span class="score-them">${m.scoreAgainst}</span></div>
+          <div class="match-score"><span class="score-me">${m.score_for}</span><span class="score-sep">:</span><span class="score-them">${m.score_against}</span></div>
           ${m.win?'<span class="badge badge-win">Victoria</span>':'<span class="badge badge-loss">Derrota</span>'}
         </div>
       </div>
@@ -1579,45 +889,40 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     const nextComp = data.competitions.filter(c=>c.date>=today).sort((a,b)=>a.date.localeCompare(b.date))[0];
     document.getElementById('dc-next-comp').textContent = nextComp ? nextComp.name : '—';
 
-    // Best win rate athlete
-    let bestAthlete = '—';
-    let bestRate = -1;
+    let bestAthlete = '—'; let bestRate = -1;
     data.athletes.forEach(a => {
-      const am = data.matches.filter(m => m._athleteId === a.id);
+      const am = data.matches.filter(m => m.user_id === a.id);
       const aw = am.filter(m=>m.win).length;
       const rate = am.length ? aw/am.length : 0;
       if(rate > bestRate) { bestRate = rate; bestAthlete = a.name; }
     });
     document.getElementById('dc-top-athlete').textContent = bestAthlete;
 
-    // Comparison table
     const compEl = document.getElementById('dc-comparison');
     if(data.athletes.length === 0) compEl.innerHTML = '<div class="empty-state">Agrega atletas para ver comparativas.</div>';
     else {
       let html = '<table class="comparison-table"><thead><tr><th>Atleta</th><th>Combates</th><th>V</th><th>D</th><th>% V</th><th>Entrenos</th><th>Competencias</th></tr></thead><tbody>';
       data.athletes.forEach(a => {
-        const am = data.matches.filter(m => m._athleteId === a.id);
-        const aw = am.filter(m=>m.win).length;
-        const al = am.length - aw;
+        const am = data.matches.filter(m => m.user_id === a.id);
+        const aw = am.filter(m=>m.win).length; const al = am.length - aw;
         const rate = am.length ? Math.round((aw/am.length)*100) : 0;
-        const at = data.trainings.filter(t => t._athleteId === a.id).length;
-        const ac = data.competitions.filter(c => c._athleteId === a.id).length;
+        const at = data.trainings.filter(t => t.user_id === a.id).length;
+        const ac = data.competitions.filter(c => c.user_id === a.id).length;
         html += `<tr><td><strong>${a.name}</strong> <span style="color:var(--text3); font-size:11px;">${a.weapon}</span></td><td>${am.length}</td><td style="color:var(--win)">${aw}</td><td style="color:var(--loss)">${al}</td><td>${rate}%</td><td>${at}</td><td>${ac}</td></tr>`;
       });
       html += '</tbody></table>';
       compEl.innerHTML = html;
     }
 
-    // Athletes list
     const listEl = document.getElementById('dc-athletes-list');
     if(data.athletes.length === 0) listEl.innerHTML = '<div class="empty-state">No hay atletas registrados.</div>';
     else listEl.innerHTML = data.athletes.map(a => {
-      const am = data.matches.filter(m => m._athleteId === a.id);
+      const am = data.matches.filter(m => m.user_id === a.id);
       const aw = am.filter(m=>m.win).length;
       return `<div class="list-item" onclick="selectAthlete('${a.id}'); navTo('dashboard-athlete');" style="cursor:pointer;">
         <div class="list-item-content">
-          <div class="list-item-title">${a.name} ${a.nick?'"'+a.nick+'"':''}</div>
-          <div class="list-item-meta">${a.weapon} · ${a.category}${a.country?' · '+a.country:''}${a.born?' · '+a.born:''}</div>
+          <div class="list-item-title">${a.name}</div>
+          <div class="list-item-meta">${a.weapon} · ${a.category}</div>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
           <span class="badge badge-win">${aw}V</span>
@@ -1629,13 +934,12 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderAthletesCrud() {
     const el = document.getElementById('list-athletes-crud');
-    if(data.athletes.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">Sin atletas</div>Crea el primer perfil de tu equipo.</div>'; return; }
+    if(data.athletes.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-title">Sin atletas</div>Genera un código de invitación para que se unan.</div>'; return; }
     el.innerHTML = data.athletes.map(a => `
       <div class="list-item">
         <div class="list-item-content">
-          <div class="list-item-title">${a.name} ${a.nick?'"'+a.nick+'"':''}</div>
-          <div class="list-item-meta">${a.weapon} · ${a.category}${a.country?' · '+a.country:''}${a.born?' · Nac: '+a.born:''}</div>
-          ${a.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+a.notes+'</div>':''}
+          <div class="list-item-title">${a.name}</div>
+          <div class="list-item-meta">${a.weapon} · ${a.category}</div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
           <button class="btn btn-sm" onclick="selectAthlete('${a.id}'); navTo('dashboard-athlete');">Ver datos</button>
@@ -1647,7 +951,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderTrainings() {
     const el = document.getElementById('list-trainings');
-    let items = getItems(data.trainings);
+    let items = data.trainings;
     if(filters.trainings!=='all') items = items.filter(t=>t.type===filters.trainings);
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🤺</div><div class="empty-state-title">Sin entrenamientos</div>Registra tu primer entrenamiento.</div>'; return; }
     el.innerHTML = items.map(t=>`
@@ -1663,7 +967,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderCompetitions() {
     const el = document.getElementById('list-competitions');
-    const items = getItems(data.competitions);
+    const items = data.competitions;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><div class="empty-state-title">Sin competencias</div>Registra tus torneos.</div>'; return; }
     el.innerHTML = items.map(c=>`
       <div class="list-item">
@@ -1678,7 +982,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderMatches() {
     const el = document.getElementById('list-matches');
-    let items = getItems(data.matches);
+    let items = data.matches;
     if(filters.matches!=='all') {
       if(filters.matches==='individual'||filters.matches==='team') items=items.filter(m=>m.type===filters.matches);
       else items=items.filter(m=>m.format===filters.matches);
@@ -1687,7 +991,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     el.innerHTML = items.map(m=>`
       <div class="list-item">
         <div class="list-item-content">
-          <div class="list-item-title">${m.opponentName} ${m.opponentCountry?'('+m.opponentCountry+')':''}</div>
+          <div class="list-item-title">${m.opponent_name} ${m.opponent_country?'('+m.opponent_country+')':''}</div>
           <div class="list-item-meta">${m.date} · ${m.competition||'Amistoso'} · ${m.phase}</div>
           <div style="margin-top:5px; display:flex; gap:5px; flex-wrap:wrap;">
             <span class="badge ${m.type==='team'?'badge-team':'badge-ind'}">${m.type==='team'?'Equipo':'Individual'}</span>
@@ -1696,7 +1000,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:10px;">
-          <div class="match-score"><span class="score-me">${m.scoreFor}</span><span class="score-sep">:</span><span class="score-them">${m.scoreAgainst}</span></div>
+          <div class="match-score"><span class="score-me">${m.score_for}</span><span class="score-sep">:</span><span class="score-them">${m.score_against}</span></div>
           <div class="list-item-actions"><button onclick="delMatch('${m.id}')">Eliminar</button></div>
         </div>
       </div>
@@ -1707,7 +1011,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     const el = document.getElementById('list-opponents');
     if(data.opponents.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin oponentes</div>Agrega rivales para ver estadísticas H2H.</div>'; return; }
     el.innerHTML = data.opponents.map(o=>{
-      const h2h = getItems(data.matches).filter(m=>m.opponentName.toLowerCase()===o.name.toLowerCase());
+      const h2h = data.matches.filter(m=>m.opponent_name.toLowerCase()===o.name.toLowerCase());
       const wins = h2h.filter(m=>m.win).length;
       const losses = h2h.length - wins;
       return `<div style="border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:8px; background:var(--surface2);">
@@ -1743,10 +1047,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d=>html+=`<div class="cal-day-header">${d}</div>`);
     for(let i=firstDay-1; i>=0; i--) html+=`<div class="cal-day other"><span class="cal-day-num">${prevDays-i}</span></div>`;
     const today = new Date().toISOString().split('T')[0];
-    const trainings = getItems(data.trainings);
-    const comps = getItems(data.competitions);
-    const matches = getItems(data.matches);
-    const psych = getItems(data.psychology);
+    const trainings = data.trainings;
+    const comps = data.competitions;
+    const matches = data.matches;
+    const psych = data.psychology;
     for(let d=1; d<=daysInMonth; d++) {
       const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const hasTrain = trainings.some(t=>t.date===dateStr);
@@ -1770,7 +1074,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderTests() {
     const el = document.getElementById('list-tests');
-    const items = getItems(data.tests);
+    const items = data.tests;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📈</div><div class="empty-state-title">Sin tests</div>Registra tus primeros resultados físicos.</div>'; return; }
     el.innerHTML = items.map(t=>`
       <div class="list-item">
@@ -1804,7 +1108,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderEquipment() {
     const el = document.getElementById('list-equipment');
-    const items = getItems(data.equipment);
+    const items = data.equipment;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛡️</div><div class="empty-state-title">Sin equipamiento</div>Registra tu material de esgrima.</div>'; return; }
     const statusMap = {ok:'✅ Perfecto', warn:'⚠️ Revisar', bad:'❌ Cambiar'};
     const statusColor = {ok:'var(--win)', warn:'var(--warn)', bad:'var(--loss)'};
@@ -1822,7 +1126,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderNutrition() {
     const today = new Date().toISOString().split('T')[0];
-    const todayEntry = data.nutrition.find(n=>n.date===today && (n._athleteId===getAthleteId()||!n._athleteId));
+    const todayEntry = data.nutrition.find(n=>n.date===today);
     if(todayEntry) {
       document.getElementById('n-water').textContent = todayEntry.water;
       document.getElementById('n-protein').textContent = todayEntry.protein + 'g';
@@ -1835,7 +1139,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       document.getElementById('n-veggies').textContent = '0';
     }
     const el = document.getElementById('list-nutrition');
-    const items = data.nutrition.filter(n => n._athleteId===getAthleteId()||!n._athleteId).slice(0,14);
+    const items = data.nutrition.slice(0,14);
     if(items.length===0) { el.innerHTML = '<div class="empty-state">Sin registros nutricionales.</div>'; return; }
     el.innerHTML = items.map(n=>`
       <div class="list-item">
@@ -1850,7 +1154,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderPsychology() {
     const el = document.getElementById('list-psychology');
-    const items = getItems(data.psychology);
+    const items = data.psychology;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🧠</div><div class="empty-state-title">Sin ejercicios</div>Registra los ejercicios de tu psicólogo.</div>'; return; }
     el.innerHTML = items.map(p=>`
       <div class="list-item" style="${p.completed?'opacity:.5;':''}">
@@ -1896,7 +1200,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderGoals() {
     const el = document.getElementById('list-goals');
-    const items = getItems(data.goals);
+    const items = data.goals;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎯</div><div class="empty-state-title">Sin objetivos</div>Define tus metas SMART.</div>'; return; }
     const termLabels = {short:'Corto plazo', medium:'Mediano plazo', long:'Largo plazo'};
     el.innerHTML = items.map(g=>`
@@ -1920,7 +1224,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderDiary() {
     const el = document.getElementById('list-diary');
-    const items = getItems(data.diary);
+    const items = data.diary;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📓</div><div class="empty-state-title">Sin entradas</div>Escribe sobre tu día, sensaciones y aprendizajes.</div>'; return; }
     const moodEmoji = {1:'😫',2:'😞',3:'😟',4:'😐',5:'🙂',6:'😊',7:'😃',8:'🤩',9:'🔥',10:'⚡'};
     el.innerHTML = items.map(d=>`
@@ -1937,7 +1241,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderInjuries() {
     const el = document.getElementById('list-injuries');
-    const items = getItems(data.injuries);
+    const items = data.injuries;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🩹</div><div class="empty-state-title">Sin registros</div>Buen signo. Pero registra cualquier molestia.</div>'; return; }
     const statusLabels = {active:'🔴 Activa', recovered:'🟢 Recuperada', chronic:'🟡 Crónica'};
     el.innerHTML = items.map(i=>`
@@ -1945,7 +1249,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
         <div class="list-item-content">
           <div class="list-item-title">${i.zone} · Intensidad ${i.intensity}/10</div>
           <div class="list-item-meta">${i.date} · ${statusLabels[i.status]}</div>
-          ${i.desc?'<div style="font-size:11px; color:var(--text2); margin-top:2px;">'+i.desc+'</div>':''}
+          ${i.description?'<div style="font-size:11px; color:var(--text2); margin-top:2px;">'+i.description+'</div>':''}
           ${i.treatment?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">Tratamiento: '+i.treatment+'</div>':''}
         </div>
         <div class="list-item-actions"><button onclick="delInjury('${i.id}')">Eliminar</button></div>
@@ -1955,7 +1259,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   function renderRanking() {
     const el = document.getElementById('list-ranking');
-    const items = getItems(data.ranking);
+    const items = data.ranking;
     if(items.length===0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏅</div><div class="empty-state-title">Sin rankings</div>Registra tu posición en cada actualización.</div>'; return; }
     el.innerHTML = items.map(r=>`
       <div class="list-item">
@@ -1977,13 +1281,17 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   // ═══════════════════════════════════════════════════════════════
   //  BOOT
   // ═══════════════════════════════════════════════════════════════
-  load();
-  if(data.setup && data.setup.done) {
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('main-app').style.display = 'flex';
-    initApp();
-  }
+  window.addEventListener('DOMContentLoaded', initAuth);
 })();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('SW registrado'))
+        .catch(err => console.log('SW error', err));
+    });
+  }
 </script>
 </body>
 </html>
