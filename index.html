@@ -879,17 +879,29 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       return;
     }
 
+    // Mostrar estado de carga mientras procesamos auth
+    document.getElementById('setup-msg').textContent = 'Verificando sesión...';
+
+    // Dar tiempo a Supabase para procesar el hash de OAuth si viene de un redirect
+    await new Promise(r => setTimeout(r, 800));
+
+    let authResolved = false;
+
+    // Intentar obtener sesión existente
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       currentUser = session.user;
+      authResolved = true;
       await loadUserProfile();
-    } else {
-      showLoginScreen();
+      return;
     }
 
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+    // Si no hay sesión, escuchar cambios (puede venir del redirect de OAuth)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session && !authResolved) {
+        authResolved = true;
         currentUser = session.user;
+        subscription.unsubscribe();
         await loadUserProfile();
       } else if (event === 'SIGNED_OUT') {
         currentUser = null;
@@ -897,41 +909,64 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
         showLoginScreen();
       }
     });
+
+    // Timeout: si después de 6 segundos no hay sesión, mostrar login
+    setTimeout(() => {
+      if (!authResolved && !currentUser) {
+        subscription.unsubscribe();
+        showLoginScreen();
+      }
+    }, 6000);
   }
 
   async function loadUserProfile() {
     if (!currentUser) return;
 
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', currentUser.id)
-      .single();
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single();
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error cargando perfil:', error);
-    }
-
-    if (profile && profile.full_name && profile.role) {
-      userProfile = profile;
-      data.setup.mode = profile.role;
-      data.setup.weapon = profile.weapon || 'florete';
-      data.setup.category = profile.category || 'Cadete';
-      data.setup.country = profile.country || 'VEN';
-      data.setup.name = profile.full_name;
-
-      // Si es coach, cargar atletas
-      if (profile.role === 'coach') {
-        await loadCoachAthletes();
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error cargando perfil:', error);
       }
 
-      await syncFromCloud();
-      showApp();
-    } else {
-      // Perfil incompleto, mostrar modal de perfil
-      openModal('modal-profile');
-      document.getElementById('setup-screen').style.display = 'none';
-      document.getElementById('main-app').style.display = 'flex';
+      // Si el perfil existe y tiene datos básicos, entrar directo
+      if (profile && profile.role) {
+        userProfile = profile;
+        data.setup.mode = profile.role;
+        data.setup.weapon = profile.weapon || 'florete';
+        data.setup.category = profile.category || 'Cadete';
+        data.setup.country = profile.country || 'VEN';
+        data.setup.name = profile.full_name || currentUser.user_metadata?.full_name || 'Atleta';
+
+        // Precargar formulario de perfil por si quiere editar
+        document.getElementById('pf-name').value = data.setup.name;
+        document.getElementById('pf-role').value = data.setup.mode;
+        document.getElementById('pf-weapon').value = data.setup.weapon;
+        document.getElementById('pf-cat').value = data.setup.category;
+        document.getElementById('pf-country').value = data.setup.country;
+
+        // Si es coach, cargar atletas
+        if (profile.role === 'coach') {
+          await loadCoachAthletes();
+        }
+
+        await syncFromCloud();
+        showApp();
+      } else {
+        // Perfil incompleto o no existe: mostrar modal para completar
+        document.getElementById('pf-name').value = currentUser.user_metadata?.full_name || '';
+        document.getElementById('pf-email').value = currentUser.email || '';
+        openModal('modal-profile');
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'flex';
+      }
+    } catch (e) {
+      console.error('Excepción en loadUserProfile:', e);
+      showLoginScreen();
     }
   }
 
