@@ -1081,7 +1081,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       updated_at: new Date().toISOString()
     };
 
-    const { error } = await supabase.from('profiles').upsert(updates);
+    const { error } = await supabase.from('profiles').update(updates).eq('id', currentUser.id);
     if (error) { alert('Error guardando perfil: ' + error.message); return; }
 
     // Si atleta ingresó código de equipo
