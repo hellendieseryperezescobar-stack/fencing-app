@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Fencing Pro">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRmVuY2luZyBQcm8gdjIiLCJzaG9ydF9uYW1lIjoiRmVuY2luZyBQcm8iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYxMiIsInRoZW1lX2NvbG9yIjoiIzBmMGYxMiIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJyUzRSUzQ3JlY3QgZmlsbD0nJTIzZThjNTQ3JyB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5Micgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMjAnIGZvbnQtc2l6ZT0nMTAwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNjc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNlJTNjcmVjdCBmaWxsPSclMjNlOGM1NDcnIHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nNjQnLyUzZSUzY3RleHQgeD0nMjU2JyB5PSczMjAnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" defer></script>
 <script>
 const SUPABASE_URL = 'https://lglujkcpkeybchhpckns.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbHVqa2Nwa2V5YmNoaHBja25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NDc0NTIsImV4cCI6MjEwMTQyMzQ1Mn0.J0qSgX5yudbRqCGu_TECocyPPFEZNt3uzfd68obYbtY';
@@ -267,7 +267,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="section" id="trainings">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Entrenamientos</div><div class="page-sub">Registra cada sesión de trabajo</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-training')">+ Nuevo</button>
+        <button class="btn btn-primary" id="btn-add-training" onclick="openModal('modal-training')">+ Nuevo</button>
       </div>
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterTrainings('all')">Todos</button>
@@ -283,7 +283,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="section" id="competitions">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Competencias</div><div class="page-sub">Torneos, resultados y posiciones</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-competition')">+ Nueva</button>
+        <button class="btn btn-primary" id="btn-add-competition" onclick="openModal('modal-competition')">+ Nueva</button>
       </div>
       <div id="list-competitions"></div>
     </div>
@@ -291,7 +291,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="section" id="matches">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Combates</div><div class="page-sub">Registro completo tipo Fencing Time</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-match')">+ Registrar combate</button>
+        <button class="btn btn-primary" id="btn-add-match" onclick="openModal('modal-match')">+ Registrar combate</button>
       </div>
       <div class="filter-bar">
         <button class="filter-chip active" onclick="filterMatches('all')">Todos</button>
@@ -332,7 +332,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="section" id="tests">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Tests de Rendimiento</div><div class="page-sub" id="tests-sub">Métricas objetivas de progreso físico</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-test')">+ Nuevo test</button>
+        <button class="btn btn-primary" id="btn-add-test" onclick="openModal('modal-test')">+ Nuevo test</button>
       </div>
       <div class="card" id="tests-info-card">
         <div class="card-header"><div class="card-title">Tests recomendados</div></div>
@@ -393,9 +393,62 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     <div class="section" id="goals">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
         <div><div class="page-title">Objetivos</div><div class="page-sub">Metas SMART a corto, mediano y largo plazo</div></div>
-        <button class="btn btn-primary" onclick="openModal('modal-goal')">+ Nuevo objetivo</button>
+        <button class="btn btn-primary" id="btn-add-goal" onclick="openModal('modal-goal')">+ Nuevo objetivo</button>
       </div>
       <div id="list-goals"></div>
+    </div>
+
+    <div class="section" id="coach-notes">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Mis notas</div><div class="page-sub">Privadas: lo que tú ves y anotas en competencia. El atleta no las ve.</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-coachnote')">+ Nueva nota</button>
+      </div>
+      <div id="list-coach-notes"></div>
+    </div>
+
+    <div class="section" id="plans-coach">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+        <div><div class="page-title">Rutinas enviadas</div><div class="page-sub">Envía una rutina al atleta seleccionado arriba; le llega directo a su cuenta</div></div>
+        <button class="btn btn-primary" onclick="openModal('modal-plan')">+ Enviar rutina</button>
+      </div>
+      <div id="list-plans-coach"></div>
+    </div>
+
+    <div class="section" id="plans-athlete">
+      <div style="margin-bottom:14px;"><div class="page-title">Rutinas del coach</div><div class="page-sub">Lo que tu entrenador te ha asignado</div></div>
+      <div id="list-plans-athlete"></div>
+    </div>
+
+    <div class="section" id="teams">
+      <div style="margin-bottom:14px;"><div class="page-title">Mis equipos</div><div class="page-sub">Club, selección estadal o selección nacional — puedes estar en varios a la vez</div></div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-weight:600; margin-bottom:8px;">Unirme a un equipo</div>
+        <div class="form-row">
+          <div class="form-group"><input type="text" id="team-join-code" placeholder="Código de invitación"></div>
+        </div>
+        <button class="btn btn-primary" onclick="joinTeamByCode()">Unirme</button>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-weight:600; margin-bottom:8px;">Crear un equipo nuevo</div>
+        <div class="form-row">
+          <div class="form-group full"><label>Nombre</label><input type="text" id="team-new-name" placeholder="Ej: Selección Miranda / Selección Venezuela"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Nivel</label>
+            <select id="team-new-level" onchange="document.getElementById('team-new-region-wrap').style.display = this.value==='estadal' ? '' : 'none'">
+              <option value="club">Club</option>
+              <option value="estadal">Estadal</option>
+              <option value="nacional">Nacional</option>
+            </select>
+          </div>
+          <div class="form-group" id="team-new-region-wrap" style="display:none;"><label>Estado</label><input type="text" id="team-new-region" placeholder="Ej: Miranda"></div>
+        </div>
+        <button class="btn btn-primary" onclick="createTeam()">Crear equipo</button>
+      </div>
+
+      <div id="list-teams"></div>
     </div>
 
     <div class="section" id="diary">
@@ -669,6 +722,26 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-coachnote">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Nueva nota privada</h3><button class="modal-close" onclick="closeModal('modal-coachnote')">&times;</button></div>
+    <div class="form-group full"><label>Competencia / contexto</label><input type="text" id="cn-competition" placeholder="Ej: Copa Ciudad, poule 2"></div>
+    <div class="form-group full"><label>Marcador que llevaste</label><input type="text" id="cn-score" placeholder="Ej: 5-3, 5-4, 3-5..."></div>
+    <div class="form-group full"><label>Tus conclusiones</label><textarea id="cn-notes" placeholder="Lo que observaste: distancia, decisiones, estado del atleta..."></textarea></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-coachnote')">Cancelar</button><button class="btn btn-primary" onclick="saveCoachNote()">Guardar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-plan">
+  <div class="modal">
+    <div class="modal-header"><h3 class="modal-title">Enviar rutina al atleta</h3><button class="modal-close" onclick="closeModal('modal-plan')">&times;</button></div>
+    <div class="form-group full"><label>Título</label><input type="text" id="pl-title" placeholder="Ej: Semana de fondo, foco en distancia"></div>
+    <div class="form-group full"><label>Rutina / instrucciones</label><textarea id="pl-content" placeholder="Detalle de la rutina, series, foco técnico..." style="min-height:120px;"></textarea></div>
+    <div class="form-group"><label>Fecha límite (opcional)</label><input type="date" id="pl-due"></div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-plan')">Cancelar</button><button class="btn btn-primary" onclick="savePlan()">Enviar</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-diary">
   <div class="modal">
     <div class="modal-header"><h3 class="modal-title">Nueva entrada de diario</h3><button class="modal-close" onclick="closeModal('modal-diary')">&times;</button></div>
@@ -760,6 +833,8 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     tests: [], videos: [], equipment: [], nutrition: [],
     psychology: [], music: [], goals: [], diary: [],
     injuries: [], ranking: [], athletes: [],
+    coachNotes: [], assignedPlans: [],
+    teams: [], teamMembers: [], teamRoster: [],
     setup: { mode: 'athlete', weapon: 'florete' },
     currentAthleteId: null
   };
@@ -784,6 +859,8 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     {id:'diary', label:'Diario', icon:'📓'},
     {id:'theory', label:'Teoría', icon:'📖'},
     {id:'injuries', label:'Lesiones', icon:'🩹'},
+    {id:'plans-athlete', label:'Rutinas del coach', icon:'📋'},
+    {id:'teams', label:'Mis equipos', icon:'🏳️'},
     {id:'ranking', label:'Ranking', icon:'🏅'}
   ];
 
@@ -796,6 +873,9 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     {id:'calendar', label:'Calendario', icon:'📅'},
     {id:'tests', label:'Tests', icon:'📈'},
     {id:'goals', label:'Objetivos', icon:'🎯'},
+    {id:'coach-notes', label:'Mis notas', icon:'📝'},
+    {id:'plans-coach', label:'Rutinas enviadas', icon:'📤'},
+    {id:'teams', label:'Mis equipos', icon:'🏳️'},
     {id:'theory', label:'Teoría', icon:'📖'}
   ];
 
@@ -882,8 +962,12 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     // Mostrar estado de carga mientras procesamos auth
     document.getElementById('setup-msg').textContent = 'Verificando sesión...';
 
-    // Dar tiempo a Supabase para procesar el hash de OAuth si viene de un redirect
-    await new Promise(r => setTimeout(r, 800));
+    // Solo esperamos si venimos de un redirect real de OAuth (hash con access_token o ?code=)
+    // En un abrir normal de la app esto no aplica y no debe frenar el arranque
+    const cameFromOAuthRedirect = window.location.hash.includes('access_token') || window.location.search.includes('code=');
+    if (cameFromOAuthRedirect) {
+      await new Promise(r => setTimeout(r, 800));
+    }
 
     let authResolved = false;
 
@@ -910,13 +994,13 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       }
     });
 
-    // Timeout: si después de 6 segundos no hay sesión, mostrar login
+    // Timeout: si no hay sesión, mostrar login. Damos más margen solo si venimos de OAuth.
     setTimeout(() => {
       if (!authResolved && !currentUser) {
         subscription.unsubscribe();
         showLoginScreen();
       }
-    }, 6000);
+    }, cameFromOAuthRedirect ? 6000 : 1500);
   }
 
   async function loadUserProfile() {
@@ -953,6 +1037,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
         if (profile.role === 'coach') {
           await loadCoachAthletes();
         }
+        await loadTeams();
 
         await syncFromCloud();
         showApp();
@@ -972,20 +1057,33 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   async function loadCoachAthletes() {
     if (!currentUser || data.setup.mode !== 'coach') return;
+    const athleteMap = {};
+
     const { data: relations, error } = await supabase
       .from('coach_athletes')
       .select('athlete_id, profiles:athlete_id(id, full_name, weapon, category)')
       .eq('coach_id', currentUser.id);
+    if (!error && relations) {
+      relations.forEach(r => {
+        if (r.profiles) athleteMap[r.profiles.id] = { id: r.profiles.id, name: r.profiles.full_name, weapon: r.profiles.weapon || 'florete', category: r.profiles.category || 'Cadete' };
+      });
+    }
 
-    if (error) { console.error('Error cargando atletas:', error); return; }
+    // Atletas alcanzados por pertenecer al mismo equipo (estadal/nacional), no solo por invitación directa
+    const { data: myTeamRows } = await supabase.from('team_members').select('team_id').eq('profile_id', currentUser.id).in('member_role', ['coach','staff']);
+    const teamIds = (myTeamRows || []).map(t => t.team_id);
+    if (teamIds.length > 0) {
+      const { data: teamAthletes } = await supabase
+        .from('team_members')
+        .select('profile_id, profiles:profile_id(id, full_name, weapon, category)')
+        .in('team_id', teamIds)
+        .eq('member_role', 'athlete');
+      (teamAthletes || []).forEach(r => {
+        if (r.profiles) athleteMap[r.profiles.id] = { id: r.profiles.id, name: r.profiles.full_name, weapon: r.profiles.weapon || 'florete', category: r.profiles.category || 'Cadete' };
+      });
+    }
 
-    data.athletes = (relations || []).map(r => ({
-      id: r.profiles.id,
-      name: r.profiles.full_name,
-      weapon: r.profiles.weapon || 'florete',
-      category: r.profiles.category || 'Cadete'
-    }));
-
+    data.athletes = Object.values(athleteMap);
     if (data.athletes.length > 0 && !data.currentAthleteId) {
       data.currentAthleteId = data.athletes[0].id;
     }
@@ -994,18 +1092,38 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   async function syncFromCloud() {
     if (!currentUser) return;
     const tables = ['trainings','competitions','matches','opponents','tests','videos','equipment','nutrition','psychology','music','goals','diary','injuries','ranking'];
-    for (const table of tables) {
-      const { data: rows, error } = await supabase.from(table).select('*').eq('user_id', currentUser.id);
+    // Un coach debe ver también los datos reales de sus atletas, no solo los propios.
+    const ownerIds = data.setup.mode === 'coach'
+      ? [currentUser.id, ...data.athletes.map(a => a.id)]
+      : [currentUser.id];
+    await Promise.all(tables.map(async (table) => {
+      const { data: rows, error } = await supabase.from(table).select('*').in('user_id', ownerIds);
       if (!error && rows) {
-        data[table] = rows.map(r => { delete r.user_id; return r; });
+        data[table] = rows; // se conserva user_id: el modo coach lo necesita para filtrar por atleta
       }
+    }));
+
+    // Notas privadas del coach (solo aplica si el rol es coach)
+    if (data.setup.mode === 'coach') {
+      const { data: notes, error: eNotes } = await supabase.from('coach_notes').select('*').eq('coach_id', currentUser.id);
+      if (!eNotes && notes) data.coachNotes = notes;
     }
+    // Rutinas asignadas: RLS ya filtra según el rol (coach ve las que envió, atleta las que recibió)
+    const { data: plans, error: ePlans } = await supabase.from('assigned_plans').select('*');
+    if (!ePlans && plans) data.assignedPlans = plans;
+
     saveLocal();
     renderAll();
   }
 
   async function syncToCloud() {
     if (!currentUser) { alert('No hay sesión activa'); return; }
+    if (data.setup.mode === 'coach') {
+      // El coach es de solo lectura: no tiene nada propio que subir, y no debe
+      // reescribir con su propio id los registros de sus atletas.
+      alert('Modo entrenador: los datos los sincroniza cada atleta desde su propia cuenta.');
+      return;
+    }
     document.getElementById('sync-status').textContent = '🟡 Sincronizando...';
 
     const tables = ['trainings','competitions','matches','opponents','tests','videos','equipment','nutrition','psychology','music','goals','diary','injuries','ranking'];
@@ -1013,7 +1131,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     for (const table of tables) {
       const items = data[table] || [];
       for (const item of items) {
-        const payload = { ...item, user_id: currentUser.id };
+        const payload = { ...item, user_id: item.user_id || currentUser.id };
         if (!payload.id) payload.id = uuid();
         const { error } = await supabase.from(table).upsert(payload, { onConflict: 'id' });
         if (error) console.error('Sync error', table, error);
@@ -1049,6 +1167,16 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     document.getElementById('main-app').style.display = 'none';
   }
 
+  // El entrenador solo puede VER los datos que el atleta mismo registra.
+  // No puede crear, editar ni borrar entrenamientos/competencias/combates/tests/objetivos a nombre del atleta.
+  function applyCoachReadOnly() {
+    const isCoach = data.setup.mode === 'coach';
+    ['btn-add-training','btn-add-competition','btn-add-match','btn-add-test','btn-add-goal'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = isCoach ? 'none' : '';
+    });
+  }
+
   function showApp() {
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('main-app').style.display = 'flex';
@@ -1059,6 +1187,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
     buildSidebar();
     renderAll();
+    applyCoachReadOnly();
 
     if (data.setup.mode === 'coach') {
       document.getElementById('athlete-selector-bar').style.display = 'block';
@@ -1235,13 +1364,17 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   }
 
   function addItem(key, item) {
+    if (data.setup.mode === 'coach') {
+      alert('Modo entrenador: solo puedes ver los datos del atleta. El registro lo debe hacer el propio atleta desde su cuenta.');
+      return;
+    }
     item.id = item.id || uuid();
     item.user_id = getUserId();
     data[key].unshift(item);
     saveLocal();
     renderAll();
     if (supabase && currentUser) {
-      const payload = { ...item, user_id: currentUser.id };
+      const payload = { ...item, user_id: item.user_id };
       supabase.from(key).upsert(payload, { onConflict: 'id' }).then(({error}) => {
         if (error) console.error('Sync error', key, error);
       });
@@ -1249,6 +1382,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   }
 
   function delItem(key, id) {
+    if (data.setup.mode === 'coach') {
+      alert('Modo entrenador: solo puedes ver los datos del atleta, no borrarlos.');
+      return;
+    }
     if (!confirm('¿Eliminar este registro?')) return;
     data[key] = data[key].filter(x => x.id !== id);
     saveLocal();
@@ -1651,6 +1788,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     renderPsychology();
     renderMusic();
     renderGoals();
+    renderCoachNotes();
+    renderPlansCoach();
+    renderPlansAthlete();
+    renderTeams();
     renderDiary();
     renderInjuries();
     renderRanking();
@@ -2067,6 +2208,258 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
         ${g.plan?'<div style="margin-top:6px; font-size:12px; color:var(--text2);"><strong>Plan:</strong> '+g.plan+'</div>':''}
       </div>
     `).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  NOTAS PRIVADAS DEL COACH (nunca visibles para el atleta)
+  // ═══════════════════════════════════════════════════════════════
+  window.saveCoachNote = function() {
+    if (!data.currentAthleteId) { alert('Selecciona un atleta arriba primero.'); return; }
+    const note = {
+      id: uuid(),
+      coach_id: currentUser.id,
+      athlete_id: data.currentAthleteId,
+      competition_ref: document.getElementById('cn-competition').value,
+      score_seen: document.getElementById('cn-score').value,
+      notes: document.getElementById('cn-notes').value,
+      created_at: new Date().toISOString()
+    };
+    data.coachNotes.unshift(note);
+    saveLocal();
+    renderCoachNotes();
+    closeModal('modal-coachnote');
+    document.getElementById('cn-competition').value = '';
+    document.getElementById('cn-score').value = '';
+    document.getElementById('cn-notes').value = '';
+    if (supabase && currentUser) {
+      supabase.from('coach_notes').upsert(note, { onConflict: 'id' }).then(({error}) => {
+        if (error) console.error('Sync error coach_notes', error);
+      });
+    }
+  };
+
+  window.delCoachNote = function(id) {
+    if (!confirm('¿Eliminar esta nota?')) return;
+    data.coachNotes = data.coachNotes.filter(n => n.id !== id);
+    saveLocal();
+    renderCoachNotes();
+    if (supabase && currentUser) {
+      supabase.from('coach_notes').delete().eq('id', id).then(({error}) => {
+        if (error) console.error('Delete error coach_notes', error);
+      });
+    }
+  };
+
+  function renderCoachNotes() {
+    const el = document.getElementById('list-coach-notes');
+    if (!el) return;
+    const items = data.currentAthleteId ? data.coachNotes.filter(n => n.athlete_id === data.currentAthleteId) : data.coachNotes;
+    if (items.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-title">Sin notas</div>Son privadas: solo tú las ves, ni el atleta ni otros coaches.</div>'; return; }
+    el.innerHTML = items.map(n => `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:600;">${n.competition_ref || 'Sin referencia'}</div>
+          ${n.score_seen ? '<div style="font-size:12px; color:var(--text2);"><strong>Marcador:</strong> '+n.score_seen+'</div>' : ''}
+          ${n.notes ? '<div style="font-size:12px; color:var(--text2); margin-top:4px; white-space:pre-wrap;">'+n.notes+'</div>' : ''}
+        </div>
+        <div class="list-item-actions"><button onclick="delCoachNote('${n.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  RUTINAS/PLANES ENVIADOS DEL COACH AL ATLETA
+  // ═══════════════════════════════════════════════════════════════
+  window.savePlan = function() {
+    if (!data.currentAthleteId) { alert('Selecciona un atleta arriba primero.'); return; }
+    const title = document.getElementById('pl-title').value;
+    if (!title) { alert('Escribe un título para la rutina.'); return; }
+    const plan = {
+      id: uuid(),
+      coach_id: currentUser.id,
+      athlete_id: data.currentAthleteId,
+      title: title,
+      content: document.getElementById('pl-content').value,
+      due_date: document.getElementById('pl-due').value || null,
+      status: 'pendiente',
+      created_at: new Date().toISOString()
+    };
+    data.assignedPlans.unshift(plan);
+    saveLocal();
+    renderPlansCoach();
+    closeModal('modal-plan');
+    document.getElementById('pl-title').value = '';
+    document.getElementById('pl-content').value = '';
+    document.getElementById('pl-due').value = '';
+    if (supabase && currentUser) {
+      supabase.from('assigned_plans').upsert(plan, { onConflict: 'id' }).then(({error}) => {
+        if (error) console.error('Sync error assigned_plans', error);
+      });
+    }
+  };
+
+  window.delPlan = function(id) {
+    if (!confirm('¿Eliminar esta rutina enviada?')) return;
+    data.assignedPlans = data.assignedPlans.filter(p => p.id !== id);
+    saveLocal();
+    renderPlansCoach();
+    if (supabase && currentUser) {
+      supabase.from('assigned_plans').delete().eq('id', id).then(({error}) => {
+        if (error) console.error('Delete error assigned_plans', error);
+      });
+    }
+  };
+
+  window.markPlanDone = function(id) {
+    const plan = data.assignedPlans.find(p => p.id === id);
+    if (!plan) return;
+    plan.status = plan.status === 'hecho' ? 'pendiente' : 'hecho';
+    saveLocal();
+    renderPlansAthlete();
+    if (supabase && currentUser) {
+      supabase.from('assigned_plans').update({ status: plan.status }).eq('id', id).then(({error}) => {
+        if (error) console.error('Update error assigned_plans', error);
+      });
+    }
+  };
+
+  function renderPlansCoach() {
+    const el = document.getElementById('list-plans-coach');
+    if (!el) return;
+    const items = data.currentAthleteId ? data.assignedPlans.filter(p => p.athlete_id === data.currentAthleteId) : data.assignedPlans;
+    if (items.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📤</div><div class="empty-state-title">Sin rutinas enviadas</div>Envía una rutina al atleta seleccionado arriba.</div>'; return; }
+    el.innerHTML = items.map(p => `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:600;">${p.title} ${p.status==='hecho' ? '✅' : '⏳'}</div>
+          ${p.due_date ? '<div style="font-size:12px; color:var(--text2);">Vence: '+p.due_date+'</div>' : ''}
+          ${p.content ? '<div style="font-size:12px; color:var(--text2); margin-top:4px; white-space:pre-wrap;">'+p.content+'</div>' : ''}
+        </div>
+        <div class="list-item-actions"><button onclick="delPlan('${p.id}')">Eliminar</button></div>
+      </div>
+    `).join('');
+  }
+
+  function renderPlansAthlete() {
+    const el = document.getElementById('list-plans-athlete');
+    if (!el) return;
+    const items = data.assignedPlans;
+    if (items.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Sin rutinas</div>Tu entrenador aún no te ha enviado ninguna.</div>'; return; }
+    el.innerHTML = items.map(p => `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:600;">${p.title} ${p.status==='hecho' ? '✅ Hecho' : '⏳ Pendiente'}</div>
+          ${p.due_date ? '<div style="font-size:12px; color:var(--text2);">Vence: '+p.due_date+'</div>' : ''}
+          ${p.content ? '<div style="font-size:12px; color:var(--text2); margin-top:4px; white-space:pre-wrap;">'+p.content+'</div>' : ''}
+        </div>
+        <div class="list-item-actions"><button onclick="markPlanDone('${p.id}')">${p.status==='hecho' ? 'Marcar pendiente' : 'Marcar hecho'}</button></div>
+      </div>
+    `).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  EQUIPOS (club / estadal / nacional) — muchos a muchos
+  // ═══════════════════════════════════════════════════════════════
+  async function loadTeams() {
+    if (!currentUser || !supabase) return;
+    const { data: myMemberships, error: e1 } = await supabase.from('team_members').select('*').eq('profile_id', currentUser.id);
+    if (e1 || !myMemberships) return;
+    data.teamMembers = myMemberships;
+    const teamIds = myMemberships.map(m => m.team_id);
+    if (teamIds.length === 0) { data.teams = []; saveLocal(); renderTeams(); return; }
+
+    const { data: teamsData } = await supabase.from('teams').select('*').in('id', teamIds);
+    data.teams = teamsData || [];
+
+    // Traer también los miembros de cada equipo (para mostrar el roster)
+    const { data: allMembers } = await supabase
+      .from('team_members')
+      .select('id, team_id, member_role, weapon_focus, profiles:profile_id(id, full_name, weapon, category)')
+      .in('team_id', teamIds);
+    data.teamRoster = allMembers || [];
+
+    saveLocal();
+    renderTeams();
+  }
+
+  window.createTeam = async function() {
+    const name = document.getElementById('team-new-name').value.trim();
+    if (!name) { alert('Ponle un nombre al equipo.'); return; }
+    const level = document.getElementById('team-new-level').value;
+    const region = level === 'estadal' ? document.getElementById('team-new-region').value.trim() : null;
+    if (!supabase || !currentUser) { alert('No hay conexión con Supabase.'); return; }
+
+    const { data: team, error } = await supabase.from('teams').insert({ name, level, region, created_by: currentUser.id }).select().single();
+    if (error) { alert('No se pudo crear el equipo: ' + error.message); return; }
+
+    // El creador entra automáticamente como coach/staff del equipo
+    const myRole = data.setup.mode === 'coach' ? 'coach' : 'athlete';
+    await supabase.from('team_members').insert({ team_id: team.id, profile_id: currentUser.id, member_role: myRole });
+
+    document.getElementById('team-new-name').value = '';
+    document.getElementById('team-new-region').value = '';
+    await loadTeams();
+  };
+
+  window.generateTeamCode = async function(teamId, roleToAssign) {
+    if (!supabase || !currentUser) return;
+    const code = 'EQUIPO' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const { error } = await supabase.from('team_join_codes').insert({ team_id: teamId, code, role_to_assign: roleToAssign, created_by: currentUser.id });
+    if (error) { alert('No se pudo generar el código: ' + error.message); return; }
+    alert('Código generado (' + (roleToAssign === 'athlete' ? 'para atleta' : 'para coach/staff') + '): ' + code + '\nCompártelo por WhatsApp.');
+  };
+
+  window.joinTeamByCode = async function() {
+    const codeInput = document.getElementById('team-join-code');
+    const code = codeInput.value.trim().toUpperCase();
+    if (!code) return;
+    if (!supabase || !currentUser) { alert('No hay conexión con Supabase.'); return; }
+
+    const { data: invite, error: e1 } = await supabase.from('team_join_codes').select('team_id, role_to_assign').eq('code', code).single();
+    if (e1 || !invite) { alert('Código no válido.'); return; }
+
+    const { error: e2 } = await supabase.from('team_members').insert({ team_id: invite.team_id, profile_id: currentUser.id, member_role: invite.role_to_assign });
+    if (e2) { alert(e2.code === '23505' ? 'Ya perteneces a ese equipo.' : 'No se pudo unir: ' + e2.message); return; }
+
+    codeInput.value = '';
+    await loadTeams();
+    alert('Te uniste al equipo.');
+  };
+
+  function renderTeams() {
+    const el = document.getElementById('list-teams');
+    if (!el) return;
+    if (!data.teams || data.teams.length === 0) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏳️</div><div class="empty-state-title">Sin equipos</div>Crea uno o únete con un código.</div>';
+      return;
+    }
+    const levelLabel = { club: 'Club', estadal: 'Estadal', nacional: 'Nacional' };
+    el.innerHTML = data.teams.map(t => {
+      const roster = (data.teamRoster || []).filter(m => m.team_id === t.id);
+      const isCreator = t.created_by === currentUser.id;
+      const roleGroups = { coach: [], staff: [], athlete: [] };
+      roster.forEach(m => { if (m.profiles) roleGroups[m.member_role]?.push(m.profiles.full_name); });
+      return `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <div style="font-weight:700; font-size:15px;">${t.name}</div>
+              <div style="font-size:12px; color:var(--text3);">${levelLabel[t.level] || t.level}${t.region ? ' · ' + t.region : ''}</div>
+            </div>
+            ${isCreator ? `
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn-sm" onclick="generateTeamCode('${t.id}','athlete')">+ Código atleta</button>
+                <button class="btn btn-sm" onclick="generateTeamCode('${t.id}','coach')">+ Código coach</button>
+              </div>` : ''}
+          </div>
+          <div style="margin-top:10px; font-size:12px; color:var(--text2);">
+            ${roleGroups.coach.length ? '<div><strong>Coaches:</strong> ' + roleGroups.coach.join(', ') + '</div>' : ''}
+            ${roleGroups.staff.length ? '<div><strong>Staff:</strong> ' + roleGroups.staff.join(', ') + '</div>' : ''}
+            ${roleGroups.athlete.length ? '<div><strong>Atletas (' + roleGroups.athlete.length + '):</strong> ' + roleGroups.athlete.join(', ') + '</div>' : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   function renderDiary() {
