@@ -694,8 +694,10 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     </div>
     <div class="form-row">
       <div class="form-group"><label>Categoría</label><select id="mu-cat"><option value="pre-entrenamiento">Pre-entrenamiento</option><option value="entrenamiento">Entrenamiento</option><option value="pre-competitivo">Pre-competitivo</option><option value="recuperacion">Recuperación</option></select></div>
-      <div class="form-group"><label>Link (URL)</label><input type="url" id="mu-url" placeholder="https://..."></div>
+      <div class="form-group"><label>Link (URL, opcional)</label><input type="url" id="mu-url" placeholder="https://..."></div>
     </div>
+    <div class="form-group full"><label>O sube el archivo (MP3/M4A/WAV, máx. 15MB)</label><input type="file" id="mu-file" accept="audio/mpeg,audio/mp3,audio/wav,audio/x-m4a,audio/mp4,audio/aac"></div>
+    <div id="mu-upload-status" style="font-size:12px; color:var(--text3); margin-top:4px;"></div>
     <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;"><button class="btn" onclick="closeModal('modal-music')">Cancelar</button><button class="btn btn-primary" onclick="saveMusic()">Guardar</button></div>
   </div>
 </div>
@@ -1153,8 +1155,25 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
 
   window.logout = async function() {
     if (!supabase) return;
-    await supabase.auth.signOut();
-    localStorage.removeItem('fencing_data');
+    document.querySelectorAll('[onclick="logout()"]').forEach(b => { b.disabled = true; b.textContent = '🚪 Cerrando sesión...'; });
+
+    // signOut() por defecto intenta revocar el token en el servidor (necesita red).
+    // Si la red está lenta o intermitente esa llamada se puede quedar colgada y
+    // nunca limpia nada. Le damos máximo 2s; pase lo que pase, limpiamos localmente.
+    try {
+      await Promise.race([
+        supabase.auth.signOut({ scope: 'local' }),
+        new Promise(resolve => setTimeout(resolve, 2000))
+      ]);
+    } catch (e) {
+      console.error('Error en signOut (se ignora, se limpia local igual):', e);
+    }
+
+    // Limpieza local manual como respaldo, por si el SDK no alcanzó a terminar
+    Object.keys(localStorage).forEach(k => {
+      if (k === 'fencing_data' || k.startsWith('sb-')) localStorage.removeItem(k);
+    });
+
     location.reload();
   };
 
@@ -1566,19 +1585,40 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     document.getElementById('p-notes').value = '';
   };
 
-  window.saveMusic = function() {
+  window.saveMusic = async function() {
+    const title = document.getElementById('mu-title').value;
+    if (!title) { alert('Ingresa el título'); return; }
+    if (data.setup.mode === 'coach') { alert('Modo entrenador: solo puedes ver los datos del atleta.'); return; }
+
     const item = {
-      title: document.getElementById('mu-title').value,
+      title: title,
       artist: document.getElementById('mu-artist').value,
       category: document.getElementById('mu-cat').value,
-      url: document.getElementById('mu-url').value
+      url: document.getElementById('mu-url').value,
+      storage_path: null
     };
-    if (!item.title) { alert('Ingresa el título'); return; }
+
+    const fileInput = document.getElementById('mu-file');
+    const file = fileInput.files[0];
+    const statusEl = document.getElementById('mu-upload-status');
+
+    if (file) {
+      if (!supabase || !currentUser) { alert('No hay conexión con Supabase, no se puede subir el archivo.'); return; }
+      if (file.size > 15 * 1024 * 1024) { alert('El archivo pesa más de 15MB. Usa uno más liviano o comprime la canción.'); return; }
+      statusEl.textContent = 'Subiendo archivo...';
+      const path = currentUser.id + '/' + Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const { error: upErr } = await supabase.storage.from('music').upload(path, file);
+      if (upErr) { statusEl.textContent = ''; alert('No se pudo subir el archivo: ' + upErr.message); return; }
+      item.storage_path = path;
+      statusEl.textContent = '';
+    }
+
     addItem('music', item);
     closeModal('modal-music');
     document.getElementById('mu-title').value = '';
     document.getElementById('mu-artist').value = '';
     document.getElementById('mu-url').value = '';
+    document.getElementById('mu-file').value = '';
   };
 
   window.saveGoal = function() {
@@ -1661,7 +1701,20 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
   window.delEquip = function(id) { delItem('equipment', id); };
   window.delNutri = function(id) { delItem('nutrition', id); };
   window.delPsych = function(id) { delItem('psychology', id); };
-  window.delMusic = function(id) { delItem('music', id); };
+  window.delMusic = async function(id) {
+    const item = data.music.find(m => m.id === id);
+    if (item && item.storage_path && supabase) {
+      await supabase.storage.from('music').remove([item.storage_path]);
+    }
+    delItem('music', id);
+  };
+
+  window.playStoredMusic = async function(path) {
+    if (!supabase) { alert('No hay conexión con Supabase.'); return; }
+    const { data: signed, error } = await supabase.storage.from('music').createSignedUrl(path, 3600);
+    if (error || !signed) { alert('No se pudo reproducir el archivo: ' + (error?.message || '')); return; }
+    window.open(signed.signedUrl, '_blank');
+  };
   window.delGoal = function(id) { delItem('goals', id); };
   window.delDiary = function(id) { delItem('diary', id); };
   window.delInjury = function(id) { delItem('injuries', id); };
@@ -2174,10 +2227,15 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       if(items.length>0) {
         html += `<div style="margin-bottom:14px;"><div style="font-size:14px; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:5px;">${cats[cat].icon} ${cats[cat].label}</div>`;
         html += items.map(m=>`
+          ${m.storage_path ? `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:7px; margin-bottom:5px; background:var(--surface2);">
+            <span style="font-size:13px;">🎵 ${m.title}${m.artist?' — '+m.artist:''}</span>
+            <button class="btn btn-sm" style="font-size:11px; padding:2px 6px;" onclick="playStoredMusic('${m.storage_path}')">▶ Reproducir</button>
+          </div>` : `
           <a href="${m.url}" target="_blank" rel="noopener" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:7px; margin-bottom:5px; text-decoration:none; color:var(--text); background:var(--surface2);" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background='var(--surface2)'">
             <span style="font-size:13px;">${m.title}${m.artist?' — '+m.artist:''}</span>
             <span style="color:var(--text3);">→</span>
-          </a>
+          </a>`}
           <div style="text-align:right; margin-bottom:5px;"><button class="btn btn-sm" style="font-size:11px; padding:2px 6px;" onclick="event.preventDefault(); delMusic('${m.id}')">Eliminar</button></div>
         `).join('');
         html += '</div>';
