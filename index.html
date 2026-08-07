@@ -449,6 +449,45 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       </div>
 
       <div id="list-teams"></div>
+
+      <div class="card" style="margin-top:16px;">
+        <div style="font-weight:600; margin-bottom:8px;">Convocatorias del equipo</div>
+        <div id="teams-event-form-wrap" style="display:none; margin-bottom:12px; padding:10px; border:1px solid var(--border); border-radius:8px;">
+          <div class="form-row">
+            <div class="form-group"><label>Equipo</label><select id="te-team"></select></div>
+            <div class="form-group"><label>Tipo</label><select id="te-type"><option value="entrenamiento">Entrenamiento</option><option value="competencia">Competencia</option><option value="otro">Otro</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full"><label>Título</label><input type="text" id="te-title" placeholder="Ej: Concentración previa al Nacional"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Fecha</label><input type="date" id="te-date"></div>
+            <div class="form-group full"><label>Notas</label><input type="text" id="te-notes" placeholder="Lugar, hora, indicaciones..."></div>
+          </div>
+          <button class="btn btn-primary" onclick="createTeamEvent()">Convocar</button>
+        </div>
+        <div id="list-team-events"></div>
+      </div>
+    </div>
+
+    <div class="section" id="attendance">
+      <div style="margin-bottom:14px;"><div class="page-title" id="attendance-title">Asistencia</div><div class="page-sub">Registro de presencia en entrenamientos</div></div>
+      <div id="attendance-form-wrap" class="card" style="display:none; margin-bottom:16px;">
+        <div class="form-row">
+          <div class="form-group"><label>Fecha</label><input type="date" id="att-date"></div>
+          <div class="form-group full"><label>Nota (opcional)</label><input type="text" id="att-note" placeholder="Ej: llegó tarde, justificó con..."></div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary" onclick="markAttendance(true)">✅ Marcar presente</button>
+          <button class="btn" onclick="markAttendance(false)">❌ Marcar ausente</button>
+        </div>
+      </div>
+      <div id="list-attendance"></div>
+    </div>
+
+    <div class="section" id="team-dashboard">
+      <div style="margin-bottom:14px;"><div class="page-title">Tablero de equipo</div><div class="page-sub">Todo el grupo de un vistazo — últimos 7 días</div></div>
+      <div id="team-dashboard-body"></div>
     </div>
 
     <div class="section" id="diary">
@@ -837,6 +876,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     injuries: [], ranking: [], athletes: [],
     coachNotes: [], assignedPlans: [],
     teams: [], teamMembers: [], teamRoster: [],
+    entryComments: [], attendance: [], teamEvents: [],
     setup: { mode: 'athlete', weapon: 'florete' },
     currentAthleteId: null
   };
@@ -863,6 +903,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     {id:'injuries', label:'Lesiones', icon:'🩹'},
     {id:'plans-athlete', label:'Rutinas del coach', icon:'📋'},
     {id:'teams', label:'Mis equipos', icon:'🏳️'},
+    {id:'attendance', label:'Mi asistencia', icon:'✅'},
     {id:'ranking', label:'Ranking', icon:'🏅'}
   ];
 
@@ -877,6 +918,8 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     {id:'goals', label:'Objetivos', icon:'🎯'},
     {id:'coach-notes', label:'Mis notas', icon:'📝'},
     {id:'plans-coach', label:'Rutinas enviadas', icon:'📤'},
+    {id:'attendance', label:'Asistencia', icon:'✅'},
+    {id:'team-dashboard', label:'Tablero de equipo', icon:'📊'},
     {id:'teams', label:'Mis equipos', icon:'🏳️'},
     {id:'theory', label:'Teoría', icon:'📖'}
   ];
@@ -1114,6 +1157,18 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     const { data: plans, error: ePlans } = await supabase.from('assigned_plans').select('*');
     if (!ePlans && plans) data.assignedPlans = plans;
 
+    // Comentarios visibles: RLS filtra (coach ve los suyos, atleta ve los que le dejaron)
+    const { data: comments, error: eComments } = await supabase.from('entry_comments').select('*');
+    if (!eComments && comments) data.entryComments = comments;
+
+    // Asistencia: RLS filtra (coach ve los suyos, atleta ve los propios)
+    const { data: att, error: eAtt } = await supabase.from('attendance').select('*');
+    if (!eAtt && att) data.attendance = att;
+
+    // Eventos de equipo: RLS ya filtra a los equipos donde el usuario es miembro
+    const { data: events, error: eEvents } = await supabase.from('team_events').select('*');
+    if (!eEvents && events) data.teamEvents = events;
+
     saveLocal();
     renderAll();
   }
@@ -1194,6 +1249,20 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
       const el = document.getElementById(id);
       if (el) el.style.display = isCoach ? 'none' : '';
     });
+    const attForm = document.getElementById('attendance-form-wrap');
+    if (attForm) attForm.style.display = isCoach ? 'block' : 'none';
+    const attTitle = document.getElementById('attendance-title');
+    if (attTitle) attTitle.textContent = isCoach ? 'Asistencia' : 'Mi asistencia';
+    const teForm = document.getElementById('teams-event-form-wrap');
+    if (teForm) teForm.style.display = isCoach ? 'block' : 'none';
+    if (isCoach) populateTeamEventSelect();
+  }
+
+  function populateTeamEventSelect() {
+    const sel = document.getElementById('te-team');
+    if (!sel) return;
+    const myTeams = (data.teams || []).filter(t => (data.teamMembers||[]).some(m => m.team_id === t.id && m.profile_id === currentUser.id && ['coach','staff'].includes(m.member_role)));
+    sel.innerHTML = myTeams.map(t => `<option value="${t.id}">${t.name}</option>`).join('') || '<option value="">Sin equipos</option>';
   }
 
   function showApp() {
@@ -1845,6 +1914,9 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     renderPlansCoach();
     renderPlansAthlete();
     renderTeams();
+    renderAttendance();
+    renderTeamDashboard();
+    renderTeamEvents();
     renderDiary();
     renderInjuries();
     renderRanking();
@@ -2003,6 +2075,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           <div class="list-item-meta">${t.date}${t.notes?' · '+t.notes:''}</div>
         </div>
         <div class="list-item-actions"><button onclick="delTraining('${t.id}')">Eliminar</button></div>
+        ${renderEntryComments('trainings', t.id, t.user_id)}
       </div>
     `).join('');
   }
@@ -2018,6 +2091,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           <div class="list-item-meta">${c.date} · ${c.location}${c.position?' · Posición: '+c.position:''}</div>
         </div>
         <div class="list-item-actions"><button onclick="delCompetition('${c.id}')">Eliminar</button></div>
+        ${renderEntryComments('competitions', c.id, c.user_id)}
       </div>
     `).join('');
   }
@@ -2045,6 +2119,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           <div class="match-score"><span class="score-me">${m.score_for}</span><span class="score-sep">:</span><span class="score-them">${m.score_against}</span></div>
           <div class="list-item-actions"><button onclick="delMatch('${m.id}')">Eliminar</button></div>
         </div>
+        ${renderEntryComments('matches', m.id, m.user_id)}
       </div>
     `).join('');
   }
@@ -2125,6 +2200,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           ${t.notes?'<div style="font-size:11px; color:var(--text3); margin-top:2px;">'+t.notes+'</div>':''}
         </div>
         <div class="list-item-actions"><button onclick="delTest('${t.id}')">Eliminar</button></div>
+        ${renderEntryComments('tests', t.id, t.user_id)}
       </div>
     `).join('');
   }
@@ -2264,6 +2340,7 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
         </div>
         <div class="progress-bar"><div class="progress-fill" style="width:${g.progress}%; background:${g.progress>=75?'var(--win)':g.progress>=40?'var(--accent)':'var(--warn)'}"></div></div>
         ${g.plan?'<div style="margin-top:6px; font-size:12px; color:var(--text2);"><strong>Plan:</strong> '+g.plan+'</div>':''}
+        ${renderEntryComments('goals', g.id, g.user_id)}
       </div>
     `).join('');
   }
@@ -2517,6 +2594,209 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
           </div>
         </div>
       `;
+    }).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  COMENTARIOS VISIBLES DEL COACH SOBRE UNA ENTRADA PUNTUAL
+  //  (no edita lo que el atleta escribió, solo agrega un comentario al lado)
+  // ═══════════════════════════════════════════════════════════════
+  function renderEntryComments(tableName, entryId, athleteId) {
+    const comments = data.entryComments.filter(c => c.table_name === tableName && c.entry_id === entryId);
+    let html = '';
+    if (comments.length > 0) {
+      html += '<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border);">' +
+        comments.map(c => '<div style="font-size:12px; color:var(--text2); margin-bottom:3px;">💬 <strong>Coach:</strong> ' + c.comment + '</div>').join('') +
+        '</div>';
+    }
+    if (data.setup.mode === 'coach' && athleteId) {
+      const inputId = 'cmt-' + tableName + '-' + entryId;
+      html += '<div style="display:flex; gap:4px; margin-top:6px;">' +
+        '<input type="text" id="' + inputId + '" placeholder="Dejar comentario visible para el atleta..." style="flex:1; font-size:12px; padding:5px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);">' +
+        '<button class="btn btn-sm" style="font-size:11px;" onclick="addEntryComment(\'' + tableName + '\',\'' + entryId + '\',\'' + athleteId + '\')">Comentar</button>' +
+        '</div>';
+    }
+    return html;
+  }
+
+  window.addEntryComment = async function(tableName, entryId, athleteId) {
+    const inputId = 'cmt-' + tableName + '-' + entryId;
+    const input = document.getElementById(inputId);
+    const text = input.value.trim();
+    if (!text) return;
+    const comment = {
+      id: uuid(),
+      coach_id: currentUser.id,
+      athlete_id: athleteId,
+      table_name: tableName,
+      entry_id: entryId,
+      comment: text,
+      created_at: new Date().toISOString()
+    };
+    data.entryComments.unshift(comment);
+    saveLocal();
+    renderAll();
+    if (supabase && currentUser) {
+      supabase.from('entry_comments').upsert(comment, { onConflict: 'id' }).then(({error}) => {
+        if (error) console.error('Sync error entry_comments', error);
+      });
+    }
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  ASISTENCIA A ENTRENAMIENTOS (registro del coach, visible al atleta)
+  // ═══════════════════════════════════════════════════════════════
+  window.markAttendance = async function(present) {
+    if (!data.currentAthleteId) { alert('Selecciona un atleta arriba primero.'); return; }
+    const dateInput = document.getElementById('att-date');
+    const dateVal = dateInput.value || new Date().toISOString().slice(0,10);
+    const record = {
+      id: uuid(),
+      coach_id: currentUser.id,
+      athlete_id: data.currentAthleteId,
+      team_id: null,
+      event_date: dateVal,
+      present: present,
+      note: document.getElementById('att-note').value,
+      created_at: new Date().toISOString()
+    };
+    data.attendance.unshift(record);
+    saveLocal();
+    renderAttendance();
+    document.getElementById('att-note').value = '';
+    if (supabase && currentUser) {
+      supabase.from('attendance').upsert(record, { onConflict: 'id' }).then(({error}) => {
+        if (error) console.error('Sync error attendance', error);
+      });
+    }
+  };
+
+  window.delAttendance = async function(id) {
+    if (!confirm('¿Eliminar este registro de asistencia?')) return;
+    data.attendance = data.attendance.filter(a => a.id !== id);
+    saveLocal();
+    renderAttendance();
+    if (supabase && currentUser) {
+      supabase.from('attendance').delete().eq('id', id).then(({error}) => {
+        if (error) console.error('Delete error attendance', error);
+      });
+    }
+  };
+
+  function renderAttendance() {
+    const el = document.getElementById('list-attendance');
+    if (!el) return;
+    const items = data.setup.mode === 'coach' && data.currentAthleteId
+      ? data.attendance.filter(a => a.athlete_id === data.currentAthleteId)
+      : data.attendance.filter(a => a.athlete_id === currentUser.id);
+    const sorted = [...items].sort((a,b) => (b.event_date||'').localeCompare(a.event_date||''));
+    if (sorted.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">Sin registros</div>Aún no hay asistencia registrada.</div>'; return; }
+    el.innerHTML = sorted.map(a => `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:600;">${a.event_date} ${a.present ? '✅ Presente' : '❌ Ausente'}</div>
+          ${a.note ? '<div style="font-size:12px; color:var(--text2); margin-top:2px;">'+a.note+'</div>' : ''}
+        </div>
+        ${data.setup.mode === 'coach' ? '<div class="list-item-actions"><button onclick="delAttendance(\''+a.id+'\')">Eliminar</button></div>' : ''}
+      </div>
+    `).join('');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  TABLERO DE EQUIPO — resumen del grupo de un vistazo
+  // ═══════════════════════════════════════════════════════════════
+  function renderTeamDashboard() {
+    const el = document.getElementById('team-dashboard-body');
+    if (!el) return;
+    if (!data.athletes || data.athletes.length === 0) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-title">Sin atletas</div>Invita atletas o crea/únete a un equipo para ver el tablero.</div>';
+      return;
+    }
+    const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().slice(0,10);
+    el.innerHTML = `
+      <table style="width:100%; border-collapse:collapse; font-size:13px;">
+        <thead><tr style="text-align:left; border-bottom:1px solid var(--border);">
+          <th style="padding:6px;">Atleta</th>
+          <th style="padding:6px;">Entrenó esta semana</th>
+          <th style="padding:6px;">Último registro</th>
+          <th style="padding:6px;">Lesiones activas</th>
+        </tr></thead>
+        <tbody>
+        ${data.athletes.map(ath => {
+          const own = data.trainings.filter(t => t.user_id === ath.id);
+          const recent = own.filter(t => t.date >= sevenDaysAgo);
+          const last = own.sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+          const injuries = (data.injuries || []).filter(i => i.user_id === ath.id && i.status !== 'recovered');
+          return `<tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:6px; font-weight:600;">${ath.name}</td>
+            <td style="padding:6px;">${recent.length > 0 ? '✅ Sí ('+recent.length+')' : '⚠️ No'}</td>
+            <td style="padding:6px; color:var(--text2);">${last ? last.date : 'Sin registros'}</td>
+            <td style="padding:6px;">${injuries.length > 0 ? '🩹 '+injuries.length : '—'}</td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+    `;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CALENDARIO DE EQUIPO (convocatorias oficiales, controlado por el coach)
+  // ═══════════════════════════════════════════════════════════════
+  window.createTeamEvent = async function() {
+    const teamId = document.getElementById('te-team').value;
+    const title = document.getElementById('te-title').value.trim();
+    const eventDate = document.getElementById('te-date').value;
+    if (!teamId) { alert('Selecciona un equipo.'); return; }
+    if (!title || !eventDate) { alert('Completa título y fecha.'); return; }
+    const ev = {
+      id: uuid(),
+      team_id: teamId,
+      created_by: currentUser.id,
+      title: title,
+      event_type: document.getElementById('te-type').value,
+      event_date: eventDate,
+      notes: document.getElementById('te-notes').value,
+      created_at: new Date().toISOString()
+    };
+    if (!supabase || !currentUser) { alert('No hay conexión con Supabase.'); return; }
+    const { error } = await supabase.from('team_events').insert(ev);
+    if (error) { alert('No se pudo crear el evento: ' + error.message); return; }
+    data.teamEvents.unshift(ev);
+    saveLocal();
+    renderTeamEvents();
+    document.getElementById('te-title').value = '';
+    document.getElementById('te-notes').value = '';
+  };
+
+  window.delTeamEvent = async function(id) {
+    if (!confirm('¿Eliminar este evento?')) return;
+    if (supabase) {
+      const { error } = await supabase.from('team_events').delete().eq('id', id);
+      if (error) { alert('No se pudo eliminar: ' + error.message); return; }
+    }
+    data.teamEvents = data.teamEvents.filter(e => e.id !== id);
+    saveLocal();
+    renderTeamEvents();
+  };
+
+  function renderTeamEvents() {
+    const el = document.getElementById('list-team-events');
+    if (!el) return;
+    const sorted = [...(data.teamEvents||[])].sort((a,b) => (a.event_date||'').localeCompare(b.event_date||''));
+    if (sorted.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-title">Sin eventos</div>El coach aún no ha convocado nada.</div>'; return; }
+    const teamName = id => (data.teams.find(t => t.id === id) || {}).name || '';
+    const typeIcon = { entrenamiento: '🤺', competencia: '🏆', otro: '📌' };
+    el.innerHTML = sorted.map(e => {
+      const canManage = data.setup.mode === 'coach' && e.created_by === currentUser.id;
+      return `
+      <div class="list-item">
+        <div>
+          <div style="font-weight:600;">${typeIcon[e.event_type]||'📌'} ${e.title}</div>
+          <div style="font-size:12px; color:var(--text2);">${e.event_date} · ${teamName(e.team_id)}</div>
+          ${e.notes ? '<div style="font-size:12px; color:var(--text3); margin-top:2px;">'+e.notes+'</div>' : ''}
+        </div>
+        ${canManage ? '<div class="list-item-actions"><button onclick="delTeamEvent(\''+e.id+'\')">Eliminar</button></div>' : ''}
+      </div>`;
     }).join('');
   }
 
