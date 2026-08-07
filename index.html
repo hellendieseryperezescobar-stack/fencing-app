@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Fencing Pro">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRmVuY2luZyBQcm8gdjIiLCJzaG9ydF9uYW1lIjoiRmVuY2luZyBQcm8iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBmMGYxMiIsInRoZW1lX2NvbG9yIjoiIzBmMGYxMiIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxOTIgMTkyJyUzRSUzQ3JlY3QgZmlsbD0nJTIzZThjNTQ3JyB3aWR0aD0nMTkyJyBoZWlnaHQ9JzE5Micgcng9JzI0Jy8lM0UlM0N0ZXh0IHg9Jzk2JyB5PScxMjAnIGZvbnQtc2l6ZT0nMTAwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWwsJTNjc3ZnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgdmlld0JveD0nMCAwIDUxMiA1MTInJTNlJTNjcmVjdCBmaWxsPSclMjNlOGM1NDcnIHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nNjQnLyUzZSUzY3RleHQgeD0nMjU2JyB5PSczMjAnIGZvbnQtc2l6ZT0nMjgwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyUzRSVGMCU5RiU5RiU5QSUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4" defer></script>
+<script src="./supabase.min.js" defer></script>
 <script>
 const SUPABASE_URL = 'https://lglujkcpkeybchhpckns.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxnbHVqa2Nwa2V5YmNoaHBja25zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NDc0NTIsImV4cCI6MjEwMTQyMzQ1Mn0.J0qSgX5yudbRqCGu_TECocyPPFEZNt3uzfd68obYbtY';
@@ -1232,8 +1232,9 @@ body { font-family:var(--font); background:var(--bg); color:var(--text); min-hei
     location.reload();
   };
 
-  window.manualSync = function() {
-    syncToCloud();
+  window.manualSync = async function() {
+    await syncToCloud();
+    await syncFromCloud();
   };
 
   function showLoginScreen() {

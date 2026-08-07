@@ -1,7 +1,8 @@
-const CACHE_NAME = 'fencing-pro-v2-cache-v1';
+const CACHE_NAME = 'fencing-pro-v2-cache-v2';
 const URLS_TO_CACHE = [
-  '/',
-  '/index.html'
+  './',
+  './index.html',
+  './supabase.min.js'
 ];
 
 self.addEventListener('install', (event) => {
