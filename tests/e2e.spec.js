@@ -20,7 +20,9 @@ test('service worker registration appears in console', async ({ page }) => {
 
 test('offline: caches include supabase.min.js and index.html', async ({ page, context }) => {
   await page.goto('/');
+  // Wait for the service worker to take control so reload can be served from cache
+  await page.waitForFunction(() => (navigator.serviceWorker && navigator.serviceWorker.controller) || false, null, { timeout: 5000 });
   await context.setOffline(true);
-  await page.reload();
+  await page.reload({ waitUntil: 'load', timeout: 10000 });
   await expect(page.locator('#setup-screen')).toBeVisible();
 });
